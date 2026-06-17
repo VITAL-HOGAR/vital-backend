@@ -131,6 +131,7 @@
     let currentRole = null;
     let storageKey = null;
     let currentPatient = "Maria Gonzalez";
+    let recognitionActive = false;
 
     // ==================== LOGO ====================
     const savedLogo = localStorage.getItem('vital_logo');
@@ -153,29 +154,60 @@
         }
     });
 
-    // ==================== DICTADO ====================
+    // ==================== DICTADO CORREGIDO ====================
     function iniciarDictado(targetId) {
-        if(!('webkitSpeechRecognition' in window)) {
+        if (!('webkitSpeechRecognition' in window)) {
             showToast('Voz no soportada en este navegador', 'error');
             return;
         }
+        
+        if (recognitionActive) {
+            showToast('Ya hay una grabación en curso', 'warning');
+            return;
+        }
+        
         const recognition = new webkitSpeechRecognition();
         recognition.lang = 'es-ES';
         recognition.continuous = false;
-        recognition.interimResults = true;
+        recognition.interimResults = false; // SOLO resultado final
+        recognition.maxAlternatives = 1;
+        
+        recognition.onstart = function() {
+            recognitionActive = true;
+            showToast('🎙️ Habla ahora...', 'success');
+        };
+        
+        recognition.onend = function() {
+            recognitionActive = false;
+            showToast('✅ Grabación finalizada', 'success');
+        };
+        
         recognition.onresult = function(event) {
-            let final = '';
-            for(let i = event.resultIndex; i < event.results.length; i++) {
-                final += event.results[i][0].transcript;
-            }
             const target = document.getElementById(targetId);
-            if(target) {
-                target.value += (target.value ? ' ' : '') + final;
-                showToast('✅ Dictado completado', 'success');
+            if (!target) return;
+            
+            const result = event.results[0];
+            if (result && result.isFinal) {
+                const texto = result[0].transcript.trim();
+                if (texto) {
+                    target.value += (target.value ? ' ' : '') + texto;
+                    showToast('✅ Dictado completado', 'success');
+                }
             }
         };
+        
+        recognition.onerror = function(event) {
+            recognitionActive = false;
+            if (event.error === 'not-allowed') {
+                showToast('Permiso de micrófono denegado', 'error');
+            } else if (event.error === 'no-speech') {
+                showToast('No se detectó voz', 'error');
+            } else {
+                showToast('Error: ' + event.error, 'error');
+            }
+        };
+        
         recognition.start();
-        showToast('🎙️ Habla ahora...', 'success');
     }
 
     function showToast(msg, type = 'success') {
@@ -543,7 +575,7 @@
         showToast('✅ ENTREGA registrada', 'success');
     };
 
-    // ==================== REPORTES CON TODOS LOS DATOS ====================
+    // ==================== REPORTES ====================
     function getReportesContent() {
         return `<div class="card"><div class="card-title">📄 Reporte Completo del Turno</div>
             <div class="grid-2">
@@ -553,7 +585,7 @@
         </div>`;
     }
 
-    // ==================== GENERAR PDF COMPLETO (UNIFICADO) ====================
+    // ==================== GENERAR PDF COMPLETO CON FIRMAS ====================
     window.generarReportePDF = async () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
@@ -584,7 +616,7 @@
                 if(y > 270) { doc.addPage(); y = 20; }
                 doc.text(`${i+1}. ${d.actividad || 'Actividad'} - ${d.hora || 'Sin hora'}`, 25, y);
                 if(d.observacion) doc.text(`   Obs: ${d.observacion.substring(0, 60)}`, 30, y+5);
-                y += 10;
+                y += 12;
             });
             y += 10;
         }
@@ -598,7 +630,7 @@
                 if(y > 270) { doc.addPage(); y = 20; }
                 doc.text(`${i+1}. SpO2:${d.spo2 || '-'}% | FC:${d.fc || '-'} | FR:${d.fr || '-'} | Temp:${d.temp || '-'}°C | TA:${d.bp || '-'} | Glucosa:${d.glucosa || '-'}`, 25, y);
                 doc.text(`   Hora: ${d.hora || '-'}`, 30, y+5);
-                y += 10;
+                y += 12;
             });
             y += 10;
         }
@@ -612,7 +644,7 @@
                 if(y > 270) { doc.addPage(); y = 20; }
                 doc.text(`${i+1}. ${d.nombre || 'Medicamento'} - ${d.dosis || 'Sin dosis'} - ${d.hora || 'Sin hora'}`, 25, y);
                 if(d.obs) doc.text(`   Obs: ${d.obs.substring(0, 50)}`, 30, y+5);
-                y += 10;
+                y += 12;
             });
             y += 10;
         }
@@ -631,48 +663,52 @@
         }
 
         // ========== 5. FIRMAS ==========
-        y += 10;
+        y += 15;
+        doc.setFontSize(12);
         doc.text('FIRMAS:', 20, y);
-        y += 12;
+        y += 15;
+        doc.setFontSize(10);
 
-        // Firma del profesional (sigEntrega)
-        const sigEntrega = document.getElementById('sigEntrega');
-        if(sigEntrega) {
+        function obtenerFirmaCanvas(id) {
+            const canvas = document.getElementById(id);
+            if(!canvas) return null;
             try {
-                const imgData = sigEntrega.toDataURL('image/png');
-                if(imgData && imgData !== 'data:image/png;base64,') {
-                    doc.text('Firma del Profesional:', 20, y);
-                    doc.addImage(imgData, 'PNG', 100, y-5, 60, 20);
-                    y += 30;
-                } else {
-                    doc.text('Firma del Profesional: ___________________', 20, y);
-                    y += 12;
+                const dataUrl = canvas.toDataURL('image/png');
+                if(dataUrl && dataUrl !== 'data:image/png;base64,') {
+                    return dataUrl;
                 }
-            } catch(e) {
-                doc.text('Firma del Profesional: ___________________', 20, y);
-                y += 12;
-            }
+            } catch(e) {}
+            return null;
+        }
+
+        // Firma profesional (sigEntrega)
+        const firmaProfesional = obtenerFirmaCanvas('sigEntrega');
+        if(firmaProfesional) {
+            doc.text('Firma del Profesional:', 20, y);
+            try { doc.addImage(firmaProfesional, 'PNG', 100, y-5, 60, 25); } catch(e) { doc.text('___________________', 100, y+5); }
+            y += 35;
         } else {
             doc.text('Firma del Profesional: ___________________', 20, y);
             y += 12;
         }
 
-        // Firma del acudiente (sigRecibe)
-        const sigRecibe = document.getElementById('sigRecibe');
-        if(sigRecibe) {
-            try {
-                const imgData = sigRecibe.toDataURL('image/png');
-                if(imgData && imgData !== 'data:image/png;base64,') {
-                    doc.text('Firma del Acudiente/Familiar:', 20, y);
-                    doc.addImage(imgData, 'PNG', 100, y-5, 60, 20);
-                } else {
-                    doc.text('Firma del Acudiente/Familiar: _____________', 20, y);
-                }
-            } catch(e) {
-                doc.text('Firma del Acudiente/Familiar: _____________', 20, y);
-            }
+        // Firma acudiente (sigRecibe)
+        const firmaAcudiente = obtenerFirmaCanvas('sigRecibe');
+        if(firmaAcudiente) {
+            doc.text('Firma del Acudiente/Familiar:', 20, y);
+            try { doc.addImage(firmaAcudiente, 'PNG', 100, y-5, 60, 25); } catch(e) { doc.text('___________________', 100, y+5); }
+            y += 35;
         } else {
             doc.text('Firma del Acudiente/Familiar: _____________', 20, y);
+            y += 12;
+        }
+
+        // Firma recibo (sigRecibo) - opcional
+        const firmaRecibo = obtenerFirmaCanvas('sigRecibo');
+        if(firmaRecibo) {
+            doc.text('Firma de Recibo:', 20, y);
+            try { doc.addImage(firmaRecibo, 'PNG', 100, y-5, 60, 25); } catch(e) { doc.text('___________________', 100, y+5); }
+            y += 35;
         }
 
         doc.save(`reporte_completo_${Date.now()}.pdf`);
@@ -857,6 +893,56 @@
     }
 
     window.clearCanvas = (id) => { const canvas = document.getElementById(id); if(canvas) { const ctx = canvas.getContext('2d'); ctx.fillStyle = 'white'; ctx.fillRect(0, 0, canvas.width, canvas.height); } };
+    
+    // ==================== CAPTURAR FIRMAS ====================
+    function capturarFirmas() {
+        const firmas = {
+            sigRecibo: document.getElementById('sigRecibo'),
+            sigEntrega: document.getElementById('sigEntrega'),
+            sigRecibe: document.getElementById('sigRecibe')
+        };
+        let todasFirmas = true;
+        let mensaje = '';
+        for (const [nombre, canvas] of Object.entries(firmas)) {
+            if (canvas) {
+                try {
+                    const dataUrl = canvas.toDataURL('image/png');
+                    const img = new Image();
+                    img.src = dataUrl;
+                    const canvasAux = document.createElement('canvas');
+                    canvasAux.width = canvas.width;
+                    canvasAux.height = canvas.height;
+                    const ctx = canvasAux.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    const imageData = ctx.getImageData(0, 0, canvasAux.width, canvasAux.height);
+                    const data = imageData.data;
+                    let hasDraw = false;
+                    for (let i = 0; i < data.length; i += 4) {
+                        if (data[i] < 240 || data[i+1] < 240 || data[i+2] < 240) {
+                            hasDraw = true;
+                            break;
+                        }
+                    }
+                    if (!hasDraw) {
+                        todasFirmas = false;
+                        mensaje += `Firma de ${nombre.replace('sig', '')} está vacía. `;
+                    }
+                } catch(e) {
+                    todasFirmas = false;
+                    mensaje += `Error en ${nombre}. `;
+                }
+            } else {
+                todasFirmas = false;
+                mensaje += `Canvas ${nombre} no encontrado. `;
+            }
+        }
+        if (!todasFirmas) {
+            showToast('⚠️ ' + mensaje + 'Las firmas no se incluirán en el PDF.', 'warning');
+        } else {
+            showToast('✅ Firmas capturadas correctamente', 'success');
+        }
+        return todasFirmas;
+    }
 
     // ==================== INICIALIZAR ====================
     loadMasterData();
