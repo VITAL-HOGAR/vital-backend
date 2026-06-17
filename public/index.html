@@ -38,8 +38,16 @@
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 0.65rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; letter-spacing: 0.5px; }
         .form-group input, .form-group select, .form-group textarea {
-            width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 10px; color: white; font-size: 0.9rem;
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 10px;
+            color: white;
+            font-size: 0.9rem;
         }
+        .form-group select option { background: #1e293b; color: white; }
+        .form-group textarea { min-height: 80px; resize: vertical; }
         .btn { padding: 10px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; border: none; font-size: 0.9rem; }
         .btn-primary { background: #22c55e; color: white; width: 100%; }
         .btn-secondary { background: #334155; color: white; }
@@ -54,7 +62,15 @@
         .tab.active { background: #22c55e; color: white; }
         .hidden { display: none; }
         .activity-item { background: #0f172a; padding: 10px; border-radius: 10px; margin-bottom: 6px; border-left: 3px solid #22c55e; font-size: 0.85rem; }
-        .signature-canvas { background: white; border-radius: 10px; width: 100%; height: 100px; border: 1px solid #334155; touch-action: none; }
+        .signature-canvas {
+            background: white;
+            border-radius: 10px;
+            width: 100%;
+            height: 120px;
+            border: 2px solid #334155;
+            touch-action: none;
+            cursor: crosshair;
+        }
         .tip-box { background: #0f172a; padding: 10px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid #f97316; font-size: 0.8rem; }
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; border-radius: 30px; padding: 10px 20px; display: none; z-index: 1000; font-size: 0.8rem; max-width: 90%; text-align: center; }
         .toast.show { display: block; }
@@ -72,7 +88,7 @@
             .tab { font-size: 0.7rem; padding: 6px 12px; }
             .card { padding: 12px; }
             .card-title { font-size: 0.9rem; }
-            .signature-canvas { height: 80px; }
+            .signature-canvas { height: 100px; }
             .btn { font-size: 0.85rem; padding: 10px 14px; }
         }
     </style>
@@ -154,38 +170,26 @@
         }
     });
 
-    // ==================== DICTADO CORREGIDO ====================
+    // ==================== DICTADO ====================
     function iniciarDictado(targetId) {
         if (!('webkitSpeechRecognition' in window)) {
             showToast('Voz no soportada en este navegador', 'error');
             return;
         }
-        
         if (recognitionActive) {
             showToast('Ya hay una grabación en curso', 'warning');
             return;
         }
-        
         const recognition = new webkitSpeechRecognition();
         recognition.lang = 'es-ES';
         recognition.continuous = false;
-        recognition.interimResults = false; // SOLO resultado final
+        recognition.interimResults = false;
         recognition.maxAlternatives = 1;
-        
-        recognition.onstart = function() {
-            recognitionActive = true;
-            showToast('🎙️ Habla ahora...', 'success');
-        };
-        
-        recognition.onend = function() {
-            recognitionActive = false;
-            showToast('✅ Grabación finalizada', 'success');
-        };
-        
+        recognition.onstart = function() { recognitionActive = true; showToast('🎙️ Habla ahora...', 'success'); };
+        recognition.onend = function() { recognitionActive = false; showToast('✅ Grabación finalizada', 'success'); };
         recognition.onresult = function(event) {
             const target = document.getElementById(targetId);
             if (!target) return;
-            
             const result = event.results[0];
             if (result && result.isFinal) {
                 const texto = result[0].transcript.trim();
@@ -195,18 +199,12 @@
                 }
             }
         };
-        
         recognition.onerror = function(event) {
             recognitionActive = false;
-            if (event.error === 'not-allowed') {
-                showToast('Permiso de micrófono denegado', 'error');
-            } else if (event.error === 'no-speech') {
-                showToast('No se detectó voz', 'error');
-            } else {
-                showToast('Error: ' + event.error, 'error');
-            }
+            if (event.error === 'not-allowed') showToast('Permiso de micrófono denegado', 'error');
+            else if (event.error === 'no-speech') showToast('No se detectó voz', 'error');
+            else showToast('Error: ' + event.error, 'error');
         };
-        
         recognition.start();
     }
 
@@ -223,11 +221,8 @@
         try {
             const res = await fetch(`${API_URL}/api/users`);
             const data = await res.json();
-            if(data.success && data.data) {
-                localStorage.setItem('vital_usuarios', JSON.stringify(data.data));
-            }
-        } catch(e) { console.warn('API no disponible, usando datos locales'); }
-        
+            if(data.success && data.data) localStorage.setItem('vital_usuarios', JSON.stringify(data.data));
+        } catch(e) { console.warn('API no disponible'); }
         let users = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
         if(users.length === 0) {
             users = [
@@ -246,16 +241,11 @@
             ];
             localStorage.setItem('vital_usuarios', JSON.stringify(users));
         }
-        
-        // Pacientes
         try {
             const res = await fetch(`${API_URL}/api/patients`);
             const data = await res.json();
-            if(data.success && data.data) {
-                localStorage.setItem('vital_pacientes', JSON.stringify(data.data));
-            }
+            if(data.success && data.data) localStorage.setItem('vital_pacientes', JSON.stringify(data.data));
         } catch(e) {}
-        
         let patients = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
         if(patients.length === 0) {
             patients = [
@@ -264,7 +254,6 @@
             ];
             localStorage.setItem('vital_pacientes', JSON.stringify(patients));
         }
-        
         const select = document.getElementById('loginUserSelect');
         const roleNames = { ADMIN:'Admin', AUXILIAR:'Auxiliar', ENFERMERO:'Enfermero', FISIOTERAPEUTA:'Fisioterapeuta', TERAPEUTA_OCUPACIONAL:'Terapeuta Ocupacional', FONOAUDIOLOGO:'Fonoaudiologo', PSICOLOGO:'Psicologo', NUTRICIONISTA:'Nutricionista', TRABAJADOR_SOCIAL:'Trabajador Social', TERAPEUTA_RESPIRATORIO:'Terapeuta Respiratorio', MEDICO:'Medico', COORDINADOR:'Coordinador' };
         select.innerHTML = '<option value="">-- Seleccionar usuario --</option>';
@@ -279,9 +268,7 @@
             document.getElementById('userInfoLogin').style.display = 'block';
             document.getElementById('loginUserName').innerText = user.name;
             document.getElementById('loginUserRole').innerText = roleNames[user.role] || user.role;
-        } else {
-            document.getElementById('userInfoLogin').style.display = 'none';
-        }
+        } else { document.getElementById('userInfoLogin').style.display = 'none'; }
     }
 
     // ==================== LOGIN ====================
@@ -291,20 +278,16 @@
         const user = JSON.parse(val);
         const password = document.getElementById('loginPassword').value;
         if(password !== user.password) { showToast('Contraseña incorrecta', 'error'); return; }
-        
         const roleNames = { ADMIN:'Administrador', AUXILIAR:'Auxiliar Enfermería', ENFERMERO:'Enfermero Jefe', FISIOTERAPEUTA:'Fisioterapeuta', TERAPEUTA_OCUPACIONAL:'Terapeuta Ocupacional', FONOAUDIOLOGO:'Fonoaudiólogo', PSICOLOGO:'Psicólogo', NUTRICIONISTA:'Nutricionista', TRABAJADOR_SOCIAL:'Trabajador Social', TERAPEUTA_RESPIRATORIO:'Terapeuta Respiratorio', MEDICO:'Médico', COORDINADOR:'Coordinador' };
         const storageKeys = { AUXILIAR:'vital_auxiliar', ENFERMERO:'vital_enfermero', FISIOTERAPEUTA:'vital_fisio', TERAPEUTA_OCUPACIONAL:'vital_to', FONOAUDIOLOGO:'vital_fono', PSICOLOGO:'vital_psico', NUTRICIONISTA:'vital_nutri', TRABAJADOR_SOCIAL:'vital_ts', TERAPEUTA_RESPIRATORIO:'vital_tr', MEDICO:'vital_medico', COORDINADOR:'vital_coordinador', ADMIN:'vital_admin' };
-        
         currentUser = { id: user.id, name: user.name, email: user.email, role: user.role, roleName: roleNames[user.role] };
         currentRole = user.role;
         storageKey = storageKeys[user.role];
-        
         document.getElementById('loginScreen').classList.add('hidden');
         document.getElementById('mainScreen').classList.remove('hidden');
         document.getElementById('userInfo').classList.remove('hidden');
         document.getElementById('userName').innerHTML = currentUser.name;
         document.getElementById('userRoleDisplay').innerHTML = currentUser.roleName;
-        
         buildTabs();
         showToast(`✅ Bienvenido ${currentUser.name}`, 'success');
     }
@@ -585,10 +568,19 @@
         </div>`;
     }
 
-    // ==================== GENERAR PDF COMPLETO CON FIRMAS ====================
+    // ==================== GENERAR PDF CON MULTIPLES PAGINAS Y FIRMAS ====================
     window.generarReportePDF = async () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
+        let y = 25;
+        const marginY = 270;
+        
+        function checkPage() {
+            if (y > marginY) {
+                doc.addPage();
+                y = 20;
+            }
+        }
         
         // Logo
         const logoImg = document.getElementById('logoPreview').src;
@@ -596,119 +588,113 @@
             try { doc.addImage(logoImg, 'PNG', 20, 10, 30, 30); } catch(e) {}
         }
 
-        // Encabezado
         doc.setFontSize(16);
         doc.text('VITAL HOGAR PRO IPS', 60, 25);
+        y = 45;
         doc.setFontSize(10);
-        doc.text(`Reporte Completo del Turno`, 60, 35);
-        doc.text(`Fecha: ${new Date().toLocaleString()}`, 20, 55);
-        doc.text(`Profesional: ${currentUser?.name} (${currentUser?.roleName || 'No registrado'})`, 20, 65);
-        doc.text(`Paciente: ${document.getElementById('reportePaciente')?.value || 'Maria Gonzalez'}`, 20, 75);
+        doc.text(`Reporte Completo del Turno`, 60, y);
+        y += 10;
+        doc.text(`Fecha: ${new Date().toLocaleString()}`, 20, y);
+        y += 8;
+        doc.text(`Profesional: ${currentUser?.name} (${currentUser?.roleName || 'No registrado'})`, 20, y);
+        y += 8;
+        doc.text(`Paciente: ${document.getElementById('reportePaciente')?.value || 'Maria Gonzalez'}`, 20, y);
+        y += 15;
 
-        let y = 95;
-
-        // ========== 1. ACTIVIDADES ==========
+        // ACTIVIDADES
         const actividades = getFromLocal('actividades');
         if(actividades.length > 0) {
             doc.text('ACTIVIDADES REALIZADAS:', 20, y);
-            y += 10;
+            y += 8;
             actividades.slice(-10).forEach((d, i) => {
-                if(y > 270) { doc.addPage(); y = 20; }
+                checkPage();
                 doc.text(`${i+1}. ${d.actividad || 'Actividad'} - ${d.hora || 'Sin hora'}`, 25, y);
                 if(d.observacion) doc.text(`   Obs: ${d.observacion.substring(0, 60)}`, 30, y+5);
                 y += 12;
             });
-            y += 10;
+            y += 8;
         }
 
-        // ========== 2. SIGNOS VITALES ==========
+        // SIGNOS
         const signos = getFromLocal('signos');
         if(signos.length > 0) {
+            checkPage();
             doc.text('SIGNOS VITALES:', 20, y);
-            y += 10;
+            y += 8;
             signos.slice(-10).forEach((d, i) => {
-                if(y > 270) { doc.addPage(); y = 20; }
+                checkPage();
                 doc.text(`${i+1}. SpO2:${d.spo2 || '-'}% | FC:${d.fc || '-'} | FR:${d.fr || '-'} | Temp:${d.temp || '-'}°C | TA:${d.bp || '-'} | Glucosa:${d.glucosa || '-'}`, 25, y);
                 doc.text(`   Hora: ${d.hora || '-'}`, 30, y+5);
                 y += 12;
             });
-            y += 10;
+            y += 8;
         }
 
-        // ========== 3. MEDICAMENTOS ==========
+        // MEDICAMENTOS
         const medicamentos = getFromLocal('medicamentos');
         if(medicamentos.length > 0) {
+            checkPage();
             doc.text('MEDICAMENTOS ADMINISTRADOS:', 20, y);
-            y += 10;
+            y += 8;
             medicamentos.slice(-10).forEach((d, i) => {
-                if(y > 270) { doc.addPage(); y = 20; }
+                checkPage();
                 doc.text(`${i+1}. ${d.nombre || 'Medicamento'} - ${d.dosis || 'Sin dosis'} - ${d.hora || 'Sin hora'}`, 25, y);
                 if(d.obs) doc.text(`   Obs: ${d.obs.substring(0, 50)}`, 30, y+5);
                 y += 12;
             });
-            y += 10;
+            y += 8;
         }
 
-        // ========== 4. ENTREGAS ==========
+        // ENTREGAS
         const entregas = getFromLocal('entregas');
         if(entregas.length > 0) {
+            checkPage();
             doc.text('ENTREGAS DE TURNO:', 20, y);
-            y += 10;
+            y += 8;
             const ultimaEntrega = entregas[entregas.length - 1];
             if(ultimaEntrega) {
                 doc.text(`Resumen: ${ultimaEntrega.resumen?.substring(0, 80) || 'Sin resumen'}`, 25, y);
-                if(ultimaEntrega.pendientes) doc.text(`Pendientes: ${ultimaEntrega.pendientes.substring(0, 80)}`, 25, y+8);
-                y += 20;
+                if(ultimaEntrega.pendientes) doc.text(`Pendientes: ${ultimaEntrega.pendientes.substring(0, 80)}`, 25, y+6);
+                y += 15;
             }
         }
 
-        // ========== 5. FIRMAS ==========
-        y += 15;
+        // FIRMAS
+        y += 10;
+        checkPage();
         doc.setFontSize(12);
         doc.text('FIRMAS:', 20, y);
-        y += 15;
+        y += 12;
         doc.setFontSize(10);
 
-        function obtenerFirmaCanvas(id) {
+        function getFirma(id) {
             const canvas = document.getElementById(id);
             if(!canvas) return null;
             try {
                 const dataUrl = canvas.toDataURL('image/png');
-                if(dataUrl && dataUrl !== 'data:image/png;base64,') {
-                    return dataUrl;
-                }
+                if(dataUrl && dataUrl !== 'data:image/png;base64,') return dataUrl;
             } catch(e) {}
             return null;
         }
 
-        // Firma profesional (sigEntrega)
-        const firmaProfesional = obtenerFirmaCanvas('sigEntrega');
-        if(firmaProfesional) {
+        const firmaProf = getFirma('sigEntrega');
+        if(firmaProf) {
             doc.text('Firma del Profesional:', 20, y);
-            try { doc.addImage(firmaProfesional, 'PNG', 100, y-5, 60, 25); } catch(e) { doc.text('___________________', 100, y+5); }
-            y += 35;
+            try { doc.addImage(firmaProf, 'PNG', 100, y-5, 60, 25); } catch(e) { doc.text('___________________', 100, y+5); }
+            y += 30;
         } else {
             doc.text('Firma del Profesional: ___________________', 20, y);
-            y += 12;
+            y += 10;
         }
 
-        // Firma acudiente (sigRecibe)
-        const firmaAcudiente = obtenerFirmaCanvas('sigRecibe');
-        if(firmaAcudiente) {
+        const firmaAcu = getFirma('sigRecibe');
+        if(firmaAcu) {
             doc.text('Firma del Acudiente/Familiar:', 20, y);
-            try { doc.addImage(firmaAcudiente, 'PNG', 100, y-5, 60, 25); } catch(e) { doc.text('___________________', 100, y+5); }
-            y += 35;
+            try { doc.addImage(firmaAcu, 'PNG', 100, y-5, 60, 25); } catch(e) { doc.text('___________________', 100, y+5); }
+            y += 30;
         } else {
             doc.text('Firma del Acudiente/Familiar: _____________', 20, y);
-            y += 12;
-        }
-
-        // Firma recibo (sigRecibo) - opcional
-        const firmaRecibo = obtenerFirmaCanvas('sigRecibo');
-        if(firmaRecibo) {
-            doc.text('Firma de Recibo:', 20, y);
-            try { doc.addImage(firmaRecibo, 'PNG', 100, y-5, 60, 25); } catch(e) { doc.text('___________________', 100, y+5); }
-            y += 35;
+            y += 10;
         }
 
         doc.save(`reporte_completo_${Date.now()}.pdf`);
@@ -872,15 +858,59 @@
             canvas.height = canvas.offsetHeight;
             let drawing = false;
             const ctx = canvas.getContext('2d');
+            
+            // Fondo blanco y texto guía
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('✍️ Firme aquí', canvas.width/2, canvas.height/2);
+            
             ctx.strokeStyle = '#0f172a';
             ctx.lineWidth = 2;
-            canvas.addEventListener('mousedown', (e) => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
-            canvas.addEventListener('mousemove', (e) => { if(drawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } });
+            ctx.lineCap = 'round';
+            
+            canvas.addEventListener('mousedown', (e) => {
+                drawing = true;
+                ctx.beginPath();
+                const rect = canvas.getBoundingClientRect();
+                ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#0f172a';
+            });
+            canvas.addEventListener('mousemove', (e) => {
+                if(drawing) {
+                    const rect = canvas.getBoundingClientRect();
+                    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+                    ctx.stroke();
+                }
+            });
             canvas.addEventListener('mouseup', () => drawing = false);
-            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; const rect = canvas.getBoundingClientRect(); ctx.beginPath(); ctx.moveTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top); });
-            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if(drawing) { const rect = canvas.getBoundingClientRect(); ctx.lineTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top); ctx.stroke(); } });
+            canvas.addEventListener('mouseleave', () => drawing = false);
+            
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                drawing = true;
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                ctx.beginPath();
+                ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#0f172a';
+            });
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if(drawing) {
+                    const rect = canvas.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+                    ctx.stroke();
+                }
+            });
             canvas.addEventListener('touchend', () => drawing = false);
         });
         cargarLista('recibos', 'historialRecibos');
@@ -892,8 +922,20 @@
         cargarLista('beneficiarios', 'listaBeneficiarios');
     }
 
-    window.clearCanvas = (id) => { const canvas = document.getElementById(id); if(canvas) { const ctx = canvas.getContext('2d'); ctx.fillStyle = 'white'; ctx.fillRect(0, 0, canvas.width, canvas.height); } };
-    
+    window.clearCanvas = (id) => {
+        const canvas = document.getElementById(id);
+        if(canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('✍️ Firme aquí', canvas.width/2, canvas.height/2);
+        }
+    };
+
     // ==================== CAPTURAR FIRMAS ====================
     function capturarFirmas() {
         const firmas = {
@@ -937,7 +979,7 @@
             }
         }
         if (!todasFirmas) {
-            showToast('⚠️ ' + mensaje + 'Las firmas no se incluirán en el PDF.', 'warning');
+            showToast('⚠️ ' + mensaje, 'warning');
         } else {
             showToast('✅ Firmas capturadas correctamente', 'success');
         }
