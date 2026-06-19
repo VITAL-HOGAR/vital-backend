@@ -5,8 +5,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-// ==================== IMPORTAR AUTH ====================
-const auth = require('./routes/auth');  // ← IMPORTANTE
+// ==================== IMPORTAR RUTAS ====================
+const auth = require('./routes/auth');
+const users = require('./routes/users');
+// const patients = require('./routes/patients');  // ← Cuando lo tengas
+// const education = require('./routes/education'); // ← Cuando lo tengas
+// const shifts = require('./routes/shifts');       // ← Cuando lo tengas
+// const reports = require('./routes/reports');     // ← Cuando lo tengas
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,7 +27,7 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 // ==================== CREAR ADMIN POR DEFECTO ====================
-auth.createDefaultAdmin();  // ← Crear admin si no existe
+auth.createDefaultAdmin();
 
 // ==================== HEALTH CHECK ====================
 app.get('/', (req, res) => {
@@ -33,10 +38,10 @@ app.get('/', (req, res) => {
 //  RUTAS: AUTENTICACIÓN (PÚBLICAS)
 // ============================================================
 
-// Login - PÚBLICO (no necesita autenticación)
+// POST /api/auth/login - Iniciar sesión
 app.post('/api/auth/login', auth.login);
 
-// Verify Token - PÚBLICO (verifica token)
+// POST /api/auth/verify - Verificar token
 app.post('/api/auth/verify', auth.verifyToken);
 
 // ============================================================
@@ -44,76 +49,19 @@ app.post('/api/auth/verify', auth.verifyToken);
 // ============================================================
 
 // GET /api/users - Listar usuarios (autenticación requerida)
-app.get('/api/users', auth.protect, async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('users')
-            .select('id, name, email, role, created_at');
-        if (error) throw error;
-        res.json({ success: true, data });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
+app.get('/api/users', auth.protect, users.getUsers);
+
+// GET /api/users/:id - Obtener usuario específico (SOLO ADMIN)
+app.get('/api/users/:id', auth.protect, auth.authorize('ADMIN'), users.getUserById);
 
 // POST /api/users - Crear usuario (SOLO ADMIN)
-app.post('/api/users', auth.protect, auth.authorize('ADMIN'), async (req, res) => {
-    try {
-        const { name, email, role, password } = req.body;
-        
-        // Validar campos obligatorios
-        if (!name || !email || !role || !password) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Todos los campos son obligatorios' 
-            });
-        }
+app.post('/api/users', auth.protect, auth.authorize('ADMIN'), users.createUser);
 
-        // Validar que el email no exista
-        const { data: existing } = await supabase
-            .from('users')
-            .select('email')
-            .eq('email', email)
-            .single();
-
-        if (existing) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'El email ya está registrado' 
-            });
-        }
-
-        // Encriptar contraseña
-        const salt = await bcrypt.genSalt(10);
-        const password_hash = await bcrypt.hash(password, salt);
-
-        // Guardar usuario
-        const { data, error } = await supabase
-            .from('users')
-            .insert([{ name, email, role, password_hash }])
-            .select('id, name, email, role, created_at');
-
-        if (error) throw error;
-        res.json({ success: true, data: data[0] });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
+// PUT /api/users/:id - Actualizar usuario (SOLO ADMIN)
+app.put('/api/users/:id', auth.protect, auth.authorize('ADMIN'), users.updateUser);
 
 // DELETE /api/users/:id - Eliminar usuario (SOLO ADMIN)
-app.delete('/api/users/:id', auth.protect, auth.authorize('ADMIN'), async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { error } = await supabase
-            .from('users')
-            .delete()
-            .eq('id', id);
-        if (error) throw error;
-        res.json({ success: true, message: '✅ Usuario eliminado' });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
+app.delete('/api/users/:id', auth.protect, auth.authorize('ADMIN'), users.deleteUser);
 
 // ============================================================
 //  RUTAS: PACIENTES (PROTEGIDAS)
@@ -517,6 +465,8 @@ app.put('/api/shifts/:id', auth.protect, auth.authorize('COORDINADOR'), async (r
 app.listen(PORT, () => {
     console.log(`🏥 VITAL HOGAR PRO IPS - Backend corriendo en puerto ${PORT}`);
     console.log(`📡 Health check: http://localhost:${PORT}/`);
+    console.log(`🔐 Login: POST http://localhost:${PORT}/api/auth/login`);
+    console.log(`👥 Usuarios: GET http://localhost:${PORT}/api/users`);
 });
 
 module.exports = app;
