@@ -514,7 +514,8 @@
             }
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    <!-- ==================== JSPDF - CDN CORREGIDO ==================== -->
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js">
     </script>
 </head>
 <body>
@@ -588,9 +589,41 @@
         var horaEntrada = null;
         
         // ============================================================
+        //  VERIFICAR JSPDF
+        // ============================================================
+        function verificarJSPDF() {
+            console.log('🔍 Verificando jsPDF...');
+            
+            // Verificar si jsPDF está disponible
+            if (typeof jsPDF === 'undefined') {
+                console.warn('⚠️ jsPDF no está cargado, intentando cargarlo...');
+                
+                // Intentar cargar jsPDF dinámicamente
+                var script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
+                script.onload = function() {
+                    console.log('✅ jsPDF cargado dinámicamente');
+                    showToast('✅ Librería PDF cargada correctamente', 'success');
+                };
+                script.onerror = function() {
+                    console.error('❌ Error al cargar jsPDF');
+                    showToast('❌ Error al cargar la librería PDF', 'error');
+                };
+                document.head.appendChild(script);
+                return false;
+            }
+            
+            console.log('✅ jsPDF está disponible');
+            return true;
+        }
+
+        // ============================================================
         //  INICIALIZACIÓN
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
+            // Verificar jsPDF al cargar
+            verificarJSPDF();
+            
             initPasswordToggle();
             loadMasterData();
             loadEducationTopics();
@@ -1211,8 +1244,17 @@
             
             // Verificar que jsPDF esté disponible
             if (typeof jsPDF === 'undefined') {
-                console.error('❌ jsPDF no está cargado');
-                showToast('❌ Error: Librería PDF no cargada', 'error');
+                console.warn('⚠️ jsPDF no está cargado, intentando cargarlo...');
+                verificarJSPDF();
+                
+                // Esperar un momento y reintentar
+                setTimeout(function() {
+                    if (typeof jsPDF !== 'undefined') {
+                        generarReportePorRol();
+                    } else {
+                        showToast('❌ Error: La librería PDF no se pudo cargar', 'error');
+                    }
+                }, 1000);
                 return;
             }
             
@@ -1530,7 +1572,8 @@
         }
 
         // ============================================================
-        //  REPORTE: ENFERMERO
+        //  REPORTE: ENFERMERO, MÉDICO, ESPECIALISTAS, COORDINADOR, ADMIN
+        //  (Se mantienen igual que antes, con manejo de errores)
         // ============================================================
         function generarReporteEnfermero() {
             try {
