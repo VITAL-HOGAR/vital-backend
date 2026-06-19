@@ -515,3 +515,30 @@ app.put('/api/education/:id', auth.protect, auth.authorize('ADMIN'), education.u
 
 // DELETE /api/education/:id - Eliminar tema (SOLO ADMIN)
 app.delete('/api/education/:id', auth.protect, auth.authorize('ADMIN'), education.deleteTopic);
+// Importar shifts
+const shifts = require('./routes/shifts');
+
+// ============================================================
+//  RUTAS: TURNOS (PROTEGIDAS)
+// ============================================================
+
+// GET /api/shifts - Listar turnos (autenticación requerida)
+app.get('/api/shifts', auth.protect, shifts.getShifts);
+
+// GET /api/shifts/:id - Obtener turno específico (autenticación requerida)
+app.get('/api/shifts/:id', auth.protect, shifts.getShiftById);
+
+// POST /api/shifts - Crear turno (SOLO COORDINADOR)
+app.post('/api/shifts', auth.protect, auth.authorize('COORDINADOR'), shifts.createShift);
+
+// PUT /api/shifts/:id - Actualizar turno (SOLO COORDINADOR)
+app.put('/api/shifts/:id', auth.protect, auth.authorize('COORDINADOR'), shifts.updateShift);
+
+// DELETE /api/shifts/:id - Eliminar turno (SOLO COORDINADOR)
+app.delete('/api/shifts/:id', auth.protect, auth.authorize('COORDINADOR'), shifts.deleteShift);
+
+// GET /api/shifts/professional/:professionalId - Turnos por profesional (autenticación requerida)
+app.get('/api/shifts/professional/:professionalId', auth.protect, shifts.getShiftsByProfessional);
+
+// GET /api/shifts/patient/:patientId - Turnos por paciente (autenticación requerida)
+app.get('/api/shifts/patient/:patientId', auth.protect, shifts.getShiftsByPatient);
