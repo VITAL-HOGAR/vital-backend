@@ -707,7 +707,6 @@
             loadMasterData();
             loadEducationTopics();
             
-            // Evento login
             document.getElementById('loginBtn').addEventListener('click', login);
             document.getElementById('loginPassword').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') login();
@@ -716,7 +715,6 @@
                 if (e.key === 'Enter') login();
             });
             
-            // Verificar sesión
             if (!checkSession()) {
                 document.getElementById('loginScreen').classList.remove('hidden');
             }
@@ -1000,7 +998,6 @@
                 console.warn('API pacientes no disponible');
             }
             
-            // Cargar educación asignada
             loadEducacionAsignada();
         }
 
@@ -1043,7 +1040,8 @@
                 fecha_asignacion: new Date().toISOString(),
                 estado: 'PENDIENTE',
                 fecha_completado: null,
-                evidencia: null
+                evidencia: null,
+                evidencia_foto: null
             });
             
             saveEducacionAsignada(asignadas);
@@ -1051,7 +1049,7 @@
             return true;
         }
 
-        function completarEducacion(id, evidencia) {
+        function completarEducacion(id, evidencia, foto) {
             var asignadas = loadEducacionAsignada();
             var index = asignadas.findIndex(function(a) { return a.id === id; });
             if (index === -1) {
@@ -1062,6 +1060,7 @@
             asignadas[index].estado = 'COMPLETADO';
             asignadas[index].fecha_completado = new Date().toISOString();
             asignadas[index].evidencia = evidencia || 'Sin evidencia';
+            asignadas[index].evidencia_foto = foto || null;
             
             saveEducacionAsignada(asignadas);
             showToast('✅ Educación completada', 'success');
@@ -1079,6 +1078,13 @@
             var asignadas = loadEducacionAsignada();
             return asignadas.filter(function(a) {
                 return a.profesional_id === profesionalId && a.estado === 'COMPLETADO';
+            });
+        }
+
+        function getEducacionAsignadaAuxiliar(profesionalId) {
+            var asignadas = loadEducacionAsignada();
+            return asignadas.filter(function(a) {
+                return a.profesional_id === profesionalId;
             });
         }
 
@@ -1152,7 +1158,6 @@
                 select.innerHTML = getEducationTopicsForSelect();
             }
             
-            // Actualizar selects de asignación
             var selectAsignar = document.getElementById('asignarTemaSelect');
             if (selectAsignar) {
                 selectAsignar.innerHTML = getEducationTopicsForSelect();
@@ -1165,6 +1170,16 @@
             }
             return educationTopics.map(function(t) {
                 return '<option value="' + t.id + '">' + t.title + '</option>';
+            }).join('');
+        }
+
+        function getEducacionTopicsForAuxiliar() {
+            var pendientes = getEducacionPendiente(currentUser ? currentUser.id : '');
+            if (pendientes.length === 0) {
+                return '<option value="">-- Sin temas asignados --</option>';
+            }
+            return pendientes.map(function(a) {
+                return '<option value="' + a.tema_id + '" data-asignacion="' + a.id + '">' + a.tema_titulo + ' - ' + a.paciente_nombre + '</option>';
             }).join('');
         }
 
@@ -1251,34 +1266,6 @@
         };
 
         // ============================================================
-        //  CALCULAR IMC
-        // ============================================================
-        window.calcularIMC = function() {
-            var peso = parseFloat(document.getElementById('pesoNutri') ? document.getElementById('pesoNutri').value : null);
-            var tallaCm = parseFloat(document.getElementById('tallaNutri') ? document.getElementById('tallaNutri').value : null);
-            var imcDisplay = document.getElementById('imcDisplay');
-            
-            if (imcDisplay && peso && tallaCm && tallaCm > 0) {
-                var tallaM = tallaCm / 100;
-                var imc = peso / (tallaM * tallaM);
-                imcDisplay.textContent = 'IMC: ' + imc.toFixed(1) + ' kg/m²';
-                
-                var clasificacion = '';
-                var color = '';
-                if (imc < 18.5) { clasificacion = 'Bajo peso'; color = '#f97316'; }
-                else if (imc < 25) { clasificacion = 'Normal'; color = '#22c55e'; }
-                else if (imc < 30) { clasificacion = 'Sobrepeso'; color = '#f97316'; }
-                else { clasificacion = 'Obesidad'; color = '#ef4444'; }
-                
-                imcDisplay.textContent += ' - ' + clasificacion;
-                imcDisplay.style.color = color;
-            } else if (imcDisplay) {
-                imcDisplay.textContent = 'IMC: --';
-                imcDisplay.style.color = '#94a3b8';
-            }
-        };
-
-        // ============================================================
         //  FUNCIONES DE FIRMAS PARA PDF
         // ============================================================
         function getSignatureData(canvasId) {
@@ -1290,7 +1277,6 @@
                 var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 var data = imageData.data;
                 
-                // Verificar si hay algo dibujado
                 var hasDrawing = false;
                 for (var i = 0; i < data.length; i += 4) {
                     if (data[i] < 240 || data[i+1] < 240 || data[i+2] < 240) {
@@ -1324,9 +1310,39 @@
         }
 
         // ============================================================
+        //  CALCULAR IMC
+        // ============================================================
+        window.calcularIMC = function() {
+            var peso = parseFloat(document.getElementById('pesoNutri') ? document.getElementById('pesoNutri').value : null);
+            var tallaCm = parseFloat(document.getElementById('tallaNutri') ? document.getElementById('tallaNutri').value : null);
+            var imcDisplay = document.getElementById('imcDisplay');
+            
+            if (imcDisplay && peso && tallaCm && tallaCm > 0) {
+                var tallaM = tallaCm / 100;
+                var imc = peso / (tallaM * tallaM);
+                imcDisplay.textContent = 'IMC: ' + imc.toFixed(1) + ' kg/m²';
+                
+                var clasificacion = '';
+                var color = '';
+                if (imc < 18.5) { clasificacion = 'Bajo peso'; color = '#f97316'; }
+                else if (imc < 25) { clasificacion = 'Normal'; color = '#22c55e'; }
+                else if (imc < 30) { clasificacion = 'Sobrepeso'; color = '#f97316'; }
+                else { clasificacion = 'Obesidad'; color = '#ef4444'; }
+                
+                imcDisplay.textContent += ' - ' + clasificacion;
+                imcDisplay.style.color = color;
+            } else if (imcDisplay) {
+                imcDisplay.textContent = 'IMC: --';
+                imcDisplay.style.color = '#94a3b8';
+            }
+        };
+
+        // ============================================================
         //  FUNCIONES DE REPORTES POR ROL
         // ============================================================
         function generarReportePorRol() {
+            console.log('📄 Generando reporte para rol:', currentRole);
+            
             switch (currentRole) {
                 case 'AUXILIAR':
                     generarReporteAuxiliar();
@@ -1370,868 +1386,891 @@
         //  REPORTE: AUXILIAR
         // ============================================================
         function generarReporteAuxiliar() {
-            var doc = new jsPDF();
-            var y = 25;
-            var marginY = 270;
+            console.log('📄 Generando reporte de Auxiliar...');
             
-            function checkPage() {
-                if (y > marginY) {
-                    doc.addPage();
-                    y = 20;
-                }
-            }
-            
-            function cleanText(text) {
-                if (!text) return '';
-                return String(text).trim();
-            }
-            
-            // Logo
             try {
-                doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
-            } catch (e) {
+                var doc = new jsPDF();
+                var y = 25;
+                var marginY = 270;
+                
+                function checkPage() {
+                    if (y > marginY) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                }
+                
+                function cleanText(text) {
+                    if (!text) return '';
+                    return String(text).trim();
+                }
+                
+                // Logo
                 try {
-                    doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
-                } catch (e2) {}
-            }
-            
-            doc.setFont('helvetica');
-            doc.setFontSize(16);
-            doc.text('VITAL HOGAR PRO IPS', 60, 25);
-            y = 45;
-            doc.setFontSize(10);
-            doc.text('Reporte de Auxiliar de Enfermería', 60, y);
-            y += 10;
-            doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
-            y += 8;
-            doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
-            y += 8;
-            doc.text('Rol: Auxiliar de Enfermería', 20, y);
-            y += 15;
-            
-            // 1. RECIBO
-            var recibos = getFromLocal('recibos');
-            if (recibos.length > 0) {
-                checkPage();
-                doc.setFontSize(12);
-                doc.text('1. RECIBO DEL PACIENTE', 20, y);
-                y += 8;
+                    doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
+                    console.log('✅ Logo agregado al PDF');
+                } catch (e) {
+                    console.warn('Error agregando logo:', e);
+                    try {
+                        doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
+                    } catch (e2) {}
+                }
+                
+                doc.setFont('helvetica');
+                doc.setFontSize(16);
+                doc.text('VITAL HOGAR PRO IPS', 60, 25);
+                y = 45;
                 doc.setFontSize(10);
-                var ultimoRecibo = recibos[recibos.length - 1];
-                doc.text('Estado: ' + cleanText(ultimoRecibo.estado || 'No registrado'), 25, y);
-                y += 6;
-                doc.text('Quién entrega: ' + cleanText(ultimoRecibo.quienEntrega || 'No especificado'), 25, y);
-                y += 6;
-                doc.text('Hora: ' + cleanText(ultimoRecibo.timestamp ? new Date(ultimoRecibo.timestamp).toLocaleString() : 'No registrada'), 25, y);
+                doc.text('Reporte de Auxiliar de Enfermería', 60, y);
                 y += 10;
-            }
-            
-            // 2. TURNO
-            var turnos = getFromLocal('turnos');
-            if (turnos.length > 0) {
-                checkPage();
-                doc.setFontSize(12);
-                doc.text('2. CONTROL DE TURNO', 20, y);
+                doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
                 y += 8;
-                doc.setFontSize(10);
-                var ultimoTurno = turnos[turnos.length - 1];
-                doc.text('Entrada: ' + cleanText(ultimoTurno.entrada ? new Date(ultimoTurno.entrada).toLocaleTimeString() : 'No registrada'), 25, y);
-                y += 6;
-                doc.text('Salida: ' + cleanText(ultimoTurno.salida ? new Date(ultimoTurno.salida).toLocaleTimeString() : 'No registrada'), 25, y);
-                y += 6;
-                doc.text('Duración: ' + cleanText(ultimoTurno.duracion || 'No calculada'), 25, y);
-                y += 10;
-            }
-            
-            // 3. ACTIVIDADES
-            var actividades = getFromLocal('actividades');
-            if (actividades.length > 0) {
-                checkPage();
-                doc.setFontSize(12);
-                doc.text('3. ACTIVIDADES REALIZADAS', 20, y);
+                doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
                 y += 8;
-                doc.setFontSize(10);
-                actividades.slice(-10).forEach(function(d, i) {
+                doc.text('Rol: Auxiliar de Enfermería', 20, y);
+                y += 15;
+                
+                // 1. RECIBO
+                var recibos = getFromLocal('recibos');
+                if (recibos.length > 0) {
                     checkPage();
-                    doc.text((i+1) + '. ' + cleanText(d.actividad || 'Actividad') + ' - ' + cleanText(d.hora || 'Sin hora'), 25, y);
+                    doc.setFontSize(12);
+                    doc.text('1. RECIBO DEL PACIENTE', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    var ultimoRecibo = recibos[recibos.length - 1];
+                    doc.text('Estado: ' + cleanText(ultimoRecibo.estado || 'No registrado'), 25, y);
                     y += 6;
-                    if (d.observacion) {
-                        doc.text('   Obs: ' + cleanText(d.observacion).substring(0, 60), 30, y);
-                        y += 6;
-                    }
-                    if (d.educacion) {
-                        doc.text('   Educ: ' + cleanText(d.educacion).substring(0, 50), 30, y);
-                        y += 6;
-                    }
-                    if (d.novedad) {
-                        doc.text('   Nov: ' + cleanText(d.novedad).substring(0, 50), 30, y);
-                        y += 6;
-                    }
-                    y += 4;
-                });
-                y += 10;
-            }
-            
-            // 4. SIGNOS VITALES
-            var signos = getFromLocal('signos');
-            if (signos.length > 0) {
-                checkPage();
-                doc.setFontSize(12);
-                doc.text('4. SIGNOS VITALES', 20, y);
-                y += 8;
-                doc.setFontSize(10);
-                signos.slice(-10).forEach(function(d, i) {
-                    checkPage();
-                    doc.text((i+1) + '. SpO2:' + cleanText(d.spo2 || '-') + '% | FC:' + cleanText(d.fc || '-') + ' | FR:' + cleanText(d.fr || '-') + ' | Temp:' + cleanText(d.temp || '-') + '°C', 25, y);
+                    doc.text('Quién entrega: ' + cleanText(ultimoRecibo.quienEntrega || 'No especificado'), 25, y);
                     y += 6;
-                    if (d.bp) {
-                        doc.text('   TA: ' + cleanText(d.bp), 30, y);
-                        y += 6;
-                    }
-                    if (d.glucosa) {
-                        doc.text('   Glucosa: ' + cleanText(d.glucosa) + ' mg/dL', 30, y);
-                        y += 6;
-                    }
-                    if (d.braden) {
-                        doc.text('   Braden: ' + cleanText(d.braden), 30, y);
-                        y += 6;
-                    }
-                    if (d.alertas && d.alertas.length > 0) {
-                        doc.text('   Alertas: ' + d.alertas.join('; '), 30, y);
-                        y += 6;
-                    }
-                    y += 4;
-                });
-                y += 10;
-            }
-            
-            // 5. MEDICAMENTOS
-            var medicamentos = getFromLocal('medicamentos');
-            if (medicamentos.length > 0) {
-                checkPage();
-                doc.setFontSize(12);
-                doc.text('5. MEDICAMENTOS ADMINISTRADOS', 20, y);
-                y += 8;
-                doc.setFontSize(10);
-                medicamentos.slice(-10).forEach(function(d, i) {
-                    checkPage();
-                    doc.text((i+1) + '. ' + cleanText(d.nombre || 'Medicamento') + ' - ' + cleanText(d.dosis || 'Sin dosis') + ' - ' + cleanText(d.hora || 'Sin hora'), 25, y);
-                    y += 6;
-                    if (d.obs) {
-                        doc.text('   Obs: ' + cleanText(d.obs).substring(0, 50), 30, y);
-                        y += 6;
-                    }
-                    y += 4;
-                });
-                y += 10;
-            }
-            
-            // 6. ENTREGA
-            var entregas = getFromLocal('entregas');
-            if (entregas.length > 0) {
-                checkPage();
-                doc.setFontSize(12);
-                doc.text('6. ENTREGA DE TURNO', 20, y);
-                y += 8;
-                doc.setFontSize(10);
-                var ultima = entregas[entregas.length - 1];
-                if (ultima) {
-                    doc.text('Hora: ' + cleanText(ultima.horaEntrega || 'No registrada'), 25, y);
-                    y += 6;
-                    doc.text('Resumen: ' + cleanText(ultima.resumen).substring(0, 80) || 'Sin resumen', 25, y);
-                    y += 6;
-                    if (ultima.pendientes) {
-                        doc.text('Pendientes: ' + cleanText(ultima.pendientes).substring(0, 80), 25, y);
-                        y += 6;
-                    }
-                    if (ultima.sbar) {
-                        var s = ultima.sbar;
-                        y += 4;
-                        doc.text('SBAR:', 25, y);
-                        y += 6;
-                        if (s.situacion) { doc.text('S - ' + cleanText(s.situacion).substring(0, 40), 30, y);
-                            y += 6; }
-                        if (s.antecedentes) { doc.text('A - ' + cleanText(s.antecedentes).substring(0, 40), 30, y);
-                            y += 6; }
-                        if (s.evaluacion) { doc.text('B - ' + cleanText(s.evaluacion).substring(0, 40), 30, y);
-                            y += 6; }
-                        if (s.recomendacion) { doc.text('R - ' + cleanText(s.recomendacion).substring(0, 40), 30, y);
-                            y += 6; }
-                    }
+                    doc.text('Hora: ' + cleanText(ultimoRecibo.timestamp ? new Date(ultimoRecibo.timestamp).toLocaleString() : 'No registrada'), 25, y);
                     y += 10;
                 }
-            }
-            
-            // 7. FIRMAS
-            y += 10;
-            checkPage();
-            doc.setFontSize(12);
-            doc.text('7. FIRMAS', 20, y);
-            y += 12;
-            doc.setFontSize(10);
-            
-            // Firma del Auxiliar (quien ENTREGA)
-            var firmado = false;
-            var firmaEntrega = getSignatureData('sigEntrega');
-            if (firmaEntrega) {
-                doc.text('Firma del Auxiliar (ENTREGA):', 20, y);
-                try {
-                    doc.addImage(firmaEntrega, 'PNG', 130, y - 5, 60, 25);
-                    firmado = true;
-                } catch (e) {
-                    doc.text('___________________', 130, y + 5);
+                
+                // 2. TURNO
+                var turnos = getFromLocal('turnos');
+                if (turnos.length > 0) {
+                    checkPage();
+                    doc.setFontSize(12);
+                    doc.text('2. CONTROL DE TURNO', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    var ultimoTurno = turnos[turnos.length - 1];
+                    doc.text('Entrada: ' + cleanText(ultimoTurno.entrada ? new Date(ultimoTurno.entrada).toLocaleTimeString() : 'No registrada'), 25, y);
+                    y += 6;
+                    doc.text('Salida: ' + cleanText(ultimoTurno.salida ? new Date(ultimoTurno.salida).toLocaleTimeString() : 'No registrada'), 25, y);
+                    y += 6;
+                    doc.text('Duración: ' + cleanText(ultimoTurno.duracion || 'No calculada'), 25, y);
+                    y += 10;
                 }
-                y += 30;
-                checkPage();
-            }
-            
-            // Firma del Familiar/Acudiente (quien RECIBE)
-            var firmaRecibe = getSignatureData('sigRecibe');
-            if (firmaRecibe) {
-                doc.text('Firma del Familiar/Acudiente (RECIBE):', 20, y);
-                try {
-                    doc.addImage(firmaRecibe, 'PNG', 130, y - 5, 60, 25);
-                    firmado = true;
-                } catch (e) {
-                    doc.text('___________________', 130, y + 5);
+                
+                // 3. ACTIVIDADES
+                var actividades = getFromLocal('actividades');
+                if (actividades.length > 0) {
+                    checkPage();
+                    doc.setFontSize(12);
+                    doc.text('3. ACTIVIDADES REALIZADAS', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    actividades.slice(-10).forEach(function(d, i) {
+                        checkPage();
+                        doc.text((i+1) + '. ' + cleanText(d.actividad || 'Actividad') + ' - ' + cleanText(d.hora || 'Sin hora'), 25, y);
+                        y += 6;
+                        if (d.observacion) {
+                            doc.text('   Obs: ' + cleanText(d.observacion).substring(0, 60), 30, y);
+                            y += 6;
+                        }
+                        if (d.educacion) {
+                            doc.text('   Educ: ' + cleanText(d.educacion).substring(0, 50), 30, y);
+                            y += 6;
+                        }
+                        if (d.novedad) {
+                            doc.text('   Nov: ' + cleanText(d.novedad).substring(0, 50), 30, y);
+                            y += 6;
+                        }
+                        if (d.fotos && d.fotos > 0) {
+                            doc.text('   📸 Evidencia fotográfica: ' + d.fotos + ' foto(s)', 30, y);
+                            y += 6;
+                        }
+                        y += 4;
+                    });
+                    y += 10;
                 }
-                y += 30;
-                checkPage();
-            }
-            
-            // Firma de Recibo
-            var firmaRecibo = getSignatureData('sigRecibo');
-            if (firmaRecibo) {
-                doc.text('Firma de Recibo del Paciente:', 20, y);
-                try {
-                    doc.addImage(firmaRecibo, 'PNG', 130, y - 5, 60, 25);
-                    firmado = true;
-                } catch (e) {
-                    doc.text('___________________', 130, y + 5);
+                
+                // 4. SIGNOS VITALES
+                var signos = getFromLocal('signos');
+                if (signos.length > 0) {
+                    checkPage();
+                    doc.setFontSize(12);
+                    doc.text('4. SIGNOS VITALES', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    signos.slice(-10).forEach(function(d, i) {
+                        checkPage();
+                        doc.text((i+1) + '. SpO2:' + cleanText(d.spo2 || '-') + '% | FC:' + cleanText(d.fc || '-') + ' | FR:' + cleanText(d.fr || '-') + ' | Temp:' + cleanText(d.temp || '-') + '°C', 25, y);
+                        y += 6;
+                        if (d.bp) {
+                            doc.text('   TA: ' + cleanText(d.bp), 30, y);
+                            y += 6;
+                        }
+                        if (d.glucosa) {
+                            doc.text('   Glucosa: ' + cleanText(d.glucosa) + ' mg/dL', 30, y);
+                            y += 6;
+                        }
+                        if (d.braden) {
+                            doc.text('   Braden: ' + cleanText(d.braden), 30, y);
+                            y += 6;
+                        }
+                        if (d.alertas && d.alertas.length > 0) {
+                            doc.text('   Alertas: ' + d.alertas.join('; '), 30, y);
+                            y += 6;
+                        }
+                        y += 4;
+                    });
+                    y += 10;
                 }
-                y += 30;
-                checkPage();
-            }
-            
-            if (!firmado) {
-                doc.text('No se registraron firmas en este turno', 20, y);
+                
+                // 5. MEDICAMENTOS
+                var medicamentos = getFromLocal('medicamentos');
+                if (medicamentos.length > 0) {
+                    checkPage();
+                    doc.setFontSize(12);
+                    doc.text('5. MEDICAMENTOS ADMINISTRADOS', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    medicamentos.slice(-10).forEach(function(d, i) {
+                        checkPage();
+                        doc.text((i+1) + '. ' + cleanText(d.nombre || 'Medicamento') + ' - ' + cleanText(d.dosis || 'Sin dosis') + ' - ' + cleanText(d.hora || 'Sin hora'), 25, y);
+                        y += 6;
+                        if (d.obs) {
+                            doc.text('   Obs: ' + cleanText(d.obs).substring(0, 50), 30, y);
+                            y += 6;
+                        }
+                        y += 4;
+                    });
+                    y += 10;
+                }
+                
+                // 6. ENTREGA
+                var entregas = getFromLocal('entregas');
+                if (entregas.length > 0) {
+                    checkPage();
+                    doc.setFontSize(12);
+                    doc.text('6. ENTREGA DE TURNO', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    var ultima = entregas[entregas.length - 1];
+                    if (ultima) {
+                        doc.text('Hora: ' + cleanText(ultima.horaEntrega || 'No registrada'), 25, y);
+                        y += 6;
+                        doc.text('Resumen: ' + cleanText(ultima.resumen).substring(0, 80) || 'Sin resumen', 25, y);
+                        y += 6;
+                        if (ultima.pendientes) {
+                            doc.text('Pendientes: ' + cleanText(ultima.pendientes).substring(0, 80), 25, y);
+                            y += 6;
+                        }
+                        if (ultima.sbar) {
+                            var s = ultima.sbar;
+                            y += 4;
+                            doc.text('SBAR:', 25, y);
+                            y += 6;
+                            if (s.situacion) { doc.text('S - ' + cleanText(s.situacion).substring(0, 40), 30, y);
+                                y += 6; }
+                            if (s.antecedentes) { doc.text('A - ' + cleanText(s.antecedentes).substring(0, 40), 30, y);
+                                y += 6; }
+                            if (s.evaluacion) { doc.text('B - ' + cleanText(s.evaluacion).substring(0, 40), 30, y);
+                                y += 6; }
+                            if (s.recomendacion) { doc.text('R - ' + cleanText(s.recomendacion).substring(0, 40), 30, y);
+                                y += 6; }
+                        }
+                        y += 10;
+                    }
+                }
+                
+                // 7. FIRMAS
                 y += 10;
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('7. FIRMAS', 20, y);
+                y += 12;
+                doc.setFontSize(10);
+                
+                var firmado = false;
+                
+                var firmaEntrega = getSignatureData('sigEntrega');
+                if (firmaEntrega) {
+                    doc.text('Firma del Auxiliar (ENTREGA):', 20, y);
+                    try {
+                        doc.addImage(firmaEntrega, 'PNG', 130, y - 5, 60, 25);
+                        firmado = true;
+                    } catch (e) {
+                        doc.text('___________________', 130, y + 5);
+                    }
+                    y += 30;
+                    checkPage();
+                }
+                
+                var firmaRecibe = getSignatureData('sigRecibe');
+                if (firmaRecibe) {
+                    doc.text('Firma del Familiar/Acudiente (RECIBE):', 20, y);
+                    try {
+                        doc.addImage(firmaRecibe, 'PNG', 130, y - 5, 60, 25);
+                        firmado = true;
+                    } catch (e) {
+                        doc.text('___________________', 130, y + 5);
+                    }
+                    y += 30;
+                    checkPage();
+                }
+                
+                var firmaRecibo = getSignatureData('sigRecibo');
+                if (firmaRecibo) {
+                    doc.text('Firma de Recibo del Paciente:', 20, y);
+                    try {
+                        doc.addImage(firmaRecibo, 'PNG', 130, y - 5, 60, 25);
+                        firmado = true;
+                    } catch (e) {
+                        doc.text('___________________', 130, y + 5);
+                    }
+                    y += 30;
+                    checkPage();
+                }
+                
+                if (!firmado) {
+                    doc.text('No se registraron firmas en este turno', 20, y);
+                    y += 10;
+                }
+                
+                doc.save('reporte_auxiliar_' + Date.now() + '.pdf');
+                showToast('📄 Reporte de Auxiliar generado con éxito', 'success');
+                console.log('✅ Reporte de Auxiliar guardado');
+                
+            } catch (error) {
+                console.error('Error generando reporte de Auxiliar:', error);
+                showToast('❌ Error al generar el reporte', 'error');
             }
-            
-            doc.save('reporte_auxiliar_' + Date.now() + '.pdf');
-            showToast('📄 Reporte de Auxiliar generado con éxito', 'success');
         }
 
         // ============================================================
         //  REPORTE: ENFERMERO
         // ============================================================
         function generarReporteEnfermero() {
-            var doc = new jsPDF();
-            var y = 25;
-            var marginY = 270;
-            
-            function checkPage() {
-                if (y > marginY) {
-                    doc.addPage();
-                    y = 20;
-                }
-            }
-            
-            function cleanText(text) {
-                if (!text) return '';
-                return String(text).trim();
-            }
-            
-            // Logo
             try {
-                doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
-            } catch (e) {
-                try {
-                    doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
-                } catch (e2) {}
-            }
-            
-            doc.setFont('helvetica');
-            doc.setFontSize(16);
-            doc.text('VITAL HOGAR PRO IPS', 60, 25);
-            y = 45;
-            doc.setFontSize(10);
-            doc.text('Reporte de Enfermería', 60, y);
-            y += 10;
-            doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
-            y += 8;
-            doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
-            y += 8;
-            doc.text('Rol: Enfermero Jefe', 20, y);
-            y += 15;
-            
-            // 1. SUPERVISIÓN
-            var supervisiones = getFromLocal('supervisiones');
-            if (supervisiones.length > 0) {
-                checkPage();
-                doc.setFontSize(12);
-                doc.text('1. SUPERVISIÓN REALIZADA', 20, y);
-                y += 8;
-                doc.setFontSize(10);
-                supervisiones.slice(-10).forEach(function(d, i) {
-                    checkPage();
-                    doc.text((i+1) + '. ' + cleanText(d.descripcion || 'Supervisión'), 25, y);
-                    y += 6;
-                    if (d.observacion) {
-                        doc.text('   Obs: ' + cleanText(d.observacion).substring(0, 60), 30, y);
-                        y += 6;
+                var doc = new jsPDF();
+                var y = 25;
+                var marginY = 270;
+                
+                function checkPage() {
+                    if (y > marginY) {
+                        doc.addPage();
+                        y = 20;
                     }
-                    y += 4;
-                });
+                }
+                
+                function cleanText(text) {
+                    if (!text) return '';
+                    return String(text).trim();
+                }
+                
+                try {
+                    doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
+                } catch (e) {
+                    try {
+                        doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
+                    } catch (e2) {}
+                }
+                
+                doc.setFont('helvetica');
+                doc.setFontSize(16);
+                doc.text('VITAL HOGAR PRO IPS', 60, 25);
+                y = 45;
+                doc.setFontSize(10);
+                doc.text('Reporte de Enfermería', 60, y);
                 y += 10;
-            }
-            
-            // 2. EVOLUCIONES
-            var evoluciones = getFromLocal('evoluciones');
-            if (evoluciones.length > 0) {
+                doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
+                y += 8;
+                doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
+                y += 8;
+                doc.text('Rol: Enfermero Jefe', 20, y);
+                y += 15;
+                
+                var supervisiones = getFromLocal('supervisiones');
+                if (supervisiones.length > 0) {
+                    checkPage();
+                    doc.setFontSize(12);
+                    doc.text('1. SUPERVISIÓN REALIZADA', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    supervisiones.slice(-10).forEach(function(d, i) {
+                        checkPage();
+                        doc.text((i+1) + '. ' + cleanText(d.descripcion || 'Supervisión'), 25, y);
+                        y += 6;
+                        if (d.observacion) {
+                            doc.text('   Obs: ' + cleanText(d.observacion).substring(0, 60), 30, y);
+                            y += 6;
+                        }
+                        y += 4;
+                    });
+                    y += 10;
+                }
+                
+                var evoluciones = getFromLocal('evoluciones');
+                if (evoluciones.length > 0) {
+                    checkPage();
+                    doc.setFontSize(12);
+                    doc.text('2. EVOLUCIONES DE PACIENTES', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    evoluciones.slice(-10).forEach(function(d, i) {
+                        checkPage();
+                        doc.text((i+1) + '. Paciente: ' + cleanText(d.paciente || 'No especificado'), 25, y);
+                        y += 6;
+                        doc.text('   Notas: ' + cleanText(d.texto || 'Sin notas').substring(0, 60), 30, y);
+                        y += 6;
+                        doc.text('   Fecha: ' + cleanText(d.timestamp ? new Date(d.timestamp).toLocaleString() : 'No registrada'), 30, y);
+                        y += 4;
+                    });
+                    y += 10;
+                }
+                
+                y += 10;
                 checkPage();
                 doc.setFontSize(12);
-                doc.text('2. EVOLUCIONES DE PACIENTES', 20, y);
-                y += 8;
+                doc.text('3. FIRMAS', 20, y);
+                y += 12;
                 doc.setFontSize(10);
-                evoluciones.slice(-10).forEach(function(d, i) {
+                
+                var firmado = false;
+                
+                var firmaProfesional = getSignatureData('sigProfesional');
+                if (firmaProfesional) {
+                    doc.text('Firma del Enfermero:', 20, y);
+                    try {
+                        doc.addImage(firmaProfesional, 'PNG', 130, y - 5, 60, 25);
+                        firmado = true;
+                    } catch (e) {
+                        doc.text('___________________', 130, y + 5);
+                    }
+                    y += 30;
                     checkPage();
-                    doc.text((i+1) + '. Paciente: ' + cleanText(d.paciente || 'No especificado'), 25, y);
-                    y += 6;
-                    doc.text('   Notas: ' + cleanText(d.texto || 'Sin notas').substring(0, 60), 30, y);
-                    y += 6;
-                    doc.text('   Fecha: ' + cleanText(d.timestamp ? new Date(d.timestamp).toLocaleString() : 'No registrada'), 30, y);
-                    y += 4;
-                });
-                y += 10;
-            }
-            
-            // 3. FIRMAS
-            y += 10;
-            checkPage();
-            doc.setFontSize(12);
-            doc.text('3. FIRMAS', 20, y);
-            y += 12;
-            doc.setFontSize(10);
-            
-            var firmado = false;
-            
-            // Firma del Enfermero
-            var firmaProfesional = getSignatureData('sigProfesional');
-            if (firmaProfesional) {
-                doc.text('Firma del Enfermero:', 20, y);
-                try {
-                    doc.addImage(firmaProfesional, 'PNG', 130, y - 5, 60, 25);
-                    firmado = true;
-                } catch (e) {
-                    doc.text('___________________', 130, y + 5);
                 }
-                y += 30;
-                checkPage();
-            }
-            
-            // Firma del Paciente
-            var firmaPaciente = getSignatureData('sigPaciente');
-            if (firmaPaciente) {
-                doc.text('Firma del Paciente:', 20, y);
-                try {
-                    doc.addImage(firmaPaciente, 'PNG', 130, y - 5, 60, 25);
-                    firmado = true;
-                } catch (e) {
-                    doc.text('___________________', 130, y + 5);
+                
+                var firmaPaciente = getSignatureData('sigPaciente');
+                if (firmaPaciente) {
+                    doc.text('Firma del Paciente:', 20, y);
+                    try {
+                        doc.addImage(firmaPaciente, 'PNG', 130, y - 5, 60, 25);
+                        firmado = true;
+                    } catch (e) {
+                        doc.text('___________________', 130, y + 5);
+                    }
+                    y += 30;
+                    checkPage();
                 }
-                y += 30;
-                checkPage();
+                
+                if (!firmado) {
+                    doc.text('No se registraron firmas', 20, y);
+                    y += 10;
+                }
+                
+                doc.save('reporte_enfermero_' + Date.now() + '.pdf');
+                showToast('📄 Reporte de Enfermero generado con éxito', 'success');
+                
+            } catch (error) {
+                console.error('Error generando reporte de Enfermero:', error);
+                showToast('❌ Error al generar el reporte', 'error');
             }
-            
-            if (!firmado) {
-                doc.text('No se registraron firmas', 20, y);
-                y += 10;
-            }
-            
-            doc.save('reporte_enfermero_' + Date.now() + '.pdf');
-            showToast('📄 Reporte de Enfermero generado con éxito', 'success');
         }
 
         // ============================================================
         //  REPORTE: MÉDICO
         // ============================================================
         function generarReporteMedico() {
-            var doc = new jsPDF();
-            var y = 25;
-            var marginY = 270;
-            
-            function checkPage() {
-                if (y > marginY) {
-                    doc.addPage();
-                    y = 20;
-                }
-            }
-            
-            function cleanText(text) {
-                if (!text) return '';
-                return String(text).trim();
-            }
-            
-            // Logo
             try {
-                doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
-            } catch (e) {
+                var doc = new jsPDF();
+                var y = 25;
+                var marginY = 270;
+                
+                function checkPage() {
+                    if (y > marginY) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                }
+                
+                function cleanText(text) {
+                    if (!text) return '';
+                    return String(text).trim();
+                }
+                
                 try {
-                    doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
-                } catch (e2) {}
-            }
-            
-            doc.setFont('helvetica');
-            doc.setFontSize(16);
-            doc.text('VITAL HOGAR PRO IPS', 60, 25);
-            y = 45;
-            doc.setFontSize(10);
-            doc.text('Reporte Médico', 60, y);
-            y += 10;
-            doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
-            y += 8;
-            doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
-            y += 8;
-            doc.text('Rol: Médico', 20, y);
-            y += 15;
-            
-            // 1. PRESCRIPCIONES
-            var prescripciones = getFromLocal('prescripciones');
-            if (prescripciones.length > 0) {
+                    doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
+                } catch (e) {
+                    try {
+                        doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
+                    } catch (e2) {}
+                }
+                
+                doc.setFont('helvetica');
+                doc.setFontSize(16);
+                doc.text('VITAL HOGAR PRO IPS', 60, 25);
+                y = 45;
+                doc.setFontSize(10);
+                doc.text('Reporte Médico', 60, y);
+                y += 10;
+                doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
+                y += 8;
+                doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
+                y += 8;
+                doc.text('Rol: Médico', 20, y);
+                y += 15;
+                
+                var prescripciones = getFromLocal('prescripciones');
+                if (prescripciones.length > 0) {
+                    checkPage();
+                    doc.setFontSize(12);
+                    doc.text('1. PRESCRIPCIONES MÉDICAS', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    prescripciones.slice(-10).forEach(function(d, i) {
+                        checkPage();
+                        doc.text((i+1) + '. Paciente: ' + cleanText(d.paciente || 'No especificado'), 25, y);
+                        y += 6;
+                        doc.text('   Medicamento: ' + cleanText(d.medicamento || 'No especificado'), 30, y);
+                        y += 6;
+                        doc.text('   Dosis: ' + cleanText(d.dosis || 'No especificada') + ' | Frecuencia: ' + cleanText(d.frecuencia || 'No especificada'), 30, y);
+                        y += 6;
+                        if (d.observaciones) {
+                            doc.text('   Obs: ' + cleanText(d.observaciones).substring(0, 60), 30, y);
+                            y += 6;
+                        }
+                        y += 4;
+                    });
+                    y += 10;
+                }
+                
+                y += 10;
                 checkPage();
                 doc.setFontSize(12);
-                doc.text('1. PRESCRIPCIONES MÉDICAS', 20, y);
-                y += 8;
+                doc.text('2. FIRMAS', 20, y);
+                y += 12;
                 doc.setFontSize(10);
-                prescripciones.slice(-10).forEach(function(d, i) {
-                    checkPage();
-                    doc.text((i+1) + '. Paciente: ' + cleanText(d.paciente || 'No especificado'), 25, y);
-                    y += 6;
-                    doc.text('   Medicamento: ' + cleanText(d.medicamento || 'No especificado'), 30, y);
-                    y += 6;
-                    doc.text('   Dosis: ' + cleanText(d.dosis || 'No especificada') + ' | Frecuencia: ' + cleanText(d.frecuencia || 'No especificada'), 30, y);
-                    y += 6;
-                    if (d.observaciones) {
-                        doc.text('   Obs: ' + cleanText(d.observaciones).substring(0, 60), 30, y);
-                        y += 6;
+                
+                var firmado = false;
+                
+                var firmaProfesional = getSignatureData('sigProfesional');
+                if (firmaProfesional) {
+                    doc.text('Firma del Médico:', 20, y);
+                    try {
+                        doc.addImage(firmaProfesional, 'PNG', 130, y - 5, 60, 25);
+                        firmado = true;
+                    } catch (e) {
+                        doc.text('___________________', 130, y + 5);
                     }
-                    y += 4;
-                });
-                y += 10;
-            }
-            
-            // 2. FIRMAS
-            y += 10;
-            checkPage();
-            doc.setFontSize(12);
-            doc.text('2. FIRMAS', 20, y);
-            y += 12;
-            doc.setFontSize(10);
-            
-            var firmado = false;
-            
-            // Firma del Médico
-            var firmaProfesional = getSignatureData('sigProfesional');
-            if (firmaProfesional) {
-                doc.text('Firma del Médico:', 20, y);
-                try {
-                    doc.addImage(firmaProfesional, 'PNG', 130, y - 5, 60, 25);
-                    firmado = true;
-                } catch (e) {
-                    doc.text('___________________', 130, y + 5);
+                    y += 30;
+                    checkPage();
                 }
-                y += 30;
-                checkPage();
-            }
-            
-            // Firma del Paciente
-            var firmaPaciente = getSignatureData('sigPaciente');
-            if (firmaPaciente) {
-                doc.text('Firma del Paciente:', 20, y);
-                try {
-                    doc.addImage(firmaPaciente, 'PNG', 130, y - 5, 60, 25);
-                    firmado = true;
-                } catch (e) {
-                    doc.text('___________________', 130, y + 5);
+                
+                var firmaPaciente = getSignatureData('sigPaciente');
+                if (firmaPaciente) {
+                    doc.text('Firma del Paciente:', 20, y);
+                    try {
+                        doc.addImage(firmaPaciente, 'PNG', 130, y - 5, 60, 25);
+                        firmado = true;
+                    } catch (e) {
+                        doc.text('___________________', 130, y + 5);
+                    }
+                    y += 30;
+                    checkPage();
                 }
-                y += 30;
-                checkPage();
+                
+                if (!firmado) {
+                    doc.text('No se registraron firmas', 20, y);
+                    y += 10;
+                }
+                
+                doc.save('reporte_medico_' + Date.now() + '.pdf');
+                showToast('📄 Reporte Médico generado con éxito', 'success');
+                
+            } catch (error) {
+                console.error('Error generando reporte de Médico:', error);
+                showToast('❌ Error al generar el reporte', 'error');
             }
-            
-            if (!firmado) {
-                doc.text('No se registraron firmas', 20, y);
-                y += 10;
-            }
-            
-            doc.save('reporte_medico_' + Date.now() + '.pdf');
-            showToast('📄 Reporte Médico generado con éxito', 'success');
         }
 
         // ============================================================
-        //  REPORTE: ESPECIALISTAS (Fisioterapeuta, Nutricionista, etc.)
+        //  REPORTE: ESPECIALISTAS
         // ============================================================
         function generarReporteEspecialista(rol) {
-            var doc = new jsPDF();
-            var y = 25;
-            var marginY = 270;
-            var key = 'eval_' + rol.toLowerCase().replace(/ /g, '_');
-            
-            function checkPage() {
-                if (y > marginY) {
-                    doc.addPage();
-                    y = 20;
-                }
-            }
-            
-            function cleanText(text) {
-                if (!text) return '';
-                return String(text).trim();
-            }
-            
-            // Logo
             try {
-                doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
-            } catch (e) {
+                var doc = new jsPDF();
+                var y = 25;
+                var marginY = 270;
+                var key = 'eval_' + rol.toLowerCase().replace(/ /g, '_');
+                
+                function checkPage() {
+                    if (y > marginY) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                }
+                
+                function cleanText(text) {
+                    if (!text) return '';
+                    return String(text).trim();
+                }
+                
                 try {
-                    doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
-                } catch (e2) {}
-            }
-            
-            doc.setFont('helvetica');
-            doc.setFontSize(16);
-            doc.text('VITAL HOGAR PRO IPS', 60, 25);
-            y = 45;
-            doc.setFontSize(10);
-            doc.text('Reporte de ' + rol, 60, y);
-            y += 10;
-            doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
-            y += 8;
-            doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
-            y += 8;
-            doc.text('Rol: ' + rol, 20, y);
-            y += 15;
-            
-            // 1. EVALUACIONES
-            var evaluaciones = getFromLocal(key);
-            if (evaluaciones.length > 0) {
+                    doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
+                } catch (e) {
+                    try {
+                        doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
+                    } catch (e2) {}
+                }
+                
+                doc.setFont('helvetica');
+                doc.setFontSize(16);
+                doc.text('VITAL HOGAR PRO IPS', 60, 25);
+                y = 45;
+                doc.setFontSize(10);
+                doc.text('Reporte de ' + rol, 60, y);
+                y += 10;
+                doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
+                y += 8;
+                doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
+                y += 8;
+                doc.text('Rol: ' + rol, 20, y);
+                y += 15;
+                
+                var evaluaciones = getFromLocal(key);
+                if (evaluaciones.length > 0) {
+                    checkPage();
+                    doc.setFontSize(12);
+                    doc.text('1. EVALUACIONES REALIZADAS', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    evaluaciones.slice(-10).forEach(function(d, i) {
+                        checkPage();
+                        doc.text((i+1) + '. Paciente: ' + cleanText(d.paciente || 'No especificado'), 25, y);
+                        y += 6;
+                        if (d.texto) {
+                            doc.text('   Observaciones: ' + cleanText(d.texto).substring(0, 60), 30, y);
+                            y += 6;
+                        }
+                        if (d.imc) {
+                            doc.text('   IMC: ' + cleanText(d.imc), 30, y);
+                            y += 6;
+                        }
+                        if (d.habitos) {
+                            doc.text('   Hábitos: ' + cleanText(d.habitos).substring(0, 50), 30, y);
+                            y += 6;
+                        }
+                        if (d.plan) {
+                            doc.text('   Plan: ' + cleanText(d.plan).substring(0, 50), 30, y);
+                            y += 6;
+                        }
+                        y += 4;
+                    });
+                    y += 10;
+                }
+                
+                y += 10;
                 checkPage();
                 doc.setFontSize(12);
-                doc.text('1. EVALUACIONES REALIZADAS', 20, y);
-                y += 8;
+                doc.text('2. FIRMAS', 20, y);
+                y += 12;
                 doc.setFontSize(10);
-                evaluaciones.slice(-10).forEach(function(d, i) {
+                
+                var firmado = false;
+                
+                var firmaProfesional = getSignatureData('sigProfesional');
+                if (firmaProfesional) {
+                    doc.text('Firma del ' + rol + ':', 20, y);
+                    try {
+                        doc.addImage(firmaProfesional, 'PNG', 130, y - 5, 60, 25);
+                        firmado = true;
+                    } catch (e) {
+                        doc.text('___________________', 130, y + 5);
+                    }
+                    y += 30;
                     checkPage();
-                    doc.text((i+1) + '. Paciente: ' + cleanText(d.paciente || 'No especificado'), 25, y);
-                    y += 6;
-                    if (d.texto) {
-                        doc.text('   Observaciones: ' + cleanText(d.texto).substring(0, 60), 30, y);
-                        y += 6;
-                    }
-                    if (d.imc) {
-                        doc.text('   IMC: ' + cleanText(d.imc), 30, y);
-                        y += 6;
-                    }
-                    if (d.habitos) {
-                        doc.text('   Hábitos: ' + cleanText(d.habitos).substring(0, 50), 30, y);
-                        y += 6;
-                    }
-                    if (d.plan) {
-                        doc.text('   Plan: ' + cleanText(d.plan).substring(0, 50), 30, y);
-                        y += 6;
-                    }
-                    y += 4;
-                });
-                y += 10;
-            }
-            
-            // 2. FIRMAS
-            y += 10;
-            checkPage();
-            doc.setFontSize(12);
-            doc.text('2. FIRMAS', 20, y);
-            y += 12;
-            doc.setFontSize(10);
-            
-            var firmado = false;
-            
-            // Firma del Especialista
-            var firmaProfesional = getSignatureData('sigProfesional');
-            if (firmaProfesional) {
-                doc.text('Firma del ' + rol + ':', 20, y);
-                try {
-                    doc.addImage(firmaProfesional, 'PNG', 130, y - 5, 60, 25);
-                    firmado = true;
-                } catch (e) {
-                    doc.text('___________________', 130, y + 5);
                 }
-                y += 30;
-                checkPage();
-            }
-            
-            // Firma del Paciente
-            var firmaPaciente = getSignatureData('sigPaciente');
-            if (firmaPaciente) {
-                doc.text('Firma del Paciente:', 20, y);
-                try {
-                    doc.addImage(firmaPaciente, 'PNG', 130, y - 5, 60, 25);
-                    firmado = true;
-                } catch (e) {
-                    doc.text('___________________', 130, y + 5);
+                
+                var firmaPaciente = getSignatureData('sigPaciente');
+                if (firmaPaciente) {
+                    doc.text('Firma del Paciente:', 20, y);
+                    try {
+                        doc.addImage(firmaPaciente, 'PNG', 130, y - 5, 60, 25);
+                        firmado = true;
+                    } catch (e) {
+                        doc.text('___________________', 130, y + 5);
+                    }
+                    y += 30;
+                    checkPage();
                 }
-                y += 30;
-                checkPage();
+                
+                if (!firmado) {
+                    doc.text('No se registraron firmas', 20, y);
+                    y += 10;
+                }
+                
+                doc.save('reporte_' + rol.toLowerCase().replace(/ /g, '_') + '_' + Date.now() + '.pdf');
+                showToast('📄 Reporte de ' + rol + ' generado con éxito', 'success');
+                
+            } catch (error) {
+                console.error('Error generando reporte de ' + rol + ':', error);
+                showToast('❌ Error al generar el reporte', 'error');
             }
-            
-            if (!firmado) {
-                doc.text('No se registraron firmas', 20, y);
-                y += 10;
-            }
-            
-            doc.save('reporte_' + rol.toLowerCase().replace(/ /g, '_') + '_' + Date.now() + '.pdf');
-            showToast('📄 Reporte de ' + rol + ' generado con éxito', 'success');
         }
 
         // ============================================================
         //  REPORTE: COORDINADOR
         // ============================================================
         function generarReporteCoordinador() {
-            var doc = new jsPDF();
-            var y = 25;
-            var marginY = 270;
-            
-            function checkPage() {
-                if (y > marginY) {
-                    doc.addPage();
-                    y = 20;
-                }
-            }
-            
-            function cleanText(text) {
-                if (!text) return '';
-                return String(text).trim();
-            }
-            
-            // Logo
             try {
-                doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
-            } catch (e) {
-                try {
-                    doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
-                } catch (e2) {}
-            }
-            
-            doc.setFont('helvetica');
-            doc.setFontSize(16);
-            doc.text('VITAL HOGAR PRO IPS', 60, 25);
-            y = 45;
-            doc.setFontSize(10);
-            doc.text('Reporte de Coordinación', 60, y);
-            y += 10;
-            doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
-            y += 8;
-            doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
-            y += 8;
-            doc.text('Rol: Coordinador', 20, y);
-            y += 15;
-            
-            // 1. TURNOS PROGRAMADOS
-            var turnosCoord = getFromLocal('turnosCoord');
-            if (turnosCoord.length > 0) {
-                checkPage();
-                doc.setFontSize(12);
-                doc.text('1. TURNOS PROGRAMADOS', 20, y);
-                y += 8;
-                doc.setFontSize(10);
-                turnosCoord.slice(-10).forEach(function(d, i) {
-                    checkPage();
-                    doc.text((i+1) + '. Paciente: ' + cleanText(d.paciente || 'No especificado'), 25, y);
-                    y += 6;
-                    doc.text('   Profesional: ' + cleanText(d.profesional || 'No especificado'), 30, y);
-                    y += 6;
-                    doc.text('   Fecha: ' + cleanText(d.fecha || 'No especificada') + ' | Turno: ' + cleanText(d.turno || 'No especificado'), 30, y);
-                    y += 6;
-                    doc.text('   Estado: ' + cleanText(d.estado || 'PENDIENTE'), 30, y);
-                    y += 4;
-                });
-                y += 10;
-            }
-            
-            // 2. COBERTURA 24h
-            checkPage();
-            doc.setFontSize(12);
-            doc.text('2. REPORTE DE COBERTURA 24h', 20, y);
-            y += 8;
-            doc.setFontSize(10);
-            var totalShifts = turnosCoord.length || 0;
-            var with24h = turnosCoord.filter(function(t) { return t.turno === '24h'; }).length || 0;
-            var with12h = turnosCoord.filter(function(t) { return t.turno === '12h'; }).length || 0;
-            var with8h = turnosCoord.filter(function(t) { return t.turno === '8h'; }).length || 0;
-            var with6h = turnosCoord.filter(function(t) { return t.turno === '6h'; }).length || 0;
-            var pending = turnosCoord.filter(function(t) { return t.estado === 'PENDIENTE'; }).length || 0;
-            var completed = turnosCoord.filter(function(t) { return t.estado === 'COMPLETADO'; }).length || 0;
-            
-            doc.text('Total de turnos: ' + totalShifts, 25, y);
-            y += 6;
-            doc.text('Cobertura 24h: ' + with24h + ' (' + (totalShifts > 0 ? Math.round((with24h/totalShifts)*100) : 0) + '%)', 25, y);
-            y += 6;
-            doc.text('Cobertura 12h: ' + with12h, 25, y);
-            y += 6;
-            doc.text('Cobertura 8h: ' + with8h, 25, y);
-            y += 6;
-            doc.text('Cobertura 6h: ' + with6h, 25, y);
-            y += 6;
-            doc.text('Pendientes: ' + pending, 25, y);
-            y += 6;
-            doc.text('Completados: ' + completed, 25, y);
-            y += 10;
-            
-            // 3. EDUCACIÓN ASIGNADA
-            var educacionAsignada = loadEducacionAsignada();
-            var pendientes = educacionAsignada.filter(function(e) { return e.estado === 'PENDIENTE'; });
-            var completados = educacionAsignada.filter(function(e) { return e.estado === 'COMPLETADO'; });
-            
-            if (educacionAsignada.length > 0) {
-                checkPage();
-                doc.setFontSize(12);
-                doc.text('3. EDUCACIÓN ASIGNADA', 20, y);
-                y += 8;
-                doc.setFontSize(10);
-                doc.text('Total asignaciones: ' + educacionAsignada.length, 25, y);
-                y += 6;
-                doc.text('Pendientes: ' + pendientes.length, 25, y);
-                y += 6;
-                doc.text('Completados: ' + completados.length, 25, y);
-                y += 6;
+                var doc = new jsPDF();
+                var y = 25;
+                var marginY = 270;
                 
-                if (pendientes.length > 0) {
-                    doc.text('Temas pendientes:', 25, y);
-                    y += 6;
-                    pendientes.forEach(function(e, i) {
-                        checkPage();
-                        doc.text((i+1) + '. ' + cleanText(e.tema_titulo || 'Sin título') + ' - ' + cleanText(e.paciente_nombre || 'Sin paciente'), 30, y);
-                        y += 6;
-                    });
-                    y += 4;
+                function checkPage() {
+                    if (y > marginY) {
+                        doc.addPage();
+                        y = 20;
+                    }
                 }
+                
+                function cleanText(text) {
+                    if (!text) return '';
+                    return String(text).trim();
+                }
+                
+                try {
+                    doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
+                } catch (e) {
+                    try {
+                        doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
+                    } catch (e2) {}
+                }
+                
+                doc.setFont('helvetica');
+                doc.setFontSize(16);
+                doc.text('VITAL HOGAR PRO IPS', 60, 25);
+                y = 45;
+                doc.setFontSize(10);
+                doc.text('Reporte de Coordinación', 60, y);
                 y += 10;
+                doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
+                y += 8;
+                doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
+                y += 8;
+                doc.text('Rol: Coordinador', 20, y);
+                y += 15;
+                
+                var turnosCoord = getFromLocal('turnosCoord');
+                if (turnosCoord.length > 0) {
+                    checkPage();
+                    doc.setFontSize(12);
+                    doc.text('1. TURNOS PROGRAMADOS', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    turnosCoord.slice(-10).forEach(function(d, i) {
+                        checkPage();
+                        doc.text((i+1) + '. Paciente: ' + cleanText(d.paciente || 'No especificado'), 25, y);
+                        y += 6;
+                        doc.text('   Profesional: ' + cleanText(d.profesional || 'No especificado'), 30, y);
+                        y += 6;
+                        doc.text('   Fecha: ' + cleanText(d.fecha || 'No especificada') + ' | Turno: ' + cleanText(d.turno || 'No especificado'), 30, y);
+                        y += 6;
+                        doc.text('   Estado: ' + cleanText(d.estado || 'PENDIENTE'), 30, y);
+                        y += 4;
+                    });
+                    y += 10;
+                }
+                
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('2. REPORTE DE COBERTURA 24h', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                var totalShifts = turnosCoord.length || 0;
+                var with24h = turnosCoord.filter(function(t) { return t.turno === '24h'; }).length || 0;
+                var with12h = turnosCoord.filter(function(t) { return t.turno === '12h'; }).length || 0;
+                var with8h = turnosCoord.filter(function(t) { return t.turno === '8h'; }).length || 0;
+                var with6h = turnosCoord.filter(function(t) { return t.turno === '6h'; }).length || 0;
+                var pending = turnosCoord.filter(function(t) { return t.estado === 'PENDIENTE'; }).length || 0;
+                var completed = turnosCoord.filter(function(t) { return t.estado === 'COMPLETADO'; }).length || 0;
+                
+                doc.text('Total de turnos: ' + totalShifts, 25, y);
+                y += 6;
+                doc.text('Cobertura 24h: ' + with24h + ' (' + (totalShifts > 0 ? Math.round((with24h/totalShifts)*100) : 0) + '%)', 25, y);
+                y += 6;
+                doc.text('Cobertura 12h: ' + with12h, 25, y);
+                y += 6;
+                doc.text('Cobertura 8h: ' + with8h, 25, y);
+                y += 6;
+                doc.text('Cobertura 6h: ' + with6h, 25, y);
+                y += 6;
+                doc.text('Pendientes: ' + pending, 25, y);
+                y += 6;
+                doc.text('Completados: ' + completed, 25, y);
+                y += 10;
+                
+                var educacionAsignada = loadEducacionAsignada();
+                var pendientes = educacionAsignada.filter(function(e) { return e.estado === 'PENDIENTE'; });
+                var completados = educacionAsignada.filter(function(e) { return e.estado === 'COMPLETADO'; });
+                
+                if (educacionAsignada.length > 0) {
+                    checkPage();
+                    doc.setFontSize(12);
+                    doc.text('3. EDUCACIÓN ASIGNADA', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    doc.text('Total asignaciones: ' + educacionAsignada.length, 25, y);
+                    y += 6;
+                    doc.text('Pendientes: ' + pendientes.length, 25, y);
+                    y += 6;
+                    doc.text('Completados: ' + completados.length, 25, y);
+                    y += 6;
+                    
+                    if (pendientes.length > 0) {
+                        doc.text('Temas pendientes:', 25, y);
+                        y += 6;
+                        pendientes.forEach(function(e, i) {
+                            checkPage();
+                            doc.text((i+1) + '. ' + cleanText(e.tema_titulo || 'Sin título') + ' - ' + cleanText(e.paciente_nombre || 'Sin paciente'), 30, y);
+                            y += 6;
+                        });
+                        y += 4;
+                    }
+                    y += 10;
+                }
+                
+                doc.save('reporte_coordinador_' + Date.now() + '.pdf');
+                showToast('📄 Reporte de Coordinador generado con éxito', 'success');
+                
+            } catch (error) {
+                console.error('Error generando reporte de Coordinador:', error);
+                showToast('❌ Error al generar el reporte', 'error');
             }
-            
-            doc.save('reporte_coordinador_' + Date.now() + '.pdf');
-            showToast('📄 Reporte de Coordinador generado con éxito', 'success');
         }
 
         // ============================================================
         //  REPORTE: ADMIN
         // ============================================================
         function generarReporteAdmin() {
-            var doc = new jsPDF();
-            var y = 25;
-            var marginY = 270;
-            
-            function checkPage() {
-                if (y > marginY) {
-                    doc.addPage();
-                    y = 20;
-                }
-            }
-            
-            function cleanText(text) {
-                if (!text) return '';
-                return String(text).trim();
-            }
-            
-            // Logo
             try {
-                doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
-            } catch (e) {
+                var doc = new jsPDF();
+                var y = 25;
+                var marginY = 270;
+                
+                function checkPage() {
+                    if (y > marginY) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                }
+                
+                function cleanText(text) {
+                    if (!text) return '';
+                    return String(text).trim();
+                }
+                
                 try {
-                    doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
-                } catch (e2) {}
-            }
-            
-            doc.setFont('helvetica');
-            doc.setFontSize(16);
-            doc.text('VITAL HOGAR PRO IPS', 60, 25);
-            y = 45;
-            doc.setFontSize(10);
-            doc.text('Reporte Administrativo', 60, y);
-            y += 10;
-            doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
-            y += 8;
-            doc.text('Administrador: ' + cleanText(currentUser?.name), 20, y);
-            y += 15;
-            
-            // 1. ESTADÍSTICAS GLOBALES
-            var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
-            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
-            var educationTopics = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
-            var educacionAsignada = loadEducacionAsignada();
-            
-            checkPage();
-            doc.setFontSize(12);
-            doc.text('1. ESTADÍSTICAS GLOBALES', 20, y);
-            y += 8;
-            doc.setFontSize(10);
-            doc.text('Total de usuarios: ' + usuarios.length, 25, y);
-            y += 6;
-            doc.text('Total de pacientes: ' + pacientes.length, 25, y);
-            y += 6;
-            doc.text('Total de temas de educación: ' + educationTopics.length, 25, y);
-            y += 6;
-            doc.text('Total de asignaciones educativas: ' + educacionAsignada.length, 25, y);
-            y += 6;
-            var completados = educacionAsignada.filter(function(e) { return e.estado === 'COMPLETADO'; }).length;
-            doc.text('Educación completada: ' + completados, 25, y);
-            y += 6;
-            var pendientes = educacionAsignada.filter(function(e) { return e.estado === 'PENDIENTE'; }).length;
-            doc.text('Educación pendiente: ' + pendientes, 25, y);
-            y += 10;
-            
-            // 2. USUARIOS POR ROL
-            checkPage();
-            doc.setFontSize(12);
-            doc.text('2. USUARIOS POR ROL', 20, y);
-            y += 8;
-            doc.setFontSize(10);
-            var roles = {};
-            usuarios.forEach(function(u) {
-                roles[u.role] = (roles[u.role] || 0) + 1;
-            });
-            for (var role in roles) {
-                doc.text(role + ': ' + roles[role], 25, y);
-                y += 6;
-            }
-            y += 10;
-            
-            // 3. EDUCACIÓN ASIGNADA DETALLADA
-            if (educacionAsignada.length > 0) {
+                    doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
+                } catch (e) {
+                    try {
+                        doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
+                    } catch (e2) {}
+                }
+                
+                doc.setFont('helvetica');
+                doc.setFontSize(16);
+                doc.text('VITAL HOGAR PRO IPS', 60, 25);
+                y = 45;
+                doc.setFontSize(10);
+                doc.text('Reporte Administrativo', 60, y);
+                y += 10;
+                doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
+                y += 8;
+                doc.text('Administrador: ' + cleanText(currentUser?.name), 20, y);
+                y += 15;
+                
+                var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
+                var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+                var topics = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
+                var educacionAsignada = loadEducacionAsignada();
+                
                 checkPage();
                 doc.setFontSize(12);
-                doc.text('3. DETALLE DE EDUCACIÓN ASIGNADA', 20, y);
+                doc.text('1. ESTADÍSTICAS GLOBALES', 20, y);
                 y += 8;
                 doc.setFontSize(10);
-                educacionAsignada.slice(-10).forEach(function(e, i) {
-                    checkPage();
-                    doc.text((i+1) + '. Tema: ' + cleanText(e.tema_titulo || 'Sin título'), 25, y);
-                    y += 6;
-                    doc.text('   Paciente: ' + cleanText(e.paciente_nombre || 'Sin paciente'), 30, y);
-                    y += 6;
-                    doc.text('   Asignado a: ' + cleanText(e.profesional_nombre || 'Sin profesional'), 30, y);
-                    y += 6;
-                    doc.text('   Estado: ' + (e.estado === 'COMPLETADO' ? '✅ COMPLETADO' : '⏳ PENDIENTE'), 30, y);
-                    y += 6;
-                    if (e.fecha_completado) {
-                        doc.text('   Completado: ' + cleanText(new Date(e.fecha_completado).toLocaleString()), 30, y);
-                        y += 6;
-                    }
-                    y += 4;
-                });
+                doc.text('Total de usuarios: ' + usuarios.length, 25, y);
+                y += 6;
+                doc.text('Total de pacientes: ' + pacientes.length, 25, y);
+                y += 6;
+                doc.text('Total de temas de educación: ' + topics.length, 25, y);
+                y += 6;
+                doc.text('Total de asignaciones educativas: ' + educacionAsignada.length, 25, y);
+                y += 6;
+                var completados = educacionAsignada.filter(function(e) { return e.estado === 'COMPLETADO'; }).length;
+                doc.text('Educación completada: ' + completados, 25, y);
+                y += 6;
+                var pendientes = educacionAsignada.filter(function(e) { return e.estado === 'PENDIENTE'; }).length;
+                doc.text('Educación pendiente: ' + pendientes, 25, y);
                 y += 10;
+                
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('2. USUARIOS POR ROL', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                var roles = {};
+                usuarios.forEach(function(u) {
+                    roles[u.role] = (roles[u.role] || 0) + 1;
+                });
+                for (var role in roles) {
+                    doc.text(role + ': ' + roles[role], 25, y);
+                    y += 6;
+                }
+                y += 10;
+                
+                if (educacionAsignada.length > 0) {
+                    checkPage();
+                    doc.setFontSize(12);
+                    doc.text('3. DETALLE DE EDUCACIÓN ASIGNADA', 20, y);
+                    y += 8;
+                    doc.setFontSize(10);
+                    educacionAsignada.slice(-10).forEach(function(e, i) {
+                        checkPage();
+                        doc.text((i+1) + '. Tema: ' + cleanText(e.tema_titulo || 'Sin título'), 25, y);
+                        y += 6;
+                        doc.text('   Paciente: ' + cleanText(e.paciente_nombre || 'Sin paciente'), 30, y);
+                        y += 6;
+                        doc.text('   Asignado a: ' + cleanText(e.profesional_nombre || 'Sin profesional'), 30, y);
+                        y += 6;
+                        doc.text('   Estado: ' + (e.estado === 'COMPLETADO' ? '✅ COMPLETADO' : '⏳ PENDIENTE'), 30, y);
+                        y += 6;
+                        if (e.fecha_completado) {
+                            doc.text('   Completado: ' + cleanText(new Date(e.fecha_completado).toLocaleString()), 30, y);
+                            y += 6;
+                        }
+                        if (e.evidencia) {
+                            doc.text('   Evidencia: ' + cleanText(e.evidencia).substring(0, 50), 30, y);
+                            y += 6;
+                        }
+                        y += 4;
+                    });
+                    y += 10;
+                }
+                
+                doc.save('reporte_admin_' + Date.now() + '.pdf');
+                showToast('📄 Reporte Administrativo generado con éxito', 'success');
+                
+            } catch (error) {
+                console.error('Error generando reporte de Admin:', error);
+                showToast('❌ Error al generar el reporte', 'error');
             }
-            
-            doc.save('reporte_admin_' + Date.now() + '.pdf');
-            showToast('📄 Reporte Administrativo generado con éxito', 'success');
         }
 
         // ============================================================
@@ -2391,12 +2430,10 @@
                 default: contentDiv.innerHTML = '<div class="card"><p>Contenido no disponible</p></div>';
             }
             
-            // Inicializar firmas
             setTimeout(function() {
                 initSignatures();
             }, 300);
             
-            // Cargar listas
             setTimeout(function() {
                 if (tabId === 'signos') cargarLista('signos', 'historialSignos');
                 if (tabId === 'actividades') cargarLista('actividades', 'listaActividades');
@@ -2515,9 +2552,20 @@
         };
 
         // ============================================================
-        //  CONTENIDO: ACTIVIDADES
+        //  CONTENIDO: ACTIVIDADES (CON EDUCACIÓN UNIFICADA)
         // ============================================================
         function getActividadesContent() {
+            // Obtener temas asignados al auxiliar actual
+            var temasAsignados = getEducacionPendiente(currentUser ? currentUser.id : '');
+            var options = '<option value="">-- Seleccionar tema --</option>';
+            if (temasAsignados.length === 0) {
+                options += '<option value="" disabled>-- Sin temas asignados --</option>';
+            } else {
+                temasAsignados.forEach(function(a) {
+                    options += '<option value="' + a.tema_id + '" data-asignacion="' + a.id + '">' + a.tema_titulo + ' - ' + a.paciente_nombre + '</option>';
+                });
+            }
+            
             return '<div class="card">' +
                 '<div class="card-title">✅ Actividades Realizadas</div>' +
                 '<div id="listaActividades" style="margin-bottom:12px;"></div>' +
@@ -2553,9 +2601,7 @@
                 '</div>' +
                 '<div class="form-group" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">' +
                 '<label>🧠 Educación al Paciente/Familia</label>' +
-                '<select id="educacionTipo">' +
-                '<option value="">-- Seleccionar tema --</option>' +
-                '</select>' +
+                '<select id="educacionTipo">' + options + '</select>' +
                 '<textarea id="educacionDesc" rows="2" placeholder="Describa la educación brindada..." style="margin-top:6px;"></textarea>' +
                 '<button class="btn-voice" onclick="iniciarDictado(\'educacionDesc\')">🎙️ Dictar</button>' +
                 '</div>' +
@@ -2611,22 +2657,65 @@
             var novedad = document.getElementById('novedadTipo').value;
             var novedadDesc = document.getElementById('novedadDesc').value;
 
+            // Obtener el ID de la asignación
+            var select = document.getElementById('educacionTipo');
+            var asignacionId = null;
+            if (select) {
+                var selectedOption = select.options[select.selectedIndex];
+                if (selectedOption) {
+                    asignacionId = selectedOption.getAttribute('data-asignacion');
+                }
+            }
+
             var data = {
                 actividad: actividad,
                 hora: hora,
                 observacion: observacion,
                 educacion: educacion ? educacion + ': ' + educacionDesc : '',
                 novedad: novedad ? novedad + ': ' + novedadDesc : '',
-                fotos: document.getElementById('photoPreview').children.length
+                fotos: document.getElementById('photoPreview').children.length,
+                educacion_asignacion_id: asignacionId,
+                educacion_desc: educacionDesc
             };
 
             saveToLocal('actividades', data);
+            
+            // Si se seleccionó un tema de educación asignado, marcarlo como completado
+            if (asignacionId) {
+                var evidencia = educacionDesc || 'Educación realizada';
+                // Capturar la evidencia fotográfica como base64
+                var preview = document.getElementById('photoPreview');
+                var fotoData = null;
+                if (preview && preview.children.length > 0) {
+                    var img = preview.children[0];
+                    fotoData = img.src;
+                }
+                completarEducacion(asignacionId, evidencia, fotoData);
+                showToast('✅ Educación completada con evidencia', 'success');
+            }
+            
             document.getElementById('obsActividad').value = '';
             document.getElementById('horaActividad').value = '';
             document.getElementById('educacionDesc').value = '';
             document.getElementById('novedadDesc').value = '';
             document.getElementById('photoInput').value = '';
             document.getElementById('photoPreview').innerHTML = '';
+            
+            // Actualizar el selector de educación
+            var select = document.getElementById('educacionTipo');
+            if (select) {
+                var temasAsignados = getEducacionPendiente(currentUser ? currentUser.id : '');
+                var options = '<option value="">-- Seleccionar tema --</option>';
+                if (temasAsignados.length === 0) {
+                    options += '<option value="" disabled>-- Sin temas asignados --</option>';
+                } else {
+                    temasAsignados.forEach(function(a) {
+                        options += '<option value="' + a.tema_id + '" data-asignacion="' + a.id + '">' + a.tema_titulo + ' - ' + a.paciente_nombre + '</option>';
+                    });
+                }
+                select.innerHTML = options;
+            }
+            
             cargarLista('actividades', 'listaActividades');
             showToast('✅ Actividad agregada', 'success');
         };
@@ -2904,14 +2993,17 @@
             var pendientes = educacion.filter(function(e) {
                 return e.profesional_id === currentUser.id && e.estado === 'PENDIENTE';
             });
+            var completados = educacion.filter(function(e) {
+                return e.profesional_id === currentUser.id && e.estado === 'COMPLETADO';
+            });
             
             var html = '<div class="card">' +
-                '<div class="card-title">📚 Educación Asignada</div>';
+                '<div class="card-title">📚 Educación Asignada - Pendiente</div>';
             
             if (pendientes.length === 0) {
-                html += '<p class="text-muted">No tienes educación pendiente por realizar.</p>';
+                html += '<p class="text-muted">✅ No tienes educación pendiente por realizar.</p>';
             } else {
-                html += '<div class="tip-box"><strong>⚠️ IMPORTANTE:</strong> Realiza la educación y marca como completada con evidencia.</div>';
+                html += '<div class="tip-box"><strong>⚠️ IMPORTANTE:</strong> Realiza la educación y marca como completada desde la tab "✅ Actividades".</div>';
                 pendientes.forEach(function(e) {
                     html += '<div class="educacion-asignada">' +
                         '<strong>Tema:</strong> ' + e.tema_titulo + '<br>' +
@@ -2921,9 +3013,7 @@
                         '<strong>Fecha:</strong> ' + new Date(e.fecha_asignacion).toLocaleString() + '<br>' +
                         '<span class="estado-pendiente">⏳ PENDIENTE</span><br>' +
                         '<div style="margin-top:8px;">' +
-                        '<label>📝 Evidencia:</label>' +
-                        '<input type="text" id="evidencia_' + e.id + '" placeholder="Describa la evidencia..." style="width:100%; margin-top:4px; background:#0f172a; border:1px solid #334155; border-radius:8px; padding:8px; color:white;">' +
-                        '<button class="btn-success btn-sm" style="margin-top:6px;" onclick="completarEducacionAsignada(\'' + e.id + '\')">✅ Marcar como Completada</button>' +
+                        '<span class="text-muted" style="font-size:0.7rem;">📌 Para completar, ve a "✅ Actividades" y selecciona este tema.</span>' +
                         '</div>' +
                         '</div>';
                 });
@@ -2931,24 +3021,27 @@
             
             html += '</div>' +
                 '<div class="card">' +
-                '<div class="card-title">📋 Educación Completada</div>' +
-                '<div id="educacionCompletada"></div>' +
-                '</div>';
+                '<div class="card-title">📋 Educación Completada</div>';
+            
+            if (completados.length === 0) {
+                html += '<p class="text-muted">No hay educación completada aún.</p>';
+            } else {
+                completados.forEach(function(e) {
+                    html += '<div class="educacion-asignada" style="border-left-color:#22c55e;">' +
+                        '<strong>Tema:</strong> ' + e.tema_titulo + '<br>' +
+                        '<strong>Paciente:</strong> ' + e.paciente_nombre + '<br>' +
+                        '<span class="estado-completado">✅ COMPLETADO</span><br>' +
+                        '<strong>Completado:</strong> ' + new Date(e.fecha_completado).toLocaleString() + '<br>' +
+                        (e.evidencia ? '<strong>Evidencia:</strong> ' + e.evidencia + '<br>' : '') +
+                        (e.evidencia_foto ? '<span class="text-muted" style="font-size:0.7rem;">📸 Con evidencia fotográfica</span><br>' : '') +
+                        '</div>';
+                });
+            }
+            
+            html += '</div>';
             
             return html;
         }
-
-        window.completarEducacionAsignada = function(id) {
-            var evidencia = document.getElementById('evidencia_' + id) ? document.getElementById('evidencia_' + id).value : '';
-            if (!evidencia) {
-                showToast('Por favor, describa la evidencia de la educación', 'warning');
-                return;
-            }
-            
-            if (completarEducacion(id, evidencia)) {
-                renderEducacionPendiente();
-            }
-        };
 
         function renderEducacionPendiente() {
             var div = document.getElementById('dynamicContent');
@@ -2974,7 +3067,6 @@
                 return '<option value="' + p.id + '">' + p.name + ' (' + p.role + ')</option>';
             }).join('');
             
-            var asignaciones = loadEducacionAsignada();
             var html = '<div class="card">' +
                 '<div class="card-title">📋 Asignar Educación al Paciente</div>' +
                 '<div class="grid-2">' +
@@ -3048,13 +3140,13 @@
                         '<span class="' + estadoClass + '">' + estadoText + '</span>' +
                         (e.fecha_completado ? '<br><strong>Completado:</strong> ' + new Date(e.fecha_completado).toLocaleString() : '') +
                         (e.evidencia ? '<br><strong>Evidencia:</strong> ' + e.evidencia : '') +
+                        (e.evidencia_foto ? '<br><span class="text-muted" style="font-size:0.7rem;">📸 Con evidencia fotográfica</span>' : '') +
                         '</div>';
                 }).join('');
             }
         }
 
         function cargarListaPacientesYUsuarios() {
-            // Recargar selects de asignación
             var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
             var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
             var profesionales = usuarios.filter(function(u) { return u.role === 'AUXILIAR' || u.role === 'ENFERMERO'; });
