@@ -494,3 +494,24 @@ app.delete('/api/patients/:id', auth.protect, auth.authorize('ADMIN'), patients.
 
 // PUT /api/patients/:id/reactivate - Reactivar paciente (SOLO ADMIN)
 app.put('/api/patients/:id/reactivate', auth.protect, auth.authorize('ADMIN'), patients.reactivatePatient);
+// Importar education
+const education = require('./routes/education');
+
+// ============================================================
+//  RUTAS: TEMAS DE EDUCACIÓN (PROTEGIDAS)
+// ============================================================
+
+// GET /api/education - Listar temas (autenticación requerida)
+app.get('/api/education', auth.protect, education.getTopics);
+
+// GET /api/education/:id - Obtener tema específico (autenticación requerida)
+app.get('/api/education/:id', auth.protect, education.getTopicById);
+
+// POST /api/education - Crear tema (SOLO ADMIN)
+app.post('/api/education', auth.protect, auth.authorize('ADMIN'), education.createTopic);
+
+// PUT /api/education/:id - Actualizar tema (SOLO ADMIN)
+app.put('/api/education/:id', auth.protect, auth.authorize('ADMIN'), education.updateTopic);
+
+// DELETE /api/education/:id - Eliminar tema (SOLO ADMIN)
+app.delete('/api/education/:id', auth.protect, auth.authorize('ADMIN'), education.deleteTopic);
