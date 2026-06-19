@@ -1,2 +1,34 @@
+# Dependencias
 node_modules/
+package-lock.json
+yarn.lock
+
+# Variables de entorno
 .env
+.env.local
+.env.*.local
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+*.log
+*.pid
+*.pid.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build
+dist/
+build/
+coverage/
+.nyc_output/
+
+# Base de datos local
+*.sqlite
+*.db
+*.sqlite3
