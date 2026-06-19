@@ -542,3 +542,24 @@ app.get('/api/shifts/professional/:professionalId', auth.protect, shifts.getShif
 
 // GET /api/shifts/patient/:patientId - Turnos por paciente (autenticación requerida)
 app.get('/api/shifts/patient/:patientId', auth.protect, shifts.getShiftsByPatient);
+// Importar reports
+const reports = require('./routes/reports');
+
+// ============================================================
+//  RUTAS: REPORTES (PROTEGIDAS)
+// ============================================================
+
+// GET /api/reports/global - Reporte global (SOLO ADMIN y COORDINADOR)
+app.get('/api/reports/global', auth.protect, auth.authorize('ADMIN', 'COORDINADOR'), reports.getGlobalReports);
+
+// GET /api/reports/coverage - Reporte de cobertura (SOLO ADMIN y COORDINADOR)
+app.get('/api/reports/coverage', auth.protect, auth.authorize('ADMIN', 'COORDINADOR'), reports.getCoverageReport);
+
+// GET /api/reports/professional/:professionalId - Reporte por profesional (autenticación requerida)
+app.get('/api/reports/professional/:professionalId', auth.protect, reports.getProfessionalReport);
+
+// GET /api/reports/patient/:patientId - Reporte por paciente (autenticación requerida)
+app.get('/api/reports/patient/:patientId', auth.protect, reports.getPatientReport);
+
+// GET /api/reports/activities - Reporte de actividades por fecha (autenticación requerida)
+app.get('/api/reports/activities', auth.protect, reports.getActivityReport);
