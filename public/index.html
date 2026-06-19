@@ -250,6 +250,15 @@
             width: auto;
         }
         
+        .btn-success {
+            background: #22c55e;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #16a34a;
+        }
+        
         /* ==================== GRIDS ==================== */
         .grid-2 {
             display: grid;
@@ -547,6 +556,25 @@
             color: #22c55e;
         }
         
+        /* ==================== EDUCACIÓN ASIGNADA ==================== */
+        .educacion-asignada {
+            background: #0f172a;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            border-left: 3px solid #f97316;
+        }
+        
+        .educacion-asignada .estado-pendiente {
+            color: #f97316;
+            font-weight: 600;
+        }
+        
+        .educacion-asignada .estado-completado {
+            color: #22c55e;
+            font-weight: 600;
+        }
+        
         /* ==================== RESPONSIVE ==================== */
         @media (max-width: 480px) {
             body { padding: 8px; }
@@ -601,7 +629,6 @@
     <!-- ==================== HEADER ==================== -->
     <header class="header">
         <div class="logo-area">
-            <!-- LOGO VITAL HOGAR - IMAGEN DESDE GOOGLE DRIVE -->
             <img id="logoPreview" src="https://drive.google.com/thumbnail?id=1FA7SjXi_e8Xqd562_dgNJhd0NBMw4479&sz=w1000" alt="Vital Hogar Pro IPS" style="height:50px; width:auto; border-radius:8px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 60%22%3E%3Crect width=%22200%22 height=%2260%22 rx=%2210%22 fill=%22%231e293b%22/%3E%3Ctext x=%2215%22 y=%2238%22 font-size=%2222%22 font-weight=%22bold%22 fill=%22%2322c55e%22%3EVITAL%3C/text%3E%3Ctext x=%2295%22 y=%2238%22 font-size=%2222%22 font-weight=%22bold%22 fill=%22%23ffffff%22%3EHOGAR%3C/text%3E%3Ctext x=%22175%22 y=%2238%22 font-size=%2210%22 fill=%22%2394a3b8%22%3E®%3C/text%3E%3C/svg%3E'">
             <div>
                 <h1>VITAL HOGAR PRO IPS</h1>
@@ -660,6 +687,8 @@
         //  CONFIGURACIÓN
         // ============================================================
         const API_URL = 'https://vital-backend-1-y4kt.onrender.com';
+        const LOGO_URL = 'https://drive.google.com/thumbnail?id=1FA7SjXi_e8Xqd562_dgNJhd0NBMw4479&sz=w1000';
+        const LOGO_SVG_FALLBACK = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 60%22%3E%3Crect width=%22200%22 height=%2260%22 rx=%2210%22 fill=%22%231e293b%22/%3E%3Ctext x=%2215%22 y=%2238%22 font-size=%2222%22 font-weight=%22bold%22 fill=%22%2322c55e%22%3EVITAL%3C/text%3E%3Ctext x=%2295%22 y=%2238%22 font-size=%2222%22 font-weight=%22bold%22 fill=%22%23ffffff%22%3EHOGAR%3C/text%3E%3Ctext x=%22175%22 y=%2238%22 font-size=%2210%22 fill=%22%2394a3b8%22%3E®%3C/text%3E%3C/svg%3E';
         
         // Estado global
         let currentUser = null;
@@ -724,7 +753,7 @@
         }
 
         // ============================================================
-        //  DICTADO POR VOZ (CORREGIDO - FUNCIONA EN TODOS LOS CAMPOS)
+        //  DICTADO POR VOZ
         // ============================================================
         function iniciarDictado(targetId) {
             if (!('webkitSpeechRecognition' in window)) {
@@ -970,6 +999,87 @@
             } catch (e) {
                 console.warn('API pacientes no disponible');
             }
+            
+            // Cargar educación asignada
+            loadEducacionAsignada();
+        }
+
+        // ============================================================
+        //  EDUCACIÓN ASIGNADA
+        // ============================================================
+        function loadEducacionAsignada() {
+            var asignadas = JSON.parse(localStorage.getItem('vital_educacion_asignada') || '[]');
+            return asignadas;
+        }
+
+        function saveEducacionAsignada(asignadas) {
+            localStorage.setItem('vital_educacion_asignada', JSON.stringify(asignadas));
+        }
+
+        function asignarEducacion(temaId, pacienteId, profesionalId) {
+            var asignadas = loadEducacionAsignada();
+            var tema = educationTopics.find(function(t) { return t.id === temaId; });
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var paciente = pacientes.find(function(p) { return p.id === pacienteId; });
+            var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
+            var profesional = usuarios.find(function(u) { return u.id === profesionalId; });
+            
+            if (!tema || !paciente || !profesional) {
+                showToast('❌ Datos incompletos para asignar', 'error');
+                return false;
+            }
+            
+            asignadas.push({
+                id: 'ea' + Date.now(),
+                tema_id: temaId,
+                tema_titulo: tema.title,
+                tema_descripcion: tema.description,
+                paciente_id: pacienteId,
+                paciente_nombre: paciente.name,
+                profesional_id: profesionalId,
+                profesional_nombre: profesional.name,
+                asignado_por: currentUser ? currentUser.id : 'admin',
+                asignado_por_nombre: currentUser ? currentUser.name : 'Administrador',
+                fecha_asignacion: new Date().toISOString(),
+                estado: 'PENDIENTE',
+                fecha_completado: null,
+                evidencia: null
+            });
+            
+            saveEducacionAsignada(asignadas);
+            showToast('✅ Educación asignada correctamente', 'success');
+            return true;
+        }
+
+        function completarEducacion(id, evidencia) {
+            var asignadas = loadEducacionAsignada();
+            var index = asignadas.findIndex(function(a) { return a.id === id; });
+            if (index === -1) {
+                showToast('❌ Educación no encontrada', 'error');
+                return false;
+            }
+            
+            asignadas[index].estado = 'COMPLETADO';
+            asignadas[index].fecha_completado = new Date().toISOString();
+            asignadas[index].evidencia = evidencia || 'Sin evidencia';
+            
+            saveEducacionAsignada(asignadas);
+            showToast('✅ Educación completada', 'success');
+            return true;
+        }
+
+        function getEducacionPendiente(profesionalId) {
+            var asignadas = loadEducacionAsignada();
+            return asignadas.filter(function(a) {
+                return a.profesional_id === profesionalId && a.estado === 'PENDIENTE';
+            });
+        }
+
+        function getEducacionCompletada(profesionalId) {
+            var asignadas = loadEducacionAsignada();
+            return asignadas.filter(function(a) {
+                return a.profesional_id === profesionalId && a.estado === 'COMPLETADO';
+            });
         }
 
         // ============================================================
@@ -1041,6 +1151,12 @@
             if (select) {
                 select.innerHTML = getEducationTopicsForSelect();
             }
+            
+            // Actualizar selects de asignación
+            var selectAsignar = document.getElementById('asignarTemaSelect');
+            if (selectAsignar) {
+                selectAsignar.innerHTML = getEducationTopicsForSelect();
+            }
         }
 
         function getEducationTopicsForSelect() {
@@ -1048,7 +1164,7 @@
                 return '<option value="">-- Sin temas disponibles --</option>';
             }
             return educationTopics.map(function(t) {
-                return '<option value="' + t.title + '">' + t.title + '</option>';
+                return '<option value="' + t.id + '">' + t.title + '</option>';
             }).join('');
         }
 
@@ -1135,7 +1251,7 @@
         };
 
         // ============================================================
-        //  CALCULAR IMC (CORREGIDO - talla en metros)
+        //  CALCULAR IMC
         // ============================================================
         window.calcularIMC = function() {
             var peso = parseFloat(document.getElementById('pesoNutri') ? document.getElementById('pesoNutri').value : null);
@@ -1143,7 +1259,6 @@
             var imcDisplay = document.getElementById('imcDisplay');
             
             if (imcDisplay && peso && tallaCm && tallaCm > 0) {
-                // ✅ CORRECCIÓN: Convertir cm a metros
                 var tallaM = tallaCm / 100;
                 var imc = peso / (tallaM * tallaM);
                 imcDisplay.textContent = 'IMC: ' + imc.toFixed(1) + ' kg/m²';
@@ -1164,6 +1279,962 @@
         };
 
         // ============================================================
+        //  FUNCIONES DE FIRMAS PARA PDF
+        // ============================================================
+        function getSignatureData(canvasId) {
+            var canvas = document.getElementById(canvasId);
+            if (!canvas) return null;
+            
+            try {
+                var ctx = canvas.getContext('2d');
+                var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                var data = imageData.data;
+                
+                // Verificar si hay algo dibujado
+                var hasDrawing = false;
+                for (var i = 0; i < data.length; i += 4) {
+                    if (data[i] < 240 || data[i+1] < 240 || data[i+2] < 240) {
+                        hasDrawing = true;
+                        break;
+                    }
+                }
+                
+                if (!hasDrawing) return null;
+                
+                return canvas.toDataURL('image/png');
+            } catch (e) {
+                console.warn('Error capturando firma:', canvasId, e);
+                return null;
+            }
+        }
+
+        function addSignatureToPDF(doc, canvasId, label, x, y, width, height) {
+            var signatureData = getSignatureData(canvasId);
+            if (signatureData) {
+                doc.text(label, x, y);
+                try {
+                    doc.addImage(signatureData, 'PNG', x + 80, y - 5, width || 60, height || 25);
+                    return 30;
+                } catch (e) {
+                    doc.text('___________________', x + 80, y + 5);
+                    return 20;
+                }
+            }
+            return 0;
+        }
+
+        // ============================================================
+        //  FUNCIONES DE REPORTES POR ROL
+        // ============================================================
+        function generarReportePorRol() {
+            switch (currentRole) {
+                case 'AUXILIAR':
+                    generarReporteAuxiliar();
+                    break;
+                case 'ENFERMERO':
+                    generarReporteEnfermero();
+                    break;
+                case 'MEDICO':
+                    generarReporteMedico();
+                    break;
+                case 'FISIOTERAPEUTA':
+                    generarReporteEspecialista('Fisioterapeuta');
+                    break;
+                case 'NUTRICIONISTA':
+                    generarReporteEspecialista('Nutricionista');
+                    break;
+                case 'PSICOLOGO':
+                    generarReporteEspecialista('Psicólogo');
+                    break;
+                case 'FONOAUDIOLOGO':
+                    generarReporteEspecialista('Fonoaudiólogo');
+                    break;
+                case 'TERAPEUTA_OCUPACIONAL':
+                    generarReporteEspecialista('Terapeuta Ocupacional');
+                    break;
+                case 'TERAPEUTA_RESPIRATORIO':
+                    generarReporteEspecialista('Terapeuta Respiratorio');
+                    break;
+                case 'COORDINADOR':
+                    generarReporteCoordinador();
+                    break;
+                case 'ADMIN':
+                    generarReporteAdmin();
+                    break;
+                default:
+                    showToast('⚠️ Rol no configurado para reportes', 'warning');
+            }
+        }
+
+        // ============================================================
+        //  REPORTE: AUXILIAR
+        // ============================================================
+        function generarReporteAuxiliar() {
+            var doc = new jsPDF();
+            var y = 25;
+            var marginY = 270;
+            
+            function checkPage() {
+                if (y > marginY) {
+                    doc.addPage();
+                    y = 20;
+                }
+            }
+            
+            function cleanText(text) {
+                if (!text) return '';
+                return String(text).trim();
+            }
+            
+            // Logo
+            try {
+                doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
+            } catch (e) {
+                try {
+                    doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
+                } catch (e2) {}
+            }
+            
+            doc.setFont('helvetica');
+            doc.setFontSize(16);
+            doc.text('VITAL HOGAR PRO IPS', 60, 25);
+            y = 45;
+            doc.setFontSize(10);
+            doc.text('Reporte de Auxiliar de Enfermería', 60, y);
+            y += 10;
+            doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
+            y += 8;
+            doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
+            y += 8;
+            doc.text('Rol: Auxiliar de Enfermería', 20, y);
+            y += 15;
+            
+            // 1. RECIBO
+            var recibos = getFromLocal('recibos');
+            if (recibos.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('1. RECIBO DEL PACIENTE', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                var ultimoRecibo = recibos[recibos.length - 1];
+                doc.text('Estado: ' + cleanText(ultimoRecibo.estado || 'No registrado'), 25, y);
+                y += 6;
+                doc.text('Quién entrega: ' + cleanText(ultimoRecibo.quienEntrega || 'No especificado'), 25, y);
+                y += 6;
+                doc.text('Hora: ' + cleanText(ultimoRecibo.timestamp ? new Date(ultimoRecibo.timestamp).toLocaleString() : 'No registrada'), 25, y);
+                y += 10;
+            }
+            
+            // 2. TURNO
+            var turnos = getFromLocal('turnos');
+            if (turnos.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('2. CONTROL DE TURNO', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                var ultimoTurno = turnos[turnos.length - 1];
+                doc.text('Entrada: ' + cleanText(ultimoTurno.entrada ? new Date(ultimoTurno.entrada).toLocaleTimeString() : 'No registrada'), 25, y);
+                y += 6;
+                doc.text('Salida: ' + cleanText(ultimoTurno.salida ? new Date(ultimoTurno.salida).toLocaleTimeString() : 'No registrada'), 25, y);
+                y += 6;
+                doc.text('Duración: ' + cleanText(ultimoTurno.duracion || 'No calculada'), 25, y);
+                y += 10;
+            }
+            
+            // 3. ACTIVIDADES
+            var actividades = getFromLocal('actividades');
+            if (actividades.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('3. ACTIVIDADES REALIZADAS', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                actividades.slice(-10).forEach(function(d, i) {
+                    checkPage();
+                    doc.text((i+1) + '. ' + cleanText(d.actividad || 'Actividad') + ' - ' + cleanText(d.hora || 'Sin hora'), 25, y);
+                    y += 6;
+                    if (d.observacion) {
+                        doc.text('   Obs: ' + cleanText(d.observacion).substring(0, 60), 30, y);
+                        y += 6;
+                    }
+                    if (d.educacion) {
+                        doc.text('   Educ: ' + cleanText(d.educacion).substring(0, 50), 30, y);
+                        y += 6;
+                    }
+                    if (d.novedad) {
+                        doc.text('   Nov: ' + cleanText(d.novedad).substring(0, 50), 30, y);
+                        y += 6;
+                    }
+                    y += 4;
+                });
+                y += 10;
+            }
+            
+            // 4. SIGNOS VITALES
+            var signos = getFromLocal('signos');
+            if (signos.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('4. SIGNOS VITALES', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                signos.slice(-10).forEach(function(d, i) {
+                    checkPage();
+                    doc.text((i+1) + '. SpO2:' + cleanText(d.spo2 || '-') + '% | FC:' + cleanText(d.fc || '-') + ' | FR:' + cleanText(d.fr || '-') + ' | Temp:' + cleanText(d.temp || '-') + '°C', 25, y);
+                    y += 6;
+                    if (d.bp) {
+                        doc.text('   TA: ' + cleanText(d.bp), 30, y);
+                        y += 6;
+                    }
+                    if (d.glucosa) {
+                        doc.text('   Glucosa: ' + cleanText(d.glucosa) + ' mg/dL', 30, y);
+                        y += 6;
+                    }
+                    if (d.braden) {
+                        doc.text('   Braden: ' + cleanText(d.braden), 30, y);
+                        y += 6;
+                    }
+                    if (d.alertas && d.alertas.length > 0) {
+                        doc.text('   Alertas: ' + d.alertas.join('; '), 30, y);
+                        y += 6;
+                    }
+                    y += 4;
+                });
+                y += 10;
+            }
+            
+            // 5. MEDICAMENTOS
+            var medicamentos = getFromLocal('medicamentos');
+            if (medicamentos.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('5. MEDICAMENTOS ADMINISTRADOS', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                medicamentos.slice(-10).forEach(function(d, i) {
+                    checkPage();
+                    doc.text((i+1) + '. ' + cleanText(d.nombre || 'Medicamento') + ' - ' + cleanText(d.dosis || 'Sin dosis') + ' - ' + cleanText(d.hora || 'Sin hora'), 25, y);
+                    y += 6;
+                    if (d.obs) {
+                        doc.text('   Obs: ' + cleanText(d.obs).substring(0, 50), 30, y);
+                        y += 6;
+                    }
+                    y += 4;
+                });
+                y += 10;
+            }
+            
+            // 6. ENTREGA
+            var entregas = getFromLocal('entregas');
+            if (entregas.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('6. ENTREGA DE TURNO', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                var ultima = entregas[entregas.length - 1];
+                if (ultima) {
+                    doc.text('Hora: ' + cleanText(ultima.horaEntrega || 'No registrada'), 25, y);
+                    y += 6;
+                    doc.text('Resumen: ' + cleanText(ultima.resumen).substring(0, 80) || 'Sin resumen', 25, y);
+                    y += 6;
+                    if (ultima.pendientes) {
+                        doc.text('Pendientes: ' + cleanText(ultima.pendientes).substring(0, 80), 25, y);
+                        y += 6;
+                    }
+                    if (ultima.sbar) {
+                        var s = ultima.sbar;
+                        y += 4;
+                        doc.text('SBAR:', 25, y);
+                        y += 6;
+                        if (s.situacion) { doc.text('S - ' + cleanText(s.situacion).substring(0, 40), 30, y);
+                            y += 6; }
+                        if (s.antecedentes) { doc.text('A - ' + cleanText(s.antecedentes).substring(0, 40), 30, y);
+                            y += 6; }
+                        if (s.evaluacion) { doc.text('B - ' + cleanText(s.evaluacion).substring(0, 40), 30, y);
+                            y += 6; }
+                        if (s.recomendacion) { doc.text('R - ' + cleanText(s.recomendacion).substring(0, 40), 30, y);
+                            y += 6; }
+                    }
+                    y += 10;
+                }
+            }
+            
+            // 7. FIRMAS
+            y += 10;
+            checkPage();
+            doc.setFontSize(12);
+            doc.text('7. FIRMAS', 20, y);
+            y += 12;
+            doc.setFontSize(10);
+            
+            // Firma del Auxiliar (quien ENTREGA)
+            var firmado = false;
+            var firmaEntrega = getSignatureData('sigEntrega');
+            if (firmaEntrega) {
+                doc.text('Firma del Auxiliar (ENTREGA):', 20, y);
+                try {
+                    doc.addImage(firmaEntrega, 'PNG', 130, y - 5, 60, 25);
+                    firmado = true;
+                } catch (e) {
+                    doc.text('___________________', 130, y + 5);
+                }
+                y += 30;
+                checkPage();
+            }
+            
+            // Firma del Familiar/Acudiente (quien RECIBE)
+            var firmaRecibe = getSignatureData('sigRecibe');
+            if (firmaRecibe) {
+                doc.text('Firma del Familiar/Acudiente (RECIBE):', 20, y);
+                try {
+                    doc.addImage(firmaRecibe, 'PNG', 130, y - 5, 60, 25);
+                    firmado = true;
+                } catch (e) {
+                    doc.text('___________________', 130, y + 5);
+                }
+                y += 30;
+                checkPage();
+            }
+            
+            // Firma de Recibo
+            var firmaRecibo = getSignatureData('sigRecibo');
+            if (firmaRecibo) {
+                doc.text('Firma de Recibo del Paciente:', 20, y);
+                try {
+                    doc.addImage(firmaRecibo, 'PNG', 130, y - 5, 60, 25);
+                    firmado = true;
+                } catch (e) {
+                    doc.text('___________________', 130, y + 5);
+                }
+                y += 30;
+                checkPage();
+            }
+            
+            if (!firmado) {
+                doc.text('No se registraron firmas en este turno', 20, y);
+                y += 10;
+            }
+            
+            doc.save('reporte_auxiliar_' + Date.now() + '.pdf');
+            showToast('📄 Reporte de Auxiliar generado con éxito', 'success');
+        }
+
+        // ============================================================
+        //  REPORTE: ENFERMERO
+        // ============================================================
+        function generarReporteEnfermero() {
+            var doc = new jsPDF();
+            var y = 25;
+            var marginY = 270;
+            
+            function checkPage() {
+                if (y > marginY) {
+                    doc.addPage();
+                    y = 20;
+                }
+            }
+            
+            function cleanText(text) {
+                if (!text) return '';
+                return String(text).trim();
+            }
+            
+            // Logo
+            try {
+                doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
+            } catch (e) {
+                try {
+                    doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
+                } catch (e2) {}
+            }
+            
+            doc.setFont('helvetica');
+            doc.setFontSize(16);
+            doc.text('VITAL HOGAR PRO IPS', 60, 25);
+            y = 45;
+            doc.setFontSize(10);
+            doc.text('Reporte de Enfermería', 60, y);
+            y += 10;
+            doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
+            y += 8;
+            doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
+            y += 8;
+            doc.text('Rol: Enfermero Jefe', 20, y);
+            y += 15;
+            
+            // 1. SUPERVISIÓN
+            var supervisiones = getFromLocal('supervisiones');
+            if (supervisiones.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('1. SUPERVISIÓN REALIZADA', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                supervisiones.slice(-10).forEach(function(d, i) {
+                    checkPage();
+                    doc.text((i+1) + '. ' + cleanText(d.descripcion || 'Supervisión'), 25, y);
+                    y += 6;
+                    if (d.observacion) {
+                        doc.text('   Obs: ' + cleanText(d.observacion).substring(0, 60), 30, y);
+                        y += 6;
+                    }
+                    y += 4;
+                });
+                y += 10;
+            }
+            
+            // 2. EVOLUCIONES
+            var evoluciones = getFromLocal('evoluciones');
+            if (evoluciones.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('2. EVOLUCIONES DE PACIENTES', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                evoluciones.slice(-10).forEach(function(d, i) {
+                    checkPage();
+                    doc.text((i+1) + '. Paciente: ' + cleanText(d.paciente || 'No especificado'), 25, y);
+                    y += 6;
+                    doc.text('   Notas: ' + cleanText(d.texto || 'Sin notas').substring(0, 60), 30, y);
+                    y += 6;
+                    doc.text('   Fecha: ' + cleanText(d.timestamp ? new Date(d.timestamp).toLocaleString() : 'No registrada'), 30, y);
+                    y += 4;
+                });
+                y += 10;
+            }
+            
+            // 3. FIRMAS
+            y += 10;
+            checkPage();
+            doc.setFontSize(12);
+            doc.text('3. FIRMAS', 20, y);
+            y += 12;
+            doc.setFontSize(10);
+            
+            var firmado = false;
+            
+            // Firma del Enfermero
+            var firmaProfesional = getSignatureData('sigProfesional');
+            if (firmaProfesional) {
+                doc.text('Firma del Enfermero:', 20, y);
+                try {
+                    doc.addImage(firmaProfesional, 'PNG', 130, y - 5, 60, 25);
+                    firmado = true;
+                } catch (e) {
+                    doc.text('___________________', 130, y + 5);
+                }
+                y += 30;
+                checkPage();
+            }
+            
+            // Firma del Paciente
+            var firmaPaciente = getSignatureData('sigPaciente');
+            if (firmaPaciente) {
+                doc.text('Firma del Paciente:', 20, y);
+                try {
+                    doc.addImage(firmaPaciente, 'PNG', 130, y - 5, 60, 25);
+                    firmado = true;
+                } catch (e) {
+                    doc.text('___________________', 130, y + 5);
+                }
+                y += 30;
+                checkPage();
+            }
+            
+            if (!firmado) {
+                doc.text('No se registraron firmas', 20, y);
+                y += 10;
+            }
+            
+            doc.save('reporte_enfermero_' + Date.now() + '.pdf');
+            showToast('📄 Reporte de Enfermero generado con éxito', 'success');
+        }
+
+        // ============================================================
+        //  REPORTE: MÉDICO
+        // ============================================================
+        function generarReporteMedico() {
+            var doc = new jsPDF();
+            var y = 25;
+            var marginY = 270;
+            
+            function checkPage() {
+                if (y > marginY) {
+                    doc.addPage();
+                    y = 20;
+                }
+            }
+            
+            function cleanText(text) {
+                if (!text) return '';
+                return String(text).trim();
+            }
+            
+            // Logo
+            try {
+                doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
+            } catch (e) {
+                try {
+                    doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
+                } catch (e2) {}
+            }
+            
+            doc.setFont('helvetica');
+            doc.setFontSize(16);
+            doc.text('VITAL HOGAR PRO IPS', 60, 25);
+            y = 45;
+            doc.setFontSize(10);
+            doc.text('Reporte Médico', 60, y);
+            y += 10;
+            doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
+            y += 8;
+            doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
+            y += 8;
+            doc.text('Rol: Médico', 20, y);
+            y += 15;
+            
+            // 1. PRESCRIPCIONES
+            var prescripciones = getFromLocal('prescripciones');
+            if (prescripciones.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('1. PRESCRIPCIONES MÉDICAS', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                prescripciones.slice(-10).forEach(function(d, i) {
+                    checkPage();
+                    doc.text((i+1) + '. Paciente: ' + cleanText(d.paciente || 'No especificado'), 25, y);
+                    y += 6;
+                    doc.text('   Medicamento: ' + cleanText(d.medicamento || 'No especificado'), 30, y);
+                    y += 6;
+                    doc.text('   Dosis: ' + cleanText(d.dosis || 'No especificada') + ' | Frecuencia: ' + cleanText(d.frecuencia || 'No especificada'), 30, y);
+                    y += 6;
+                    if (d.observaciones) {
+                        doc.text('   Obs: ' + cleanText(d.observaciones).substring(0, 60), 30, y);
+                        y += 6;
+                    }
+                    y += 4;
+                });
+                y += 10;
+            }
+            
+            // 2. FIRMAS
+            y += 10;
+            checkPage();
+            doc.setFontSize(12);
+            doc.text('2. FIRMAS', 20, y);
+            y += 12;
+            doc.setFontSize(10);
+            
+            var firmado = false;
+            
+            // Firma del Médico
+            var firmaProfesional = getSignatureData('sigProfesional');
+            if (firmaProfesional) {
+                doc.text('Firma del Médico:', 20, y);
+                try {
+                    doc.addImage(firmaProfesional, 'PNG', 130, y - 5, 60, 25);
+                    firmado = true;
+                } catch (e) {
+                    doc.text('___________________', 130, y + 5);
+                }
+                y += 30;
+                checkPage();
+            }
+            
+            // Firma del Paciente
+            var firmaPaciente = getSignatureData('sigPaciente');
+            if (firmaPaciente) {
+                doc.text('Firma del Paciente:', 20, y);
+                try {
+                    doc.addImage(firmaPaciente, 'PNG', 130, y - 5, 60, 25);
+                    firmado = true;
+                } catch (e) {
+                    doc.text('___________________', 130, y + 5);
+                }
+                y += 30;
+                checkPage();
+            }
+            
+            if (!firmado) {
+                doc.text('No se registraron firmas', 20, y);
+                y += 10;
+            }
+            
+            doc.save('reporte_medico_' + Date.now() + '.pdf');
+            showToast('📄 Reporte Médico generado con éxito', 'success');
+        }
+
+        // ============================================================
+        //  REPORTE: ESPECIALISTAS (Fisioterapeuta, Nutricionista, etc.)
+        // ============================================================
+        function generarReporteEspecialista(rol) {
+            var doc = new jsPDF();
+            var y = 25;
+            var marginY = 270;
+            var key = 'eval_' + rol.toLowerCase().replace(/ /g, '_');
+            
+            function checkPage() {
+                if (y > marginY) {
+                    doc.addPage();
+                    y = 20;
+                }
+            }
+            
+            function cleanText(text) {
+                if (!text) return '';
+                return String(text).trim();
+            }
+            
+            // Logo
+            try {
+                doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
+            } catch (e) {
+                try {
+                    doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
+                } catch (e2) {}
+            }
+            
+            doc.setFont('helvetica');
+            doc.setFontSize(16);
+            doc.text('VITAL HOGAR PRO IPS', 60, 25);
+            y = 45;
+            doc.setFontSize(10);
+            doc.text('Reporte de ' + rol, 60, y);
+            y += 10;
+            doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
+            y += 8;
+            doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
+            y += 8;
+            doc.text('Rol: ' + rol, 20, y);
+            y += 15;
+            
+            // 1. EVALUACIONES
+            var evaluaciones = getFromLocal(key);
+            if (evaluaciones.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('1. EVALUACIONES REALIZADAS', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                evaluaciones.slice(-10).forEach(function(d, i) {
+                    checkPage();
+                    doc.text((i+1) + '. Paciente: ' + cleanText(d.paciente || 'No especificado'), 25, y);
+                    y += 6;
+                    if (d.texto) {
+                        doc.text('   Observaciones: ' + cleanText(d.texto).substring(0, 60), 30, y);
+                        y += 6;
+                    }
+                    if (d.imc) {
+                        doc.text('   IMC: ' + cleanText(d.imc), 30, y);
+                        y += 6;
+                    }
+                    if (d.habitos) {
+                        doc.text('   Hábitos: ' + cleanText(d.habitos).substring(0, 50), 30, y);
+                        y += 6;
+                    }
+                    if (d.plan) {
+                        doc.text('   Plan: ' + cleanText(d.plan).substring(0, 50), 30, y);
+                        y += 6;
+                    }
+                    y += 4;
+                });
+                y += 10;
+            }
+            
+            // 2. FIRMAS
+            y += 10;
+            checkPage();
+            doc.setFontSize(12);
+            doc.text('2. FIRMAS', 20, y);
+            y += 12;
+            doc.setFontSize(10);
+            
+            var firmado = false;
+            
+            // Firma del Especialista
+            var firmaProfesional = getSignatureData('sigProfesional');
+            if (firmaProfesional) {
+                doc.text('Firma del ' + rol + ':', 20, y);
+                try {
+                    doc.addImage(firmaProfesional, 'PNG', 130, y - 5, 60, 25);
+                    firmado = true;
+                } catch (e) {
+                    doc.text('___________________', 130, y + 5);
+                }
+                y += 30;
+                checkPage();
+            }
+            
+            // Firma del Paciente
+            var firmaPaciente = getSignatureData('sigPaciente');
+            if (firmaPaciente) {
+                doc.text('Firma del Paciente:', 20, y);
+                try {
+                    doc.addImage(firmaPaciente, 'PNG', 130, y - 5, 60, 25);
+                    firmado = true;
+                } catch (e) {
+                    doc.text('___________________', 130, y + 5);
+                }
+                y += 30;
+                checkPage();
+            }
+            
+            if (!firmado) {
+                doc.text('No se registraron firmas', 20, y);
+                y += 10;
+            }
+            
+            doc.save('reporte_' + rol.toLowerCase().replace(/ /g, '_') + '_' + Date.now() + '.pdf');
+            showToast('📄 Reporte de ' + rol + ' generado con éxito', 'success');
+        }
+
+        // ============================================================
+        //  REPORTE: COORDINADOR
+        // ============================================================
+        function generarReporteCoordinador() {
+            var doc = new jsPDF();
+            var y = 25;
+            var marginY = 270;
+            
+            function checkPage() {
+                if (y > marginY) {
+                    doc.addPage();
+                    y = 20;
+                }
+            }
+            
+            function cleanText(text) {
+                if (!text) return '';
+                return String(text).trim();
+            }
+            
+            // Logo
+            try {
+                doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
+            } catch (e) {
+                try {
+                    doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
+                } catch (e2) {}
+            }
+            
+            doc.setFont('helvetica');
+            doc.setFontSize(16);
+            doc.text('VITAL HOGAR PRO IPS', 60, 25);
+            y = 45;
+            doc.setFontSize(10);
+            doc.text('Reporte de Coordinación', 60, y);
+            y += 10;
+            doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
+            y += 8;
+            doc.text('Profesional: ' + cleanText(currentUser?.name), 20, y);
+            y += 8;
+            doc.text('Rol: Coordinador', 20, y);
+            y += 15;
+            
+            // 1. TURNOS PROGRAMADOS
+            var turnosCoord = getFromLocal('turnosCoord');
+            if (turnosCoord.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('1. TURNOS PROGRAMADOS', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                turnosCoord.slice(-10).forEach(function(d, i) {
+                    checkPage();
+                    doc.text((i+1) + '. Paciente: ' + cleanText(d.paciente || 'No especificado'), 25, y);
+                    y += 6;
+                    doc.text('   Profesional: ' + cleanText(d.profesional || 'No especificado'), 30, y);
+                    y += 6;
+                    doc.text('   Fecha: ' + cleanText(d.fecha || 'No especificada') + ' | Turno: ' + cleanText(d.turno || 'No especificado'), 30, y);
+                    y += 6;
+                    doc.text('   Estado: ' + cleanText(d.estado || 'PENDIENTE'), 30, y);
+                    y += 4;
+                });
+                y += 10;
+            }
+            
+            // 2. COBERTURA 24h
+            checkPage();
+            doc.setFontSize(12);
+            doc.text('2. REPORTE DE COBERTURA 24h', 20, y);
+            y += 8;
+            doc.setFontSize(10);
+            var totalShifts = turnosCoord.length || 0;
+            var with24h = turnosCoord.filter(function(t) { return t.turno === '24h'; }).length || 0;
+            var with12h = turnosCoord.filter(function(t) { return t.turno === '12h'; }).length || 0;
+            var with8h = turnosCoord.filter(function(t) { return t.turno === '8h'; }).length || 0;
+            var with6h = turnosCoord.filter(function(t) { return t.turno === '6h'; }).length || 0;
+            var pending = turnosCoord.filter(function(t) { return t.estado === 'PENDIENTE'; }).length || 0;
+            var completed = turnosCoord.filter(function(t) { return t.estado === 'COMPLETADO'; }).length || 0;
+            
+            doc.text('Total de turnos: ' + totalShifts, 25, y);
+            y += 6;
+            doc.text('Cobertura 24h: ' + with24h + ' (' + (totalShifts > 0 ? Math.round((with24h/totalShifts)*100) : 0) + '%)', 25, y);
+            y += 6;
+            doc.text('Cobertura 12h: ' + with12h, 25, y);
+            y += 6;
+            doc.text('Cobertura 8h: ' + with8h, 25, y);
+            y += 6;
+            doc.text('Cobertura 6h: ' + with6h, 25, y);
+            y += 6;
+            doc.text('Pendientes: ' + pending, 25, y);
+            y += 6;
+            doc.text('Completados: ' + completed, 25, y);
+            y += 10;
+            
+            // 3. EDUCACIÓN ASIGNADA
+            var educacionAsignada = loadEducacionAsignada();
+            var pendientes = educacionAsignada.filter(function(e) { return e.estado === 'PENDIENTE'; });
+            var completados = educacionAsignada.filter(function(e) { return e.estado === 'COMPLETADO'; });
+            
+            if (educacionAsignada.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('3. EDUCACIÓN ASIGNADA', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                doc.text('Total asignaciones: ' + educacionAsignada.length, 25, y);
+                y += 6;
+                doc.text('Pendientes: ' + pendientes.length, 25, y);
+                y += 6;
+                doc.text('Completados: ' + completados.length, 25, y);
+                y += 6;
+                
+                if (pendientes.length > 0) {
+                    doc.text('Temas pendientes:', 25, y);
+                    y += 6;
+                    pendientes.forEach(function(e, i) {
+                        checkPage();
+                        doc.text((i+1) + '. ' + cleanText(e.tema_titulo || 'Sin título') + ' - ' + cleanText(e.paciente_nombre || 'Sin paciente'), 30, y);
+                        y += 6;
+                    });
+                    y += 4;
+                }
+                y += 10;
+            }
+            
+            doc.save('reporte_coordinador_' + Date.now() + '.pdf');
+            showToast('📄 Reporte de Coordinador generado con éxito', 'success');
+        }
+
+        // ============================================================
+        //  REPORTE: ADMIN
+        // ============================================================
+        function generarReporteAdmin() {
+            var doc = new jsPDF();
+            var y = 25;
+            var marginY = 270;
+            
+            function checkPage() {
+                if (y > marginY) {
+                    doc.addPage();
+                    y = 20;
+                }
+            }
+            
+            function cleanText(text) {
+                if (!text) return '';
+                return String(text).trim();
+            }
+            
+            // Logo
+            try {
+                doc.addImage(LOGO_URL, 'JPEG', 20, 10, 30, 30);
+            } catch (e) {
+                try {
+                    doc.addImage(LOGO_SVG_FALLBACK, 'PNG', 20, 10, 30, 30);
+                } catch (e2) {}
+            }
+            
+            doc.setFont('helvetica');
+            doc.setFontSize(16);
+            doc.text('VITAL HOGAR PRO IPS', 60, 25);
+            y = 45;
+            doc.setFontSize(10);
+            doc.text('Reporte Administrativo', 60, y);
+            y += 10;
+            doc.text('Fecha: ' + new Date().toLocaleString(), 20, y);
+            y += 8;
+            doc.text('Administrador: ' + cleanText(currentUser?.name), 20, y);
+            y += 15;
+            
+            // 1. ESTADÍSTICAS GLOBALES
+            var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var educationTopics = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
+            var educacionAsignada = loadEducacionAsignada();
+            
+            checkPage();
+            doc.setFontSize(12);
+            doc.text('1. ESTADÍSTICAS GLOBALES', 20, y);
+            y += 8;
+            doc.setFontSize(10);
+            doc.text('Total de usuarios: ' + usuarios.length, 25, y);
+            y += 6;
+            doc.text('Total de pacientes: ' + pacientes.length, 25, y);
+            y += 6;
+            doc.text('Total de temas de educación: ' + educationTopics.length, 25, y);
+            y += 6;
+            doc.text('Total de asignaciones educativas: ' + educacionAsignada.length, 25, y);
+            y += 6;
+            var completados = educacionAsignada.filter(function(e) { return e.estado === 'COMPLETADO'; }).length;
+            doc.text('Educación completada: ' + completados, 25, y);
+            y += 6;
+            var pendientes = educacionAsignada.filter(function(e) { return e.estado === 'PENDIENTE'; }).length;
+            doc.text('Educación pendiente: ' + pendientes, 25, y);
+            y += 10;
+            
+            // 2. USUARIOS POR ROL
+            checkPage();
+            doc.setFontSize(12);
+            doc.text('2. USUARIOS POR ROL', 20, y);
+            y += 8;
+            doc.setFontSize(10);
+            var roles = {};
+            usuarios.forEach(function(u) {
+                roles[u.role] = (roles[u.role] || 0) + 1;
+            });
+            for (var role in roles) {
+                doc.text(role + ': ' + roles[role], 25, y);
+                y += 6;
+            }
+            y += 10;
+            
+            // 3. EDUCACIÓN ASIGNADA DETALLADA
+            if (educacionAsignada.length > 0) {
+                checkPage();
+                doc.setFontSize(12);
+                doc.text('3. DETALLE DE EDUCACIÓN ASIGNADA', 20, y);
+                y += 8;
+                doc.setFontSize(10);
+                educacionAsignada.slice(-10).forEach(function(e, i) {
+                    checkPage();
+                    doc.text((i+1) + '. Tema: ' + cleanText(e.tema_titulo || 'Sin título'), 25, y);
+                    y += 6;
+                    doc.text('   Paciente: ' + cleanText(e.paciente_nombre || 'Sin paciente'), 30, y);
+                    y += 6;
+                    doc.text('   Asignado a: ' + cleanText(e.profesional_nombre || 'Sin profesional'), 30, y);
+                    y += 6;
+                    doc.text('   Estado: ' + (e.estado === 'COMPLETADO' ? '✅ COMPLETADO' : '⏳ PENDIENTE'), 30, y);
+                    y += 6;
+                    if (e.fecha_completado) {
+                        doc.text('   Completado: ' + cleanText(new Date(e.fecha_completado).toLocaleString()), 30, y);
+                        y += 6;
+                    }
+                    y += 4;
+                });
+                y += 10;
+            }
+            
+            doc.save('reporte_admin_' + Date.now() + '.pdf');
+            showToast('📄 Reporte Administrativo generado con éxito', 'success');
+        }
+
+        // ============================================================
         //  CONSTRUIR TABS
         // ============================================================
         function buildTabs() {
@@ -1179,6 +2250,7 @@
                         { id: 'signos', name: '🩺 Signos' },
                         { id: 'medicamentos', name: '💊 Medicamentos' },
                         { id: 'entrega', name: '🔄 Entrega' },
+                        { id: 'educacionPendiente', name: '📚 Educación' },
                         { id: 'reportes', name: '📄 Reportes' }
                     ];
                     break;
@@ -1188,6 +2260,7 @@
                         { id: 'usuarios', name: '👥 Usuarios' },
                         { id: 'pacientes', name: '🏥 Pacientes' },
                         { id: 'educationTopics', name: '📚 Temas Educación' },
+                        { id: 'asignarEducacion', name: '📋 Asignar Educación' },
                         { id: 'reportesGlobales', name: '📊 Reportes' }
                     ];
                     break;
@@ -1252,6 +2325,7 @@
                 case 'COORDINADOR':
                     tabs = [
                         { id: 'turnosCoord', name: '📅 Turnos' },
+                        { id: 'asignarEducacion', name: '📋 Asignar Educación' },
                         { id: 'reportes', name: '📄 Reportes' }
                     ];
                     break;
@@ -1300,6 +2374,8 @@
                 case 'usuarios': contentDiv.innerHTML = getUsuariosContent(); break;
                 case 'pacientes': contentDiv.innerHTML = getPacientesContent(); break;
                 case 'educationTopics': contentDiv.innerHTML = getEducationTopicsContent(); break;
+                case 'asignarEducacion': contentDiv.innerHTML = getAsignarEducacionContent(); break;
+                case 'educacionPendiente': contentDiv.innerHTML = getEducacionPendienteContent(); break;
                 case 'reportesGlobales': contentDiv.innerHTML = getReportesGlobalesContent(); break;
                 case 'supervision': contentDiv.innerHTML = getSupervisionContent(); break;
                 case 'evolucion': contentDiv.innerHTML = getEvolucionContent(); break;
@@ -1330,6 +2406,8 @@
                 if (tabId === 'usuarios') renderUsuarios();
                 if (tabId === 'pacientes') renderPacientes();
                 if (tabId === 'educationTopics') cargarListaTemas();
+                if (tabId === 'asignarEducacion') cargarListaPacientesYUsuarios();
+                if (tabId === 'educacionPendiente') renderEducacionPendiente();
                 if (tabId === 'evalNutri') cargarLista('evalNutri', 'historialEvalNutri');
             }, 500);
         }
@@ -1799,201 +2877,207 @@
         //  CONTENIDO: REPORTES
         // ============================================================
         function getReportesContent() {
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var options = pacientes.map(function(p) {
+                return '<option value="' + p.id + '">' + p.name + '</option>';
+            }).join('');
+            
             return '<div class="card">' +
-                '<div class="card-title">📄 Reporte del Turno</div>' +
+                '<div class="card-title">📄 Generar Reporte por Rol</div>' +
                 '<div class="form-group">' +
-                '<label>Paciente</label>' +
+                '<label>👤 Paciente</label>' +
                 '<select id="reportePaciente">' +
-                '<option>Maria Gonzalez</option>' +
-                '<option>Pedro Ramirez</option>' +
+                '<option value="">-- Seleccionar paciente --</option>' +
+                options +
                 '</select>' +
                 '</div>' +
-                '<button class="btn btn-primary" onclick="generarReportePDF()">📥 Generar Reporte Completo</button>' +
+                '<div class="tip-box"><strong>📌 NOTA:</strong> El reporte se generará según tu rol y las firmas correspondientes.</div>' +
+                '<button class="btn btn-primary" onclick="generarReportePorRol()">📥 Generar Reporte</button>' +
                 '</div>';
         }
 
         // ============================================================
-        //  GENERAR PDF
+        //  CONTENIDO: EDUCACIÓN PENDIENTE (AUXILIAR)
         // ============================================================
-        window.generarReportePDF = function() {
-            showToast('📄 Reporte generado', 'success');
-        };
-
-        // ============================================================
-        //  EVALUACIÓN ESPECIALISTA (CON DICTADO EN TODOS LOS CAMPOS)
-        // ============================================================
-        function getEvaluacionEspecialista(rol) {
-            var campos = '';
+        function getEducacionPendienteContent() {
+            var educacion = loadEducacionAsignada();
+            var pendientes = educacion.filter(function(e) {
+                return e.profesional_id === currentUser.id && e.estado === 'PENDIENTE';
+            });
             
-            if (rol === 'Fisioterapeuta') {
-                campos = '<div class="grid-2">' +
-                    '<div class="form-group"><label>🦵 Rango de movimiento</label><input type="text" id="rangoMovimiento" placeholder="Ej: 0-120°"></div>' +
-                    '<div class="form-group"><label>💪 Fuerza muscular (1-5)</label><input type="number" id="fuerzaMuscular" min="1" max="5"></div>' +
-                    '<div class="form-group"><label>⚖️ Equilibrio</label><select id="equilibrio"><option>Normal</option><option>Disminuido</option><option>Alterado</option></select></div>' +
-                    '<div class="form-group"><label>📝 Plan de ejercicios</label><textarea id="planEjercicios" rows="2" placeholder="Plan de ejercicios..."></textarea>' +
-                    '<button class="btn-voice" onclick="iniciarDictado(\'planEjercicios\')">🎙️ Dictar</button></div>' +
-                    '</div>';
-            } else if (rol === 'Psicólogo') {
-                campos = '<div class="grid-2">' +
-                    '<div class="form-group"><label>😔 Depresión</label><select id="depresion"><option>Leve</option><option>Moderada</option><option>Grave</option></select></div>' +
-                    '<div class="form-group"><label>😰 Ansiedad</label><select id="ansiedad"><option>Leve</option><option>Moderada</option><option>Grave</option></select></div>' +
-                    '<div class="form-group"><label>🧭 Orientación</label><select id="orientacion"><option>Bien orientado</option><option>Desorientado</option><option>Confuso</option></select></div>' +
-                    '<div class="form-group"><label>📝 Plan terapéutico</label><textarea id="planTerapeutico" rows="2" placeholder="Plan terapéutico..."></textarea>' +
-                    '<button class="btn-voice" onclick="iniciarDictado(\'planTerapeutico\')">🎙️ Dictar</button></div>' +
-                    '</div>';
-            } else if (rol === 'Fonoaudiólogo') {
-                campos = '<div class="grid-2">' +
-                    '<div class="form-group"><label>🗣️ Comprensión</label><select id="comprension"><option>Normal</option><option>Disminuida</option><option>Alterada</option></select></div>' +
-                    '<div class="form-group"><label>🗣️ Expresión</label><select id="expresion"><option>Normal</option><option>Disminuida</option><option>Alterada</option></select></div>' +
-                    '<div class="form-group"><label>🍽️ Deglución</label><select id="deglucion"><option>Normal</option><option>Disminuida</option><option>Alterada</option></select></div>' +
-                    '<div class="form-group"><label>📝 Plan de terapia</label><textarea id="planTerapia" rows="2" placeholder="Plan de terapia..."></textarea>' +
-                    '<button class="btn-voice" onclick="iniciarDictado(\'planTerapia\')">🎙️ Dictar</button></div>' +
-                    '</div>';
-            } else if (rol === 'Terapeuta Ocupacional') {
-                campos = '<div class="grid-2">' +
-                    '<div class="form-group"><label>👕 Vestirse</label><select id="vestirse"><option>Independiente</option><option>Asistido</option><option>Dependiente</option></select></div>' +
-                    '<div class="form-group"><label>🍽️ Comer</label><select id="comer"><option>Independiente</option><option>Asistido</option><option>Dependiente</option></select></div>' +
-                    '<div class="form-group"><label>🚿 Bañarse</label><select id="banarse"><option>Independiente</option><option>Asistido</option><option>Dependiente</option></select></div>' +
-                    '<div class="form-group"><label>🏠 Adaptaciones del hogar</label><textarea id="adaptaciones" rows="2" placeholder="Adaptaciones necesarias..."></textarea>' +
-                    '<button class="btn-voice" onclick="iniciarDictado(\'adaptaciones\')">🎙️ Dictar</button></div>' +
-                    '</div>';
-            } else if (rol === 'Terapeuta Respiratorio') {
-                campos = '<div class="grid-2">' +
-                    '<div class="form-group"><label>💨 Patrón respiratorio</label><select id="patronRespiratorio"><option>Normal</option><option>Taquipneico</option><option>Bradipneico</option></select></div>' +
-                    '<div class="form-group"><label>🫁 Oxígeno (lpm)</label><input type="number" id="oxigeno" step="0.5"></div>' +
-                    '<div class="form-group"><label>🫁 Secreciones</label><select id="secreciones"><option>Ausentes</option><option>Escasas</option><option>Abundantes</option></select></div>' +
-                    '<div class="form-group"><label>📋 Plan de tratamiento</label><textarea id="planTratamiento" rows="2" placeholder="Plan de tratamiento..."></textarea>' +
-                    '<button class="btn-voice" onclick="iniciarDictado(\'planTratamiento\')">🎙️ Dictar</button></div>' +
-                    '</div>';
+            var html = '<div class="card">' +
+                '<div class="card-title">📚 Educación Asignada</div>';
+            
+            if (pendientes.length === 0) {
+                html += '<p class="text-muted">No tienes educación pendiente por realizar.</p>';
             } else {
-                campos = '<div class="form-group"><label>📝 Notas</label><textarea id="evalText" rows="5"></textarea></div>';
+                html += '<div class="tip-box"><strong>⚠️ IMPORTANTE:</strong> Realiza la educación y marca como completada con evidencia.</div>';
+                pendientes.forEach(function(e) {
+                    html += '<div class="educacion-asignada">' +
+                        '<strong>Tema:</strong> ' + e.tema_titulo + '<br>' +
+                        '<strong>Descripción:</strong> ' + (e.tema_descripcion || 'Sin descripción') + '<br>' +
+                        '<strong>Paciente:</strong> ' + e.paciente_nombre + '<br>' +
+                        '<strong>Asignado por:</strong> ' + e.asignado_por_nombre + '<br>' +
+                        '<strong>Fecha:</strong> ' + new Date(e.fecha_asignacion).toLocaleString() + '<br>' +
+                        '<span class="estado-pendiente">⏳ PENDIENTE</span><br>' +
+                        '<div style="margin-top:8px;">' +
+                        '<label>📝 Evidencia:</label>' +
+                        '<input type="text" id="evidencia_' + e.id + '" placeholder="Describa la evidencia..." style="width:100%; margin-top:4px; background:#0f172a; border:1px solid #334155; border-radius:8px; padding:8px; color:white;">' +
+                        '<button class="btn-success btn-sm" style="margin-top:6px;" onclick="completarEducacionAsignada(\'' + e.id + '\')">✅ Marcar como Completada</button>' +
+                        '</div>' +
+                        '</div>';
+                });
             }
-
-            return '<div class="card">' +
-                '<div class="card-title">📝 Evaluación - ' + rol + '</div>' +
-                '<div class="form-group">' +
-                '<label>👤 Paciente</label>' +
-                '<select id="pacienteEval">' +
-                '<option>Maria Gonzalez</option>' +
-                '<option>Pedro Ramirez</option>' +
-                '</select>' +
-                '</div>' +
-                campos +
-                '<div class="form-group" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">' +
-                '<label>📝 Observaciones de la evaluación</label>' +
-                '<textarea id="evalText" rows="3" placeholder="Observaciones de la evaluación..."></textarea>' +
-                '<button class="btn-voice" onclick="iniciarDictado(\'evalText\')">🎙️ Dictar</button>' +
-                '</div>' +
-                '<div class="grid-2" style="margin-top:12px;">' +
-                '<div><label>✍️ Firma del Profesional</label><canvas id="sigProfesional" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas(\'sigProfesional\')">Borrar</button></div>' +
-                '<div><label>✍️ Firma del Paciente</label><canvas id="sigPaciente" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas(\'sigPaciente\')">Borrar</button></div>' +
-                '</div>' +
-                '<button class="btn btn-primary" style="margin-top:12px;" onclick="guardarEvaluacionEspecialista(\'' + rol + '\')">💾 Guardar Evaluación</button>' +
-                '</div>' +
+            
+            html += '</div>' +
                 '<div class="card">' +
-                '<div class="card-title">📋 Historial</div>' +
-                '<div id="historialEvalEspecialista"></div>' +
+                '<div class="card-title">📋 Educación Completada</div>' +
+                '<div id="educacionCompletada"></div>' +
                 '</div>';
+            
+            return html;
         }
 
-        window.guardarEvaluacionEspecialista = function(rol) {
-            var texto = document.getElementById('evalText') ? document.getElementById('evalText').value : '';
-            if (!texto) {
-                showToast('Ingrese las observaciones de la evaluación', 'error');
+        window.completarEducacionAsignada = function(id) {
+            var evidencia = document.getElementById('evidencia_' + id) ? document.getElementById('evidencia_' + id).value : '';
+            if (!evidencia) {
+                showToast('Por favor, describa la evidencia de la educación', 'warning');
                 return;
             }
             
-            var key = 'eval_' + rol.toLowerCase().replace(/ /g, '_');
-            saveToLocal(key, {
-                texto: texto,
-                rol: rol,
-                paciente: document.getElementById('pacienteEval') ? document.getElementById('pacienteEval').value : 'No especificado'
-            });
-            
-            document.getElementById('evalText').value = '';
-            cargarLista(key, 'historialEvalEspecialista');
-            showToast('✅ Evaluación guardada', 'success');
+            if (completarEducacion(id, evidencia)) {
+                renderEducacionPendiente();
+            }
         };
 
-        // ============================================================
-        //  EVALUACIÓN NUTRICIONISTA (CORREGIDA - IMC Y DICTADO)
-        // ============================================================
-        function getEvaluacionNutricionista() {
-            return '<div class="card">' +
-                '<div class="card-title">🥗 Evaluación Nutricional</div>' +
-                '<div class="form-group">' +
-                '<label>👤 Paciente</label>' +
-                '<select id="pacienteEvalNutri">' +
-                '<option>Maria Gonzalez</option>' +
-                '<option>Pedro Ramirez</option>' +
-                '</select>' +
-                '</div>' +
-                '<div class="grid-2">' +
-                '<div class="form-group">' +
-                '<label>⚖️ Peso (kg)</label>' +
-                '<input type="number" step="0.1" id="pesoNutri" oninput="calcularIMC()" placeholder="Ej: 70">' +
-                '</div>' +
-                '<div class="form-group">' +
-                '<label>📏 Talla (cm)</label>' +
-                '<input type="number" step="0.1" id="tallaNutri" oninput="calcularIMC()" placeholder="Ej: 175">' +
-                '</div>' +
-                '</div>' +
-                '<div class="form-group">' +
-                '<label>📊 IMC</label>' +
-                '<div id="imcDisplay" class="imc-display">IMC: --</div>' +
-                '</div>' +
-                '<div class="grid-2">' +
-                '<div class="form-group"><label>🥗 Hábitos alimenticios</label>' +
-                '<textarea id="habitosNutri" rows="2" placeholder="Describa los hábitos alimenticios..."></textarea>' +
-                '<button class="btn-voice" onclick="iniciarDictado(\'habitosNutri\')">🎙️ Dictar</button></div>' +
-                '<div class="form-group"><label>📋 Plan nutricional</label>' +
-                '<textarea id="planNutri" rows="2" placeholder="Plan nutricional recomendado..."></textarea>' +
-                '<button class="btn-voice" onclick="iniciarDictado(\'planNutri\')">🎙️ Dictar</button></div>' +
-                '</div>' +
-                '<div class="form-group" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">' +
-                '<label>📝 Observaciones de la evaluación</label>' +
-                '<textarea id="evalText" rows="3" placeholder="Observaciones de la evaluación nutricional..."></textarea>' +
-                '<button class="btn-voice" onclick="iniciarDictado(\'evalText\')">🎙️ Dictar</button>' +
-                '</div>' +
-                '<div class="grid-2" style="margin-top:12px;">' +
-                '<div><label>✍️ Firma del Profesional</label><canvas id="sigProfesional" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas(\'sigProfesional\')">Borrar</button></div>' +
-                '<div><label>✍️ Firma del Paciente</label><canvas id="sigPaciente" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas(\'sigPaciente\')">Borrar</button></div>' +
-                '</div>' +
-                '<button class="btn btn-primary" style="margin-top:12px;" onclick="guardarEvaluacionNutri()">💾 Guardar Evaluación</button>' +
-                '</div>' +
-                '<div class="card">' +
-                '<div class="card-title">📋 Historial</div>' +
-                '<div id="historialEvalNutri"></div>' +
-                '</div>';
+        function renderEducacionPendiente() {
+            var div = document.getElementById('dynamicContent');
+            if (div) {
+                div.innerHTML = getEducacionPendienteContent();
+                setTimeout(initSignatures, 300);
+            }
         }
 
-        window.guardarEvaluacionNutri = function() {
-            var texto = document.getElementById('evalText') ? document.getElementById('evalText').value : '';
-            if (!texto) {
-                showToast('Ingrese las observaciones de la evaluación', 'error');
+        // ============================================================
+        //  CONTENIDO: ASIGNAR EDUCACIÓN (ADMIN/COORDINADOR)
+        // ============================================================
+        function getAsignarEducacionContent() {
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
+            var profesionales = usuarios.filter(function(u) { return u.role === 'AUXILIAR' || u.role === 'ENFERMERO'; });
+            
+            var pacientesOptions = pacientes.map(function(p) {
+                return '<option value="' + p.id + '">' + p.name + '</option>';
+            }).join('');
+            
+            var profesionalesOptions = profesionales.map(function(p) {
+                return '<option value="' + p.id + '">' + p.name + ' (' + p.role + ')</option>';
+            }).join('');
+            
+            var asignaciones = loadEducacionAsignada();
+            var html = '<div class="card">' +
+                '<div class="card-title">📋 Asignar Educación al Paciente</div>' +
+                '<div class="grid-2">' +
+                '<div class="form-group">' +
+                '<label>📚 Tema de Educación</label>' +
+                '<select id="asignarTemaSelect">' +
+                '<option value="">-- Seleccionar tema --</option>' +
+                '</select>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>👤 Paciente</label>' +
+                '<select id="asignarPacienteSelect">' +
+                '<option value="">-- Seleccionar paciente --</option>' +
+                pacientesOptions +
+                '</select>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>👨‍⚕️ Profesional (Auxiliar/Enfermero)</label>' +
+                '<select id="asignarProfesionalSelect">' +
+                '<option value="">-- Seleccionar profesional --</option>' +
+                profesionalesOptions +
+                '</select>' +
+                '</div>' +
+                '</div>' +
+                '<button class="btn btn-primary" onclick="asignarEducacionHandler()">📤 Asignar Educación</button>' +
+                '</div>' +
+                '<div class="card">' +
+                '<div class="card-title">📋 Educación Asignada</div>' +
+                '<div id="listaAsignaciones"></div>' +
+                '</div>';
+            
+            return html;
+        }
+
+        window.asignarEducacionHandler = function() {
+            var temaId = document.getElementById('asignarTemaSelect').value;
+            var pacienteId = document.getElementById('asignarPacienteSelect').value;
+            var profesionalId = document.getElementById('asignarProfesionalSelect').value;
+            
+            if (!temaId || !pacienteId || !profesionalId) {
+                showToast('Seleccione tema, paciente y profesional', 'error');
                 return;
             }
             
-            var peso = document.getElementById('pesoNutri') ? document.getElementById('pesoNutri').value : '';
-            var talla = document.getElementById('tallaNutri') ? document.getElementById('tallaNutri').value : '';
-            var imcDisplay = document.getElementById('imcDisplay') ? document.getElementById('imcDisplay').textContent : 'IMC: --';
-            
-            saveToLocal('evalNutri', {
-                texto: texto,
-                peso: peso || 'No registrado',
-                talla: talla || 'No registrado',
-                imc: imcDisplay,
-                habitos: document.getElementById('habitosNutri') ? document.getElementById('habitosNutri').value : '',
-                plan: document.getElementById('planNutri') ? document.getElementById('planNutri').value : '',
-                paciente: document.getElementById('pacienteEvalNutri') ? document.getElementById('pacienteEvalNutri').value : 'No especificado'
-            });
-            
-            document.getElementById('evalText').value = '';
-            document.getElementById('habitosNutri').value = '';
-            document.getElementById('planNutri').value = '';
-            cargarLista('evalNutri', 'historialEvalNutri');
-            showToast('✅ Evaluación nutricional guardada', 'success');
+            if (asignarEducacion(temaId, pacienteId, profesionalId)) {
+                document.getElementById('asignarTemaSelect').value = '';
+                document.getElementById('asignarPacienteSelect').value = '';
+                document.getElementById('asignarProfesionalSelect').value = '';
+                cargarListaPacientesYUsuarios();
+                renderAsignaciones();
+            }
         };
+
+        function renderAsignaciones() {
+            var div = document.getElementById('listaAsignaciones');
+            if (!div) return;
+            
+            var asignaciones = loadEducacionAsignada();
+            if (asignaciones.length === 0) {
+                div.innerHTML = '<p class="text-muted">No hay educación asignada</p>';
+            } else {
+                div.innerHTML = asignaciones.map(function(e) {
+                    var estadoClass = e.estado === 'COMPLETADO' ? 'estado-completado' : 'estado-pendiente';
+                    var estadoText = e.estado === 'COMPLETADO' ? '✅ COMPLETADO' : '⏳ PENDIENTE';
+                    return '<div class="educacion-asignada">' +
+                        '<strong>Tema:</strong> ' + e.tema_titulo + '<br>' +
+                        '<strong>Paciente:</strong> ' + e.paciente_nombre + '<br>' +
+                        '<strong>Profesional:</strong> ' + e.profesional_nombre + '<br>' +
+                        '<strong>Asignado por:</strong> ' + e.asignado_por_nombre + '<br>' +
+                        '<strong>Fecha:</strong> ' + new Date(e.fecha_asignacion).toLocaleString() + '<br>' +
+                        '<span class="' + estadoClass + '">' + estadoText + '</span>' +
+                        (e.fecha_completado ? '<br><strong>Completado:</strong> ' + new Date(e.fecha_completado).toLocaleString() : '') +
+                        (e.evidencia ? '<br><strong>Evidencia:</strong> ' + e.evidencia : '') +
+                        '</div>';
+                }).join('');
+            }
+        }
+
+        function cargarListaPacientesYUsuarios() {
+            // Recargar selects de asignación
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
+            var profesionales = usuarios.filter(function(u) { return u.role === 'AUXILIAR' || u.role === 'ENFERMERO'; });
+            
+            var pacientesSelect = document.getElementById('asignarPacienteSelect');
+            if (pacientesSelect) {
+                pacientesSelect.innerHTML = '<option value="">-- Seleccionar paciente --</option>' +
+                    pacientes.map(function(p) { return '<option value="' + p.id + '">' + p.name + '</option>'; }).join('');
+            }
+            
+            var profesionalesSelect = document.getElementById('asignarProfesionalSelect');
+            if (profesionalesSelect) {
+                profesionalesSelect.innerHTML = '<option value="">-- Seleccionar profesional --</option>' +
+                    profesionales.map(function(p) { return '<option value="' + p.id + '">' + p.name + ' (' + p.role + ')</option>'; }).join('');
+            }
+            
+            var temaSelect = document.getElementById('asignarTemaSelect');
+            if (temaSelect) {
+                temaSelect.innerHTML = getEducationTopicsForSelect();
+            }
+            
+            renderAsignaciones();
+        }
 
         // ============================================================
         //  CONTENIDO: ADMIN - USUARIOS
@@ -2264,10 +3348,28 @@
                 totalMedicamentos += (data.medicamentos ? data.medicamentos.length : 0);
                 totalEntregas += (data.entregas ? data.entregas.length : 0);
             }
+            
+            var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var educacionAsignada = loadEducacionAsignada();
+            var completados = educacionAsignada.filter(function(e) { return e.estado === 'COMPLETADO'; }).length;
+            var pendientes = educacionAsignada.filter(function(e) { return e.estado === 'PENDIENTE'; }).length;
 
             return '<div class="card">' +
                 '<div class="card-title">📊 REPORTES GLOBALES</div>' +
                 '<div class="grid-3">' +
+                '<div class="card" style="background:#0f172a; text-align:center;">' +
+                '<strong>👥 Usuarios</strong><br>' +
+                '<span style="font-size:1.5rem; color:#22c55e;">' + usuarios.length + '</span>' +
+                '</div>' +
+                '<div class="card" style="background:#0f172a; text-align:center;">' +
+                '<strong>🏥 Pacientes</strong><br>' +
+                '<span style="font-size:1.5rem; color:#8b5cf6;">' + pacientes.length + '</span>' +
+                '</div>' +
+                '<div class="card" style="background:#0f172a; text-align:center;">' +
+                '<strong>📚 Temas Educación</strong><br>' +
+                '<span style="font-size:1.5rem; color:#f97316;">' + educationTopics.length + '</span>' +
+                '</div>' +
                 '<div class="card" style="background:#0f172a; text-align:center;">' +
                 '<strong>📝 Actividades</strong><br>' +
                 '<span style="font-size:1.5rem; color:#22c55e;">' + totalActividades + '</span>' +
@@ -2284,8 +3386,16 @@
                 '<strong>🔄 Entregas</strong><br>' +
                 '<span style="font-size:1.5rem; color:#ef4444;">' + totalEntregas + '</span>' +
                 '</div>' +
+                '<div class="card" style="background:#0f172a; text-align:center;">' +
+                '<strong>✅ Educación Completada</strong><br>' +
+                '<span style="font-size:1.5rem; color:#22c55e;">' + completados + '</span>' +
                 '</div>' +
-                '<button class="btn btn-primary" onclick="showToast(\'📄 Reporte global generado\')">📥 PDF Global</button>' +
+                '<div class="card" style="background:#0f172a; text-align:center;">' +
+                '<strong>⏳ Educación Pendiente</strong><br>' +
+                '<span style="font-size:1.5rem; color:#f97316;">' + pendientes + '</span>' +
+                '</div>' +
+                '</div>' +
+                '<button class="btn btn-primary" onclick="generarReporteAdmin()">📥 PDF Administrativo</button>' +
                 '</div>';
         }
 
@@ -2295,31 +3405,57 @@
         function getSupervisionContent() {
             return '<div class="card">' +
                 '<div class="card-title">📋 Supervisión de Auxiliares</div>' +
-                '<div class="grid-2">' +
-                '<div class="card" style="background:#0f172a; text-align:center;">' +
-                '<strong>👥 Auxiliares activos</strong><br>' +
-                '<span style="font-size:1.5rem; color:#22c55e;">3</span>' +
+                '<div class="form-group">' +
+                '<label>📝 Descripción de la supervisión</label>' +
+                '<textarea id="supervisionDesc" rows="3" placeholder="Describa la supervisión realizada..."></textarea>' +
+                '<button class="btn-voice" onclick="iniciarDictado(\'supervisionDesc\')">🎙️ Dictar</button>' +
                 '</div>' +
-                '<div class="card" style="background:#0f172a; text-align:center;">' +
-                '<strong>📅 Turnos hoy</strong><br>' +
-                '<span style="font-size:1.5rem; color:#8b5cf6;">5</span>' +
+                '<div class="form-group">' +
+                '<label>📝 Observaciones</label>' +
+                '<textarea id="supervisionObs" rows="2" placeholder="Observaciones adicionales..."></textarea>' +
+                '<button class="btn-voice" onclick="iniciarDictado(\'supervisionObs\')">🎙️ Dictar</button>' +
                 '</div>' +
+                '<button class="btn btn-primary" onclick="guardarSupervision()">💾 Guardar Supervisión</button>' +
                 '</div>' +
-                '<button class="btn btn-primary" onclick="showToast(\'📄 Reporte de supervisión generado\')">📄 Ver reporte</button>' +
+                '<div class="card">' +
+                '<div class="card-title">📋 Historial de Supervisiones</div>' +
+                '<div id="historialSupervisiones"></div>' +
                 '</div>';
         }
+
+        window.guardarSupervision = function() {
+            var descripcion = document.getElementById('supervisionDesc') ? document.getElementById('supervisionDesc').value : '';
+            var observacion = document.getElementById('supervisionObs') ? document.getElementById('supervisionObs').value : '';
+            if (!descripcion) {
+                showToast('Ingrese una descripción de la supervisión', 'error');
+                return;
+            }
+            saveToLocal('supervisiones', {
+                descripcion: descripcion,
+                observacion: observacion
+            });
+            document.getElementById('supervisionDesc').value = '';
+            document.getElementById('supervisionObs').value = '';
+            cargarLista('supervisiones', 'historialSupervisiones');
+            showToast('✅ Supervisión guardada', 'success');
+        };
 
         // ============================================================
         //  CONTENIDO: ENFERMERO - EVOLUCIÓN
         // ============================================================
         function getEvolucionContent() {
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var options = pacientes.map(function(p) {
+                return '<option value="' + p.id + '">' + p.name + '</option>';
+            }).join('');
+            
             return '<div class="card">' +
                 '<div class="card-title">📝 Evolución de Enfermería</div>' +
                 '<div class="form-group">' +
                 '<label>👤 Paciente</label>' +
                 '<select id="pacienteEvolucion">' +
-                '<option>Maria Gonzalez</option>' +
-                '<option>Pedro Ramirez</option>' +
+                '<option value="">-- Seleccionar paciente --</option>' +
+                options +
                 '</select>' +
                 '</div>' +
                 '<div class="form-group">' +
@@ -2337,15 +3473,19 @@
 
         window.guardarEvolucion = function() {
             var texto = document.getElementById('notasEvolucion') ? document.getElementById('notasEvolucion').value : '';
+            var paciente = document.getElementById('pacienteEvolucion') ? document.getElementById('pacienteEvolucion').value : '';
             if (!texto) {
                 showToast('Ingrese notas clínicas', 'error');
                 return;
             }
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var pacienteNombre = pacientes.find(function(p) { return p.id === paciente; });
             saveToLocal('evoluciones', {
                 texto: texto,
-                paciente: document.getElementById('pacienteEvolucion') ? document.getElementById('pacienteEvolucion').value : 'No especificado'
+                paciente: pacienteNombre ? pacienteNombre.name : 'No especificado'
             });
             document.getElementById('notasEvolucion').value = '';
+            document.getElementById('pacienteEvolucion').value = '';
             cargarLista('evoluciones', 'historialEvoluciones');
             showToast('✅ Evolución guardada', 'success');
         };
@@ -2354,13 +3494,18 @@
         //  CONTENIDO: EVALUACIÓN GENÉRICA
         // ============================================================
         function getEvaluacionGenerica() {
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var options = pacientes.map(function(p) {
+                return '<option value="' + p.id + '">' + p.name + '</option>';
+            }).join('');
+            
             return '<div class="card">' +
                 '<div class="card-title">📝 Registro de Evaluación</div>' +
                 '<div class="form-group">' +
                 '<label>👤 Paciente</label>' +
                 '<select id="pacienteEvalGenerica">' +
-                '<option>Maria Gonzalez</option>' +
-                '<option>Pedro Ramirez</option>' +
+                '<option value="">-- Seleccionar paciente --</option>' +
+                options +
                 '</select>' +
                 '</div>' +
                 '<div class="form-group">' +
@@ -2378,15 +3523,19 @@
 
         window.guardarEvaluacionGenerica = function() {
             var texto = document.getElementById('evalText') ? document.getElementById('evalText').value : '';
+            var paciente = document.getElementById('pacienteEvalGenerica') ? document.getElementById('pacienteEvalGenerica').value : '';
             if (!texto) {
                 showToast('Ingrese texto de la evaluación', 'error');
                 return;
             }
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var pacienteNombre = pacientes.find(function(p) { return p.id === paciente; });
             saveToLocal('evaluaciones', {
                 texto: texto,
-                paciente: document.getElementById('pacienteEvalGenerica') ? document.getElementById('pacienteEvalGenerica').value : 'No especificado'
+                paciente: pacienteNombre ? pacienteNombre.name : 'No especificado'
             });
             document.getElementById('evalText').value = '';
+            document.getElementById('pacienteEvalGenerica').value = '';
             cargarLista('evaluaciones', 'historialEvaluacion');
             showToast('✅ Evaluación guardada', 'success');
         };
@@ -2395,13 +3544,18 @@
         //  CONTENIDO: PRESCRIPCIONES
         // ============================================================
         function getPrescripcionesContent() {
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var options = pacientes.map(function(p) {
+                return '<option value="' + p.id + '">' + p.name + '</option>';
+            }).join('');
+            
             return '<div class="card">' +
                 '<div class="card-title">📋 Prescripciones Médicas</div>' +
                 '<div class="form-group">' +
                 '<label>👤 Paciente</label>' +
                 '<select id="pacientePrescripcion">' +
-                '<option>Maria Gonzalez</option>' +
-                '<option>Pedro Ramirez</option>' +
+                '<option value="">-- Seleccionar paciente --</option>' +
+                options +
                 '</select>' +
                 '</div>' +
                 '<div class="form-group">' +
@@ -2427,21 +3581,25 @@
 
         window.guardarPrescripcion = function() {
             var medicamento = document.getElementById('medPrescripcion') ? document.getElementById('medPrescripcion').value : '';
+            var paciente = document.getElementById('pacientePrescripcion') ? document.getElementById('pacientePrescripcion').value : '';
             if (!medicamento) {
                 showToast('Ingrese el nombre del medicamento', 'error');
                 return;
             }
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var pacienteNombre = pacientes.find(function(p) { return p.id === paciente; });
             saveToLocal('prescripciones', {
                 medicamento: medicamento,
                 dosis: document.getElementById('dosisPrescripcion') ? document.getElementById('dosisPrescripcion').value : '',
                 frecuencia: document.getElementById('frecuenciaPrescripcion') ? document.getElementById('frecuenciaPrescripcion').value : '',
                 observaciones: document.getElementById('obsPrescripcion') ? document.getElementById('obsPrescripcion').value : '',
-                paciente: document.getElementById('pacientePrescripcion') ? document.getElementById('pacientePrescripcion').value : 'No especificado'
+                paciente: pacienteNombre ? pacienteNombre.name : 'No especificado'
             });
             document.getElementById('medPrescripcion').value = '';
             document.getElementById('dosisPrescripcion').value = '';
             document.getElementById('frecuenciaPrescripcion').value = '';
             document.getElementById('obsPrescripcion').value = '';
+            document.getElementById('pacientePrescripcion').value = '';
             cargarLista('prescripciones', 'historialPrescripciones');
             showToast('✅ Prescripción guardada', 'success');
         };
@@ -2450,11 +3608,25 @@
         //  CONTENIDO: TURNOS COORDINADOR
         // ============================================================
         function getTurnosCoordContent() {
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
+            var profesionales = usuarios.filter(function(u) { 
+                return u.role === 'AUXILIAR' || u.role === 'ENFERMERO'; 
+            });
+            
+            var pacientesOptions = pacientes.map(function(p) {
+                return '<option value="' + p.id + '">' + p.name + '</option>';
+            }).join('');
+            
+            var profesionalesOptions = profesionales.map(function(p) {
+                return '<option value="' + p.id + '">' + p.name + ' (' + p.role + ')</option>';
+            }).join('');
+            
             return '<div class="card">' +
                 '<div class="card-title">📅 Programación de Turnos</div>' +
                 '<div class="grid-2">' +
-                '<div class="form-group"><label>Paciente</label><select id="coordPaciente"><option>Maria Gonzalez</option><option>Pedro Ramirez</option></select></div>' +
-                '<div class="form-group"><label>Profesional</label><select id="coordProfesional"><option>Auxiliar Perez</option><option>Enf. Castro</option></select></div>' +
+                '<div class="form-group"><label>Paciente</label><select id="coordPaciente"><option value="">-- Seleccionar --</option>' + pacientesOptions + '</select></div>' +
+                '<div class="form-group"><label>Profesional</label><select id="coordProfesional"><option value="">-- Seleccionar --</option>' + profesionalesOptions + '</select></div>' +
                 '<div class="form-group"><label>Fecha</label><input type="date" id="coordFecha"></div>' +
                 '<div class="form-group"><label>Turno</label><select id="coordTurno"><option>6h</option><option>8h</option><option>12h</option><option>24h</option></select></div>' +
                 '</div>' +
@@ -2465,14 +3637,14 @@
                 '<div class="grid-2">' +
                 '<div class="card" style="background:#0f172a; text-align:center;">' +
                 '<strong>✅ Con cobertura</strong><br>' +
-                '<span style="font-size:1.5rem; color:#22c55e;">2</span>' +
+                '<span style="font-size:1.5rem; color:#22c55e;" id="coberturaSi">0</span>' +
                 '</div>' +
                 '<div class="card" style="background:#0f172a; text-align:center;">' +
                 '<strong>⚠️ Sin cobertura</strong><br>' +
-                '<span style="font-size:1.5rem; color:#ef4444;">1</span>' +
+                '<span style="font-size:1.5rem; color:#ef4444;" id="coberturaNo">0</span>' +
                 '</div>' +
                 '</div>' +
-                '<button class="btn btn-primary" onclick="showToast(\'📄 Reporte de cobertura generado\')">📊 Ver detalle</button>' +
+                '<button class="btn btn-primary" onclick="actualizarCobertura()">📊 Actualizar Cobertura</button>' +
                 '</div>' +
                 '<div class="card">' +
                 '<div class="card-title">📋 Turnos Programados</div>' +
@@ -2486,22 +3658,239 @@
             var fecha = document.getElementById('coordFecha') ? document.getElementById('coordFecha').value : '';
             var turno = document.getElementById('coordTurno') ? document.getElementById('coordTurno').value : '';
             
-            if (!fecha) {
-                showToast('Seleccione una fecha', 'error');
+            if (!paciente || !profesional || !fecha) {
+                showToast('Seleccione paciente, profesional y fecha', 'error');
                 return;
             }
             
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var pacienteNombre = pacientes.find(function(p) { return p.id === paciente; });
+            var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
+            var profesionalNombre = usuarios.find(function(u) { return u.id === profesional; });
+            
             saveToLocal('turnosCoord', {
-                paciente: paciente,
-                profesional: profesional,
+                paciente: pacienteNombre ? pacienteNombre.name : 'No especificado',
+                profesional: profesionalNombre ? profesionalNombre.name : 'No especificado',
                 fecha: fecha,
                 turno: turno,
                 estado: 'PENDIENTE'
             });
             
+            document.getElementById('coordPaciente').value = '';
+            document.getElementById('coordProfesional').value = '';
             document.getElementById('coordFecha').value = '';
             cargarLista('turnosCoord', 'listaTurnosCoord');
+            actualizarCobertura();
             showToast('✅ Turno programado', 'success');
+        };
+
+        window.actualizarCobertura = function() {
+            var turnos = getFromLocal('turnosCoord');
+            var total = turnos.length || 0;
+            var with24h = turnos.filter(function(t) { return t.turno === '24h'; }).length || 0;
+            
+            var coberturaSi = document.getElementById('coberturaSi');
+            var coberturaNo = document.getElementById('coberturaNo');
+            if (coberturaSi) coberturaSi.textContent = with24h;
+            if (coberturaNo) coberturaNo.textContent = total - with24h;
+        };
+
+        // ============================================================
+        //  EVALUACIÓN ESPECIALISTA
+        // ============================================================
+        function getEvaluacionEspecialista(rol) {
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var options = pacientes.map(function(p) {
+                return '<option value="' + p.id + '">' + p.name + '</option>';
+            }).join('');
+            
+            var campos = '';
+            
+            if (rol === 'Fisioterapeuta') {
+                campos = '<div class="grid-2">' +
+                    '<div class="form-group"><label>🦵 Rango de movimiento</label><input type="text" id="rangoMovimiento" placeholder="Ej: 0-120°"></div>' +
+                    '<div class="form-group"><label>💪 Fuerza muscular (1-5)</label><input type="number" id="fuerzaMuscular" min="1" max="5"></div>' +
+                    '<div class="form-group"><label>⚖️ Equilibrio</label><select id="equilibrio"><option>Normal</option><option>Disminuido</option><option>Alterado</option></select></div>' +
+                    '<div class="form-group"><label>📝 Plan de ejercicios</label><textarea id="planEjercicios" rows="2" placeholder="Plan de ejercicios..."></textarea>' +
+                    '<button class="btn-voice" onclick="iniciarDictado(\'planEjercicios\')">🎙️ Dictar</button></div>' +
+                    '</div>';
+            } else if (rol === 'Psicólogo') {
+                campos = '<div class="grid-2">' +
+                    '<div class="form-group"><label>😔 Depresión</label><select id="depresion"><option>Leve</option><option>Moderada</option><option>Grave</option></select></div>' +
+                    '<div class="form-group"><label>😰 Ansiedad</label><select id="ansiedad"><option>Leve</option><option>Moderada</option><option>Grave</option></select></div>' +
+                    '<div class="form-group"><label>🧭 Orientación</label><select id="orientacion"><option>Bien orientado</option><option>Desorientado</option><option>Confuso</option></select></div>' +
+                    '<div class="form-group"><label>📝 Plan terapéutico</label><textarea id="planTerapeutico" rows="2" placeholder="Plan terapéutico..."></textarea>' +
+                    '<button class="btn-voice" onclick="iniciarDictado(\'planTerapeutico\')">🎙️ Dictar</button></div>' +
+                    '</div>';
+            } else if (rol === 'Fonoaudiólogo') {
+                campos = '<div class="grid-2">' +
+                    '<div class="form-group"><label>🗣️ Comprensión</label><select id="comprension"><option>Normal</option><option>Disminuida</option><option>Alterada</option></select></div>' +
+                    '<div class="form-group"><label>🗣️ Expresión</label><select id="expresion"><option>Normal</option><option>Disminuida</option><option>Alterada</option></select></div>' +
+                    '<div class="form-group"><label>🍽️ Deglución</label><select id="deglucion"><option>Normal</option><option>Disminuida</option><option>Alterada</option></select></div>' +
+                    '<div class="form-group"><label>📝 Plan de terapia</label><textarea id="planTerapia" rows="2" placeholder="Plan de terapia..."></textarea>' +
+                    '<button class="btn-voice" onclick="iniciarDictado(\'planTerapia\')">🎙️ Dictar</button></div>' +
+                    '</div>';
+            } else if (rol === 'Terapeuta Ocupacional') {
+                campos = '<div class="grid-2">' +
+                    '<div class="form-group"><label>👕 Vestirse</label><select id="vestirse"><option>Independiente</option><option>Asistido</option><option>Dependiente</option></select></div>' +
+                    '<div class="form-group"><label>🍽️ Comer</label><select id="comer"><option>Independiente</option><option>Asistido</option><option>Dependiente</option></select></div>' +
+                    '<div class="form-group"><label>🚿 Bañarse</label><select id="banarse"><option>Independiente</option><option>Asistido</option><option>Dependiente</option></select></div>' +
+                    '<div class="form-group"><label>🏠 Adaptaciones del hogar</label><textarea id="adaptaciones" rows="2" placeholder="Adaptaciones necesarias..."></textarea>' +
+                    '<button class="btn-voice" onclick="iniciarDictado(\'adaptaciones\')">🎙️ Dictar</button></div>' +
+                    '</div>';
+            } else if (rol === 'Terapeuta Respiratorio') {
+                campos = '<div class="grid-2">' +
+                    '<div class="form-group"><label>💨 Patrón respiratorio</label><select id="patronRespiratorio"><option>Normal</option><option>Taquipneico</option><option>Bradipneico</option></select></div>' +
+                    '<div class="form-group"><label>🫁 Oxígeno (lpm)</label><input type="number" id="oxigeno" step="0.5"></div>' +
+                    '<div class="form-group"><label>🫁 Secreciones</label><select id="secreciones"><option>Ausentes</option><option>Escasas</option><option>Abundantes</option></select></div>' +
+                    '<div class="form-group"><label>📋 Plan de tratamiento</label><textarea id="planTratamiento" rows="2" placeholder="Plan de tratamiento..."></textarea>' +
+                    '<button class="btn-voice" onclick="iniciarDictado(\'planTratamiento\')">🎙️ Dictar</button></div>' +
+                    '</div>';
+            } else {
+                campos = '<div class="form-group"><label>📝 Notas</label><textarea id="evalText" rows="5"></textarea></div>';
+            }
+
+            return '<div class="card">' +
+                '<div class="card-title">📝 Evaluación - ' + rol + '</div>' +
+                '<div class="form-group">' +
+                '<label>👤 Paciente</label>' +
+                '<select id="pacienteEval">' +
+                '<option value="">-- Seleccionar paciente --</option>' +
+                options +
+                '</select>' +
+                '</div>' +
+                campos +
+                '<div class="form-group" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">' +
+                '<label>📝 Observaciones de la evaluación</label>' +
+                '<textarea id="evalText" rows="3" placeholder="Observaciones de la evaluación..."></textarea>' +
+                '<button class="btn-voice" onclick="iniciarDictado(\'evalText\')">🎙️ Dictar</button>' +
+                '</div>' +
+                '<div class="grid-2" style="margin-top:12px;">' +
+                '<div><label>✍️ Firma del Profesional</label><canvas id="sigProfesional" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas(\'sigProfesional\')">Borrar</button></div>' +
+                '<div><label>✍️ Firma del Paciente</label><canvas id="sigPaciente" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas(\'sigPaciente\')">Borrar</button></div>' +
+                '</div>' +
+                '<button class="btn btn-primary" style="margin-top:12px;" onclick="guardarEvaluacionEspecialista(\'' + rol + '\')">💾 Guardar Evaluación</button>' +
+                '</div>' +
+                '<div class="card">' +
+                '<div class="card-title">📋 Historial</div>' +
+                '<div id="historialEvalEspecialista"></div>' +
+                '</div>';
+        }
+
+        window.guardarEvaluacionEspecialista = function(rol) {
+            var texto = document.getElementById('evalText') ? document.getElementById('evalText').value : '';
+            var paciente = document.getElementById('pacienteEval') ? document.getElementById('pacienteEval').value : '';
+            if (!texto) {
+                showToast('Ingrese las observaciones de la evaluación', 'error');
+                return;
+            }
+            
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var pacienteNombre = pacientes.find(function(p) { return p.id === paciente; });
+            
+            var key = 'eval_' + rol.toLowerCase().replace(/ /g, '_');
+            saveToLocal(key, {
+                texto: texto,
+                rol: rol,
+                paciente: pacienteNombre ? pacienteNombre.name : 'No especificado'
+            });
+            
+            document.getElementById('evalText').value = '';
+            document.getElementById('pacienteEval').value = '';
+            cargarLista(key, 'historialEvalEspecialista');
+            showToast('✅ Evaluación guardada', 'success');
+        };
+
+        // ============================================================
+        //  EVALUACIÓN NUTRICIONISTA
+        // ============================================================
+        function getEvaluacionNutricionista() {
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var options = pacientes.map(function(p) {
+                return '<option value="' + p.id + '">' + p.name + '</option>';
+            }).join('');
+            
+            return '<div class="card">' +
+                '<div class="card-title">🥗 Evaluación Nutricional</div>' +
+                '<div class="form-group">' +
+                '<label>👤 Paciente</label>' +
+                '<select id="pacienteEvalNutri">' +
+                '<option value="">-- Seleccionar paciente --</option>' +
+                options +
+                '</select>' +
+                '</div>' +
+                '<div class="grid-2">' +
+                '<div class="form-group">' +
+                '<label>⚖️ Peso (kg)</label>' +
+                '<input type="number" step="0.1" id="pesoNutri" oninput="calcularIMC()" placeholder="Ej: 70">' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>📏 Talla (cm)</label>' +
+                '<input type="number" step="0.1" id="tallaNutri" oninput="calcularIMC()" placeholder="Ej: 175">' +
+                '</div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>📊 IMC</label>' +
+                '<div id="imcDisplay" class="imc-display">IMC: --</div>' +
+                '</div>' +
+                '<div class="grid-2">' +
+                '<div class="form-group"><label>🥗 Hábitos alimenticios</label>' +
+                '<textarea id="habitosNutri" rows="2" placeholder="Describa los hábitos alimenticios..."></textarea>' +
+                '<button class="btn-voice" onclick="iniciarDictado(\'habitosNutri\')">🎙️ Dictar</button></div>' +
+                '<div class="form-group"><label>📋 Plan nutricional</label>' +
+                '<textarea id="planNutri" rows="2" placeholder="Plan nutricional recomendado..."></textarea>' +
+                '<button class="btn-voice" onclick="iniciarDictado(\'planNutri\')">🎙️ Dictar</button></div>' +
+                '</div>' +
+                '<div class="form-group" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">' +
+                '<label>📝 Observaciones de la evaluación</label>' +
+                '<textarea id="evalText" rows="3" placeholder="Observaciones de la evaluación nutricional..."></textarea>' +
+                '<button class="btn-voice" onclick="iniciarDictado(\'evalText\')">🎙️ Dictar</button>' +
+                '</div>' +
+                '<div class="grid-2" style="margin-top:12px;">' +
+                '<div><label>✍️ Firma del Profesional</label><canvas id="sigProfesional" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas(\'sigProfesional\')">Borrar</button></div>' +
+                '<div><label>✍️ Firma del Paciente</label><canvas id="sigPaciente" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas(\'sigPaciente\')">Borrar</button></div>' +
+                '</div>' +
+                '<button class="btn btn-primary" style="margin-top:12px;" onclick="guardarEvaluacionNutri()">💾 Guardar Evaluación</button>' +
+                '</div>' +
+                '<div class="card">' +
+                '<div class="card-title">📋 Historial</div>' +
+                '<div id="historialEvalNutri"></div>' +
+                '</div>';
+        }
+
+        window.guardarEvaluacionNutri = function() {
+            var texto = document.getElementById('evalText') ? document.getElementById('evalText').value : '';
+            var paciente = document.getElementById('pacienteEvalNutri') ? document.getElementById('pacienteEvalNutri').value : '';
+            if (!texto) {
+                showToast('Ingrese las observaciones de la evaluación', 'error');
+                return;
+            }
+            
+            var peso = document.getElementById('pesoNutri') ? document.getElementById('pesoNutri').value : '';
+            var talla = document.getElementById('tallaNutri') ? document.getElementById('tallaNutri').value : '';
+            var imcDisplay = document.getElementById('imcDisplay') ? document.getElementById('imcDisplay').textContent : 'IMC: --';
+            var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+            var pacienteNombre = pacientes.find(function(p) { return p.id === paciente; });
+            
+            saveToLocal('evalNutri', {
+                texto: texto,
+                peso: peso || 'No registrado',
+                talla: talla || 'No registrado',
+                imc: imcDisplay,
+                habitos: document.getElementById('habitosNutri') ? document.getElementById('habitosNutri').value : '',
+                plan: document.getElementById('planNutri') ? document.getElementById('planNutri').value : '',
+                paciente: pacienteNombre ? pacienteNombre.name : 'No especificado'
+            });
+            
+            document.getElementById('evalText').value = '';
+            document.getElementById('pacienteEvalNutri').value = '';
+            document.getElementById('habitosNutri').value = '';
+            document.getElementById('planNutri').value = '';
+            document.getElementById('pesoNutri').value = '';
+            document.getElementById('tallaNutri').value = '';
+            document.getElementById('imcDisplay').textContent = 'IMC: --';
+            cargarLista('evalNutri', 'historialEvalNutri');
+            showToast('✅ Evaluación nutricional guardada', 'success');
         };
 
         // ============================================================
