@@ -5,18 +5,24 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+// ==================== IMPORTAR AUTH ====================
+const auth = require('./routes/auth');  // ← IMPORTANTE
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ==================== SUPABASE ====================
 const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_KEY  // SERVICE_KEY (NO ANON_KEY)
+    process.env.SUPABASE_SERVICE_KEY
 );
 
 // ==================== MIDDLEWARES ====================
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
+
+// ==================== CREAR ADMIN POR DEFECTO ====================
+auth.createDefaultAdmin();  // ← Crear admin si no existe
 
 // ==================== HEALTH CHECK ====================
 app.get('/', (req, res) => {
@@ -24,11 +30,21 @@ app.get('/', (req, res) => {
 });
 
 // ============================================================
-//  RUTAS: USUARIOS
+//  RUTAS: AUTENTICACIÓN (PÚBLICAS)
 // ============================================================
 
-// GET /api/users - Listar todos los usuarios (sin contraseñas)
-app.get('/api/users', async (req, res) => {
+// Login - PÚBLICO (no necesita autenticación)
+app.post('/api/auth/login', auth.login);
+
+// Verify Token - PÚBLICO (verifica token)
+app.post('/api/auth/verify', auth.verifyToken);
+
+// ============================================================
+//  RUTAS: USUARIOS (PROTEGIDAS)
+// ============================================================
+
+// GET /api/users - Listar usuarios (autenticación requerida)
+app.get('/api/users', auth.protect, async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('users')
@@ -40,8 +56,8 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
-// POST /api/users - Crear usuario (con contraseña encriptada)
-app.post('/api/users', async (req, res) => {
+// POST /api/users - Crear usuario (SOLO ADMIN)
+app.post('/api/users', auth.protect, auth.authorize('ADMIN'), async (req, res) => {
     try {
         const { name, email, role, password } = req.body;
         
@@ -84,8 +100,8 @@ app.post('/api/users', async (req, res) => {
     }
 });
 
-// DELETE /api/users/:id - Eliminar usuario
-app.delete('/api/users/:id', async (req, res) => {
+// DELETE /api/users/:id - Eliminar usuario (SOLO ADMIN)
+app.delete('/api/users/:id', auth.protect, auth.authorize('ADMIN'), async (req, res) => {
     try {
         const { id } = req.params;
         const { error } = await supabase
@@ -100,72 +116,11 @@ app.delete('/api/users/:id', async (req, res) => {
 });
 
 // ============================================================
-//  RUTAS: AUTENTICACIÓN (LOGIN CORREGIDO)
+//  RUTAS: PACIENTES (PROTEGIDAS)
 // ============================================================
 
-app.post('/api/auth/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        
-        if (!email || !password) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Email y contraseña son requeridos' 
-            });
-        }
-
-        // Buscar usuario por email
-        const { data: users, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('email', email);
-
-        if (error) throw error;
-        
-        if (!users || users.length === 0) {
-            return res.status(401).json({ 
-                success: false, 
-                message: 'Credenciales inválidas' 
-            });
-        }
-
-        const user = users[0];
-
-        // Verificar contraseña
-        const validPassword = await bcrypt.compare(password, user.password_hash);
-        if (!validPassword) {
-            return res.status(401).json({ 
-                success: false, 
-                message: 'Credenciales inválidas' 
-            });
-        }
-
-        // Generar token JWT
-        const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role, name: user.name },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
-
-        // Devolver usuario (sin password) + token
-        const userData = {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role
-        };
-
-        res.json({ success: true, data: { user: userData, token } });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// ============================================================
-//  RUTAS: PACIENTES
-// ============================================================
-
-app.get('/api/patients', async (req, res) => {
+// GET /api/patients - Listar pacientes (autenticación requerida)
+app.get('/api/patients', auth.protect, async (req, res) => {
     try {
         const { data, error } = await supabase.from('patients').select('*');
         if (error) throw error;
@@ -175,7 +130,8 @@ app.get('/api/patients', async (req, res) => {
     }
 });
 
-app.post('/api/patients', async (req, res) => {
+// POST /api/patients - Crear paciente (autenticación requerida)
+app.post('/api/patients', auth.protect, async (req, res) => {
     try {
         const { name, document, diagnosis, doctor } = req.body;
         
@@ -197,7 +153,8 @@ app.post('/api/patients', async (req, res) => {
     }
 });
 
-app.get('/api/patients/:id', async (req, res) => {
+// GET /api/patients/:id - Obtener paciente (autenticación requerida)
+app.get('/api/patients/:id', auth.protect, async (req, res) => {
     try {
         const { id } = req.params;
         const { data, error } = await supabase
@@ -212,7 +169,8 @@ app.get('/api/patients/:id', async (req, res) => {
     }
 });
 
-app.put('/api/patients/:id', async (req, res) => {
+// PUT /api/patients/:id - Actualizar paciente (autenticación requerida)
+app.put('/api/patients/:id', auth.protect, async (req, res) => {
     try {
         const { id } = req.params;
         const updates = req.body;
@@ -228,7 +186,8 @@ app.put('/api/patients/:id', async (req, res) => {
     }
 });
 
-app.delete('/api/patients/:id', async (req, res) => {
+// DELETE /api/patients/:id - Eliminar paciente (SOLO ADMIN)
+app.delete('/api/patients/:id', auth.protect, auth.authorize('ADMIN'), async (req, res) => {
     try {
         const { id } = req.params;
         const { error } = await supabase
@@ -243,10 +202,11 @@ app.delete('/api/patients/:id', async (req, res) => {
 });
 
 // ============================================================
-//  RUTAS: ACTIVIDADES
+//  RUTAS: ACTIVIDADES (PROTEGIDAS)
 // ============================================================
 
-app.post('/api/actividades', async (req, res) => {
+// POST /api/actividades - Crear actividad (AUXILIAR o ENFERMERO)
+app.post('/api/actividades', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
     try {
         const { patient_id, user_id, actividad, hora, observacion, educacion, novedad, fotos } = req.body;
         const { data, error } = await supabase
@@ -260,7 +220,8 @@ app.post('/api/actividades', async (req, res) => {
     }
 });
 
-app.get('/api/actividades/:userId', async (req, res) => {
+// GET /api/actividades/:userId - Obtener actividades (autenticación requerida)
+app.get('/api/actividades/:userId', auth.protect, async (req, res) => {
     try {
         const { userId } = req.params;
         const { data, error } = await supabase
@@ -276,10 +237,11 @@ app.get('/api/actividades/:userId', async (req, res) => {
 });
 
 // ============================================================
-//  RUTAS: SIGNOS VITALES
+//  RUTAS: SIGNOS VITALES (PROTEGIDAS)
 // ============================================================
 
-app.post('/api/signos', async (req, res) => {
+// POST /api/signos - Guardar signos (AUXILIAR o ENFERMERO)
+app.post('/api/signos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
     try {
         const { patient_id, user_id, spo2, fc, fr, temp, bp, glucosa, braden, hora, obs } = req.body;
         const { data, error } = await supabase
@@ -293,7 +255,8 @@ app.post('/api/signos', async (req, res) => {
     }
 });
 
-app.get('/api/signos/:userId', async (req, res) => {
+// GET /api/signos/:userId - Obtener signos (autenticación requerida)
+app.get('/api/signos/:userId', auth.protect, async (req, res) => {
     try {
         const { userId } = req.params;
         const { data, error } = await supabase
@@ -309,10 +272,11 @@ app.get('/api/signos/:userId', async (req, res) => {
 });
 
 // ============================================================
-//  RUTAS: MEDICAMENTOS
+//  RUTAS: MEDICAMENTOS (PROTEGIDAS)
 // ============================================================
 
-app.post('/api/medicamentos', async (req, res) => {
+// POST /api/medicamentos - Guardar medicamento (AUXILIAR o ENFERMERO)
+app.post('/api/medicamentos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
     try {
         const { patient_id, user_id, nombre, dosis, hora, obs } = req.body;
         const { data, error } = await supabase
@@ -326,7 +290,8 @@ app.post('/api/medicamentos', async (req, res) => {
     }
 });
 
-app.get('/api/medicamentos/:userId', async (req, res) => {
+// GET /api/medicamentos/:userId - Obtener medicamentos (autenticación requerida)
+app.get('/api/medicamentos/:userId', auth.protect, async (req, res) => {
     try {
         const { userId } = req.params;
         const { data, error } = await supabase
@@ -342,10 +307,11 @@ app.get('/api/medicamentos/:userId', async (req, res) => {
 });
 
 // ============================================================
-//  RUTAS: ENTREGAS
+//  RUTAS: ENTREGAS (PROTEGIDAS)
 // ============================================================
 
-app.post('/api/entregas', async (req, res) => {
+// POST /api/entregas - Guardar entrega (AUXILIAR o ENFERMERO)
+app.post('/api/entregas', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
     try {
         const { patient_id, user_id, resumen, pendientes, quienRecibe, horaEntrega, sbar } = req.body;
         const { data, error } = await supabase
@@ -359,7 +325,8 @@ app.post('/api/entregas', async (req, res) => {
     }
 });
 
-app.get('/api/entregas/:userId', async (req, res) => {
+// GET /api/entregas/:userId - Obtener entregas (autenticación requerida)
+app.get('/api/entregas/:userId', auth.protect, async (req, res) => {
     try {
         const { userId } = req.params;
         const { data, error } = await supabase
@@ -375,10 +342,11 @@ app.get('/api/entregas/:userId', async (req, res) => {
 });
 
 // ============================================================
-//  RUTAS: RECIBOS
+//  RUTAS: RECIBOS (PROTEGIDAS)
 // ============================================================
 
-app.post('/api/recibos', async (req, res) => {
+// POST /api/recibos - Guardar recibo (AUXILIAR o ENFERMERO)
+app.post('/api/recibos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
     try {
         const { patient_id, user_id, estado, quienEntrega } = req.body;
         const { data, error } = await supabase
@@ -392,7 +360,8 @@ app.post('/api/recibos', async (req, res) => {
     }
 });
 
-app.get('/api/recibos/:userId', async (req, res) => {
+// GET /api/recibos/:userId - Obtener recibos (autenticación requerida)
+app.get('/api/recibos/:userId', auth.protect, async (req, res) => {
     try {
         const { userId } = req.params;
         const { data, error } = await supabase
@@ -408,10 +377,11 @@ app.get('/api/recibos/:userId', async (req, res) => {
 });
 
 // ============================================================
-//  RUTAS: TEMAS DE EDUCACIÓN
+//  RUTAS: TEMAS DE EDUCACIÓN (PROTEGIDAS)
 // ============================================================
 
-app.get('/api/education', async (req, res) => {
+// GET /api/education - Listar temas (autenticación requerida)
+app.get('/api/education', auth.protect, async (req, res) => {
     try {
         const { data, error } = await supabase.from('education_topics').select('*');
         if (error) throw error;
@@ -421,7 +391,8 @@ app.get('/api/education', async (req, res) => {
     }
 });
 
-app.post('/api/education', async (req, res) => {
+// POST /api/education - Crear tema (SOLO ADMIN)
+app.post('/api/education', auth.protect, auth.authorize('ADMIN'), async (req, res) => {
     try {
         const { title, description, created_by } = req.body;
         const { data, error } = await supabase
@@ -435,7 +406,8 @@ app.post('/api/education', async (req, res) => {
     }
 });
 
-app.delete('/api/education/:id', async (req, res) => {
+// DELETE /api/education/:id - Eliminar tema (SOLO ADMIN)
+app.delete('/api/education/:id', auth.protect, auth.authorize('ADMIN'), async (req, res) => {
     try {
         const { id } = req.params;
         const { error } = await supabase
@@ -450,10 +422,11 @@ app.delete('/api/education/:id', async (req, res) => {
 });
 
 // ============================================================
-//  RUTAS: REPORTES
+//  RUTAS: REPORTES (PROTEGIDAS)
 // ============================================================
 
-app.get('/api/reports/global', async (req, res) => {
+// GET /api/reports/global - Reporte global (SOLO ADMIN y COORDINADOR)
+app.get('/api/reports/global', auth.protect, auth.authorize('ADMIN', 'COORDINADOR'), async (req, res) => {
     try {
         const { data: patients } = await supabase.from('patients').select('*');
         const { data: users } = await supabase.from('users').select('*');
@@ -471,7 +444,8 @@ app.get('/api/reports/global', async (req, res) => {
     }
 });
 
-app.get('/api/reports/coverage', async (req, res) => {
+// GET /api/reports/coverage - Reporte de cobertura (SOLO ADMIN y COORDINADOR)
+app.get('/api/reports/coverage', auth.protect, auth.authorize('ADMIN', 'COORDINADOR'), async (req, res) => {
     try {
         const { data: shifts } = await supabase.from('shifts').select('*');
         const total = shifts?.length || 0;
@@ -490,10 +464,11 @@ app.get('/api/reports/coverage', async (req, res) => {
 });
 
 // ============================================================
-//  RUTAS: TURNOS
+//  RUTAS: TURNOS (PROTEGIDAS)
 // ============================================================
 
-app.get('/api/shifts', async (req, res) => {
+// GET /api/shifts - Listar turnos (autenticación requerida)
+app.get('/api/shifts', auth.protect, async (req, res) => {
     try {
         const { data, error } = await supabase.from('shifts').select('*');
         if (error) throw error;
@@ -503,7 +478,8 @@ app.get('/api/shifts', async (req, res) => {
     }
 });
 
-app.post('/api/shifts', async (req, res) => {
+// POST /api/shifts - Crear turno (SOLO COORDINADOR)
+app.post('/api/shifts', auth.protect, auth.authorize('COORDINADOR'), async (req, res) => {
     try {
         const { patient_id, professional_id, date, type } = req.body;
         const { data, error } = await supabase
@@ -517,7 +493,8 @@ app.post('/api/shifts', async (req, res) => {
     }
 });
 
-app.put('/api/shifts/:id', async (req, res) => {
+// PUT /api/shifts/:id - Actualizar turno (SOLO COORDINADOR)
+app.put('/api/shifts/:id', auth.protect, auth.authorize('COORDINADOR'), async (req, res) => {
     try {
         const { id } = req.params;
         const updates = req.body;
