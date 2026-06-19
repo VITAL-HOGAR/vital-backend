@@ -106,6 +106,7 @@
         }
         .form-group {
             margin-bottom: 12px;
+            position: relative;
         }
         .form-group label {
             display: block;
@@ -133,6 +134,22 @@
         .form-group textarea {
             min-height: 80px;
             resize: vertical;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            z-index: 10;
+        }
+        .password-toggle:hover {
+            color: #22c55e;
         }
         .btn {
             padding: 10px 16px;
@@ -340,6 +357,18 @@
             border: 1px solid #22c55e;
             color: #22c55e;
         }
+        .login-error {
+            color: #ef4444;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            display: none;
+        }
+        .login-hint {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.7rem;
+            color: #64748b;
+        }
         @media (max-width: 480px) {
             body { padding: 8px; }
             .header { padding: 10px 12px; flex-direction: column; text-align: center; }
@@ -374,25 +403,26 @@
         </div>
     </div>
 
-    <!-- LOGIN -->
+    <!-- LOGIN CORREGIDO -->
     <div id="loginScreen">
         <div class="card">
             <div class="card-title">🔐 Acceso al Sistema</div>
             <div class="form-group">
-                <label>Selecciona tu Usuario</label>
-                <select id="loginUserSelect">
-                    <option value="">-- Seleccionar usuario --</option>
-                </select>
-            </div>
-            <div id="userInfoLogin" style="background:#0f172a; padding:10px; border-radius:10px; margin:10px 0; display:none; font-size:0.85rem;">
-                <p><strong>Nombre:</strong> <span id="loginUserName"></span></p>
-                <p><strong>Rol:</strong> <span id="loginUserRole"></span></p>
+                <label>📧 Email</label>
+                <input type="email" id="loginEmail" placeholder="admin@vitalhogar.com" autocomplete="email">
             </div>
             <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" id="loginPassword" placeholder="Ingrese su contraseña (123456)">
+                <label>🔒 Contraseña</label>
+                <div style="position: relative;">
+                    <input type="password" id="loginPassword" placeholder="Ingrese su contraseña" autocomplete="current-password">
+                    <button type="button" class="password-toggle" id="togglePassword" title="Mostrar/Ocultar contraseña">👁️</button>
+                </div>
             </div>
+            <div id="loginError" class="login-error"></div>
             <button class="btn btn-primary" onclick="login()">Ingresar</button>
+            <div class="login-hint">
+                Primer acceso: <strong>admin@vitalhogar.com</strong> / <strong>admin123</strong>
+            </div>
         </div>
     </div>
 
@@ -417,6 +447,7 @@
         let educationTopics = [];
         let recognitionActive = false;
         let signatureInitialized = false;
+        let horaEntrada = null;
 
         // Logo por defecto
         const DEFAULT_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAF8WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDUgNzkuMTYzNDk5LCAyMDE4LzA4LzEzLTE2OjQwOjIyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoTWFjaW50b3NoKSIgeG1wOkNyZWF0ZURhdGU9IjIwMjYtMDYtMTZUMTc6NDQ6MDAtMDU6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDI2LTA2LTE2VDE4OjU1OjQwLTA1OjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDI2LTA2LTE2VDE4OjU1OjQwLTA1OjAwIiBkYzpmb3JtYXQ9ImltYWdlL3BuZyIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMyIgcGhvdG9zaG9wOklDQ1Byb2ZpbGU9InNSR0IgSUVDNjE5NjYtMi4xIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjA5Y2Y3MjEwLTAw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';
@@ -426,9 +457,15 @@
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             cargarLogo();
+            initPasswordToggle();
             loadMasterData();
             loadEducationTopics();
-            document.getElementById('loginUserSelect').addEventListener('change', cargarDatosUsuario);
+            
+            // Verificar si hay sesión activa
+            if (!checkSession()) {
+                // Si no hay sesión, mostrar login
+                document.getElementById('loginScreen').classList.remove('hidden');
+            }
         });
 
         function cargarLogo() {
@@ -441,6 +478,22 @@
                 document.getElementById('logoPreview').src = DEFAULT_LOGO;
                 document.getElementById('logoPreview').style.display = 'block';
                 document.getElementById('logoPlaceholder').style.display = 'none';
+            }
+        }
+
+        // ============================================================
+        //  TOGGLE PASSWORD - Mostrar/Ocultar contraseña
+        // ============================================================
+        function initPasswordToggle() {
+            const toggleBtn = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('loginPassword');
+            
+            if (toggleBtn && passwordInput) {
+                toggleBtn.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    this.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+                });
             }
         }
 
@@ -508,11 +561,160 @@
         }
 
         // ============================================================
+        //  API REQUEST CON TOKEN
+        // ============================================================
+        async function apiRequest(endpoint, options = {}) {
+            const token = localStorage.getItem('vital_token');
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` }),
+                ...options.headers
+            };
+
+            const response = await fetch(`${API_URL}${endpoint}`, {
+                ...options,
+                headers
+            });
+
+            if (response.status === 401) {
+                showToast('⏰ Sesión expirada, inicie sesión nuevamente', 'error');
+                logout();
+                throw new Error('Sesión expirada');
+            }
+
+            return response;
+        }
+
+        // ============================================================
+        //  LOGIN - Conectar con backend
+        // ============================================================
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            // Limpiar error anterior
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+
+            // Validar campos
+            if (!email || !password) {
+                errorDiv.textContent = '⚠️ Email y contraseña son requeridos';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                showToast('🔄 Verificando credenciales...', 'success');
+
+                const response = await fetch(`${API_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    errorDiv.textContent = '❌ ' + (data.message || 'Credenciales inválidas');
+                    errorDiv.style.display = 'block';
+                    showToast('❌ Credenciales inválidas', 'error');
+                    return;
+                }
+
+                // Guardar usuario y token
+                const user = data.data.user;
+                const token = data.data.token;
+
+                localStorage.setItem('vital_token', token);
+                localStorage.setItem('vital_user', JSON.stringify(user));
+
+                // Configurar sesión
+                currentUser = user;
+                currentRole = user.role;
+                storageKey = `vital_${user.role.toLowerCase()}`;
+
+                // Mostrar interfaz
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainScreen').classList.remove('hidden');
+                document.getElementById('userInfo').classList.remove('hidden');
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userRoleDisplay').textContent = user.role;
+
+                buildTabs();
+                showToast(`✅ Bienvenido ${user.name}`, 'success');
+
+            } catch (error) {
+                console.error('Error en login:', error);
+                errorDiv.textContent = '❌ Error de conexión con el servidor';
+                errorDiv.style.display = 'block';
+                showToast('❌ Error de conexión', 'error');
+            }
+        }
+
+        // ============================================================
+        //  LOGOUT - Cerrar sesión
+        // ============================================================
+        function logout() {
+            localStorage.removeItem('vital_token');
+            localStorage.removeItem('vital_user');
+            currentUser = null;
+            currentRole = null;
+            storageKey = null;
+            document.getElementById('mainScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginEmail').value = '';
+            showToast('👋 Sesión cerrada', 'success');
+        }
+
+        // ============================================================
+        //  VERIFICAR SESIÓN AL CARGAR
+        // ============================================================
+        function checkSession() {
+            const token = localStorage.getItem('vital_token');
+            const userData = localStorage.getItem('vital_user');
+
+            if (token && userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    currentUser = user;
+                    currentRole = user.role;
+                    storageKey = `vital_${user.role.toLowerCase()}`;
+
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('mainScreen').classList.remove('hidden');
+                    document.getElementById('userInfo').classList.remove('hidden');
+                    document.getElementById('userName').textContent = user.name;
+                    document.getElementById('userRoleDisplay').textContent = user.role;
+
+                    buildTabs();
+                    showToast(`✅ Bienvenido ${user.name}`, 'success');
+                    return true;
+                } catch (e) {
+                    console.warn('Sesión inválida');
+                    localStorage.removeItem('vital_token');
+                    localStorage.removeItem('vital_user');
+                }
+            }
+            return false;
+        }
+
+        // ============================================================
         //  CARGA DE DATOS MAESTROS
         // ============================================================
         async function loadMasterData() {
             try {
-                const res = await fetch(`${API_URL}/api/users`);
+                const token = localStorage.getItem('vital_token');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                const res = await fetch(`${API_URL}/api/users`, { headers });
                 const data = await res.json();
                 if (data.success && data.data) {
                     localStorage.setItem('vital_usuarios', JSON.stringify(data.data));
@@ -521,27 +723,21 @@
                 console.warn('API no disponible, usando datos locales');
             }
 
+            // Solo cargar lo que hay en localStorage - NO crear usuarios predefinidos
             let users = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
+
             if (users.length === 0) {
-                users = [
-                    { id: 'u1', name: 'Admin', email: 'admin@vitalhogar.com', role: 'ADMIN', password: '123456' },
-                    { id: 'u2', name: 'Auxiliar Perez', email: 'auxiliar@vitalhogar.com', role: 'AUXILIAR', password: '123456' },
-                    { id: 'u3', name: 'Dr. Gomez', email: 'medico@vitalhogar.com', role: 'MEDICO', password: '123456' },
-                    { id: 'u4', name: 'Lic. Martinez', email: 'fisio@vitalhogar.com', role: 'FISIOTERAPEUTA', password: '123456' },
-                    { id: 'u5', name: 'T.S. Rodriguez', email: 'ts@vitalhogar.com', role: 'TRABAJADOR_SOCIAL', password: '123456' },
-                    { id: 'u6', name: 'Psic. Lopez', email: 'psico@vitalhogar.com', role: 'PSICOLOGO', password: '123456' },
-                    { id: 'u7', name: 'Nut. Fernandez', email: 'nutri@vitalhogar.com', role: 'NUTRICIONISTA', password: '123456' },
-                    { id: 'u8', name: 'Fono. Sanchez', email: 'fono@vitalhogar.com', role: 'FONOAUDIOLOGO', password: '123456' },
-                    { id: 'u9', name: 'TO. Ramirez', email: 'to@vitalhogar.com', role: 'TERAPEUTA_OCUPACIONAL', password: '123456' },
-                    { id: 'u10', name: 'TR. Vargas', email: 'tr@vitalhogar.com', role: 'TERAPEUTA_RESPIRATORIO', password: '123456' },
-                    { id: 'u11', name: 'Enf. Castro', email: 'enfermero@vitalhogar.com', role: 'ENFERMERO', password: '123456' },
-                    { id: 'u12', name: 'Coord. Diaz', email: 'coordinador@vitalhogar.com', role: 'COORDINADOR', password: '123456' }
-                ];
-                localStorage.setItem('vital_usuarios', JSON.stringify(users));
+                console.log('ℹ️ No hay usuarios registrados. Use admin@vitalhogar.com / admin123');
             }
 
+            // Cargar pacientes
             try {
-                const res = await fetch(`${API_URL}/api/patients`);
+                const token = localStorage.getItem('vital_token');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                const res = await fetch(`${API_URL}/api/patients`, { headers });
                 const data = await res.json();
                 if (data.success && data.data) {
                     localStorage.setItem('vital_pacientes', JSON.stringify(data.data));
@@ -550,142 +746,12 @@
                 console.warn('API pacientes no disponible');
             }
 
+            // Cargar pacientes locales si no hay de la API
             let patients = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
             if (patients.length === 0) {
-                patients = [
-                    { id: 'p1', name: 'Maria Gonzalez', document: '12345678', diagnosis: 'Hipertension', doctor: 'Dr. Gomez' },
-                    { id: 'p2', name: 'Pedro Ramirez', document: '87654321', diagnosis: 'Diabetes', doctor: 'Dr. Gomez' }
-                ];
-                localStorage.setItem('vital_pacientes', JSON.stringify(patients));
+                // No crear pacientes predefinidos
+                console.log('ℹ️ No hay pacientes registrados');
             }
-
-            const select = document.getElementById('loginUserSelect');
-            const roleNames = {
-                ADMIN: 'Admin',
-                AUXILIAR: 'Auxiliar',
-                ENFERMERO: 'Enfermero',
-                FISIOTERAPEUTA: 'Fisioterapeuta',
-                TERAPEUTA_OCUPACIONAL: 'Terapeuta Ocupacional',
-                FONOAUDIOLOGO: 'Fonoaudiologo',
-                PSICOLOGO: 'Psicologo',
-                NUTRICIONISTA: 'Nutricionista',
-                TRABAJADOR_SOCIAL: 'Trabajador Social',
-                TERAPEUTA_RESPIRATORIO: 'Terapeuta Respiratorio',
-                MEDICO: 'Medico',
-                COORDINADOR: 'Coordinador'
-            };
-            
-            select.innerHTML = '<option value="">-- Seleccionar usuario --</option>';
-            users.forEach(u => {
-                select.innerHTML += `<option value='${JSON.stringify(u)}'>${u.name} - ${roleNames[u.role] || u.role}</option>`;
-            });
-        }
-
-        function cargarDatosUsuario() {
-            const val = document.getElementById('loginUserSelect').value;
-            const infoDiv = document.getElementById('userInfoLogin');
-            
-            if (val) {
-                const user = JSON.parse(val);
-                const roleNames = {
-                    ADMIN: 'Administrador',
-                    AUXILIAR: 'Auxiliar de Enfermería',
-                    ENFERMERO: 'Enfermero Jefe',
-                    FISIOTERAPEUTA: 'Fisioterapeuta',
-                    TERAPEUTA_OCUPACIONAL: 'Terapeuta Ocupacional',
-                    FONOAUDIOLOGO: 'Fonoaudiólogo',
-                    PSICOLOGO: 'Psicólogo',
-                    NUTRICIONISTA: 'Nutricionista',
-                    TRABAJADOR_SOCIAL: 'Trabajador Social',
-                    TERAPEUTA_RESPIRATORIO: 'Terapeuta Respiratorio',
-                    MEDICO: 'Médico',
-                    COORDINADOR: 'Coordinador'
-                };
-                infoDiv.style.display = 'block';
-                document.getElementById('loginUserName').textContent = user.name;
-                document.getElementById('loginUserRole').textContent = roleNames[user.role] || user.role;
-            } else {
-                infoDiv.style.display = 'none';
-            }
-        }
-
-        // ============================================================
-        //  LOGIN / LOGOUT
-        // ============================================================
-        function login() {
-            const val = document.getElementById('loginUserSelect').value;
-            if (!val) {
-                showToast('Seleccione un usuario', 'error');
-                return;
-            }
-            
-            const user = JSON.parse(val);
-            const password = document.getElementById('loginPassword').value;
-            
-            if (password !== user.password) {
-                showToast('Contraseña incorrecta', 'error');
-                return;
-            }
-
-            const roleNames = {
-                ADMIN: 'Administrador',
-                AUXILIAR: 'Auxiliar de Enfermería',
-                ENFERMERO: 'Enfermero Jefe',
-                FISIOTERAPEUTA: 'Fisioterapeuta',
-                TERAPEUTA_OCUPACIONAL: 'Terapeuta Ocupacional',
-                FONOAUDIOLOGO: 'Fonoaudiólogo',
-                PSICOLOGO: 'Psicólogo',
-                NUTRICIONISTA: 'Nutricionista',
-                TRABAJADOR_SOCIAL: 'Trabajador Social',
-                TERAPEUTA_RESPIRATORIO: 'Terapeuta Respiratorio',
-                MEDICO: 'Médico',
-                COORDINADOR: 'Coordinador'
-            };
-
-            const storageKeys = {
-                AUXILIAR: 'vital_auxiliar',
-                ENFERMERO: 'vital_enfermero',
-                FISIOTERAPEUTA: 'vital_fisio',
-                TERAPEUTA_OCUPACIONAL: 'vital_to',
-                FONOAUDIOLOGO: 'vital_fono',
-                PSICOLOGO: 'vital_psico',
-                NUTRICIONISTA: 'vital_nutri',
-                TRABAJADOR_SOCIAL: 'vital_ts',
-                TERAPEUTA_RESPIRATORIO: 'vital_tr',
-                MEDICO: 'vital_medico',
-                COORDINADOR: 'vital_coordinador',
-                ADMIN: 'vital_admin'
-            };
-
-            currentUser = {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                roleName: roleNames[user.role] || user.role
-            };
-            currentRole = user.role;
-            storageKey = storageKeys[user.role] || 'vital_default';
-
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('mainScreen').classList.remove('hidden');
-            document.getElementById('userInfo').classList.remove('hidden');
-            document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('userRoleDisplay').textContent = currentUser.roleName;
-
-            buildTabs();
-            showToast(`✅ Bienvenido ${currentUser.name}`, 'success');
-        }
-
-        function logout() {
-            currentUser = null;
-            currentRole = null;
-            storageKey = null;
-            document.getElementById('mainScreen').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('userInfo').classList.add('hidden');
-            document.getElementById('loginPassword').value = '';
-            showToast('Sesión cerrada', 'success');
         }
 
         // ============================================================
@@ -735,7 +801,12 @@
         // ============================================================
         async function loadEducationTopics() {
             try {
-                const res = await fetch(`${API_URL}/api/education`);
+                const token = localStorage.getItem('vital_token');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                const res = await fetch(`${API_URL}/api/education`, { headers });
                 const data = await res.json();
                 if (data.success && data.data) {
                     educationTopics = data.data;
@@ -983,7 +1054,6 @@
             </div>`;
         }
 
-        let horaEntrada = null;
         window.registrarEntrada = function() {
             horaEntrada = new Date();
             document.getElementById('estadoTurno').innerHTML = `
@@ -1746,7 +1816,7 @@
                             <option>ADMIN</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Contraseña</label><input type="password" id="newUserPass" value="123456"></div>
+                    <div class="form-group"><label>Contraseña</label><input type="password" id="newUserPass" placeholder="Ingrese contraseña"></div>
                 </div>
                 <button class="btn btn-primary" onclick="crearUsuario()">➕ Crear</button>
             </div>
@@ -1781,37 +1851,62 @@
             </table>`;
         }
 
-        window.crearUsuario = function() {
-            const name = document.getElementById('newUserName').value;
-            const email = document.getElementById('newUserEmail').value;
-            if (!name || !email) {
-                showToast('Complete nombre y email', 'error');
+        window.crearUsuario = async function() {
+            const name = document.getElementById('newUserName').value.trim();
+            const email = document.getElementById('newUserEmail').value.trim();
+            const role = document.getElementById('newUserRole').value;
+            const password = document.getElementById('newUserPass').value;
+
+            if (!name || !email || !password) {
+                showToast('Complete todos los campos', 'error');
                 return;
             }
-            const users = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
-            users.push({
-                id: 'u' + Date.now(),
-                name,
-                email,
-                role: document.getElementById('newUserRole').value,
-                password: document.getElementById('newUserPass').value || '123456'
-            });
-            localStorage.setItem('vital_usuarios', JSON.stringify(users));
-            document.getElementById('newUserName').value = '';
-            document.getElementById('newUserEmail').value = '';
-            renderUsuarios();
-            loadMasterData();
-            showToast('✅ Usuario creado', 'success');
+
+            try {
+                const response = await apiRequest('/api/users', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, email, role, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('newUserName').value = '';
+                    document.getElementById('newUserEmail').value = '';
+                    document.getElementById('newUserPass').value = '';
+                    renderUsuarios();
+                    loadMasterData();
+                    showToast('✅ Usuario creado exitosamente', 'success');
+                } else {
+                    showToast('❌ ' + (data.message || 'Error al crear usuario'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('❌ Error al crear usuario', 'error');
+            }
         };
 
-        window.eliminarUsuario = function(id) {
+        window.eliminarUsuario = async function(id) {
             if (!confirm('¿Está seguro de eliminar este usuario?')) return;
-            let users = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
-            users = users.filter(u => u.id !== id);
-            localStorage.setItem('vital_usuarios', JSON.stringify(users));
-            renderUsuarios();
-            loadMasterData();
-            showToast('✅ Usuario eliminado', 'success');
+            
+            try {
+                const response = await apiRequest(`/api/users/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    renderUsuarios();
+                    loadMasterData();
+                    showToast('✅ Usuario eliminado', 'success');
+                } else {
+                    showToast('❌ ' + (data.message || 'Error al eliminar usuario'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('❌ Error al eliminar usuario', 'error');
+            }
         };
 
         // ============================================================
@@ -2243,6 +2338,7 @@
         console.log('✅ Vital Hogar Pro IPS - Sistema Cargado Correctamente');
         console.log('📋 Usuarios disponibles:', JSON.parse(localStorage.getItem('vital_usuarios') || '[]').length);
         console.log('🏥 Pacientes registrados:', JSON.parse(localStorage.getItem('vital_pacientes') || '[]').length);
+        console.log('🔐 API URL:', API_URL);
     </script>
 </body>
 </html>
