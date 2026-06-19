@@ -73,6 +73,8 @@
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         th, td { padding: 8px; text-align: left; border-bottom: 1px solid #334155; }
         th { color: #94a3b8; font-size: 0.65rem; text-transform: uppercase; }
+        .education-topic { background: #1e293b; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; border-left: 3px solid #8b5cf6; }
+        .education-topic strong { color: #8b5cf6; }
         @media (max-width: 480px) {
             body { padding: 8px; }
             .header { padding: 10px 12px; flex-direction: column; text-align: center; }
@@ -140,6 +142,7 @@
     let currentPatient = "Maria Gonzalez";
     let recognitionActive = false;
     let capturedPhotos = [];
+    let educationTopics = [];
 
     // ==================== LOGO POR DEFECTO ====================
     const DEFAULT_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAF8WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDUgNzkuMTYzNDk5LCAyMDE4LzA4LzEzLTE2OjQwOjIyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoTWFjaW50b3NoKSIgeG1wOkNyZWF0ZURhdGU9IjIwMjYtMDYtMTZUMTc6NDQ6MDAtMDU6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDI2LTA2LTE2VDE4OjU1OjQwLTA1OjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDI2LTA2LTE2VDE4OjU1OjQwLTA1OjAwIiBkYzpmb3JtYXQ9ImltYWdlL3BuZyIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMyIgcGhvdG9zaG9wOklDQ1Byb2ZpbGU9InNSR0IgSUVDNjE5NjYtMi4xIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjA5Y2Y3MjEwLTAw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';
@@ -320,6 +323,28 @@
         }
     }
 
+    // ==================== CARGAR TEMAS DE EDUCACIÓN ====================
+    async function loadEducationTopics() {
+        try {
+            const res = await fetch(`${API_URL}/api/education`);
+            const data = await res.json();
+            if(data.success && data.data) {
+                educationTopics = data.data;
+                localStorage.setItem('vital_education_topics', JSON.stringify(educationTopics));
+            }
+        } catch(e) {
+            const saved = localStorage.getItem('vital_education_topics');
+            if(saved) educationTopics = JSON.parse(saved);
+        }
+    }
+
+    function getEducationTopicsForSelect() {
+        if(educationTopics.length === 0) {
+            return '<option value="">-- Sin temas disponibles --</option>';
+        }
+        return educationTopics.map(t => `<option value="${t.title}">${t.title}</option>`).join('');
+    }
+
     // ==================== CONSTRUIR TABS ====================
     function buildTabs() {
         const tabsContainer = document.getElementById('tabsContainer');
@@ -345,42 +370,44 @@
             tabs = [
                 { id: 'usuarios', name: '👥 Usuarios' },
                 { id: 'pacientes', name: '🏥 Pacientes' },
+                { id: 'educationTopics', name: '📚 Temas Educación' },
                 { id: 'reportesGlobales', name: '📊 Reportes' }
             ];
         } else if(currentRole === 'ENFERMERO') {
             tabs = [
                 { id: 'supervision', name: '📋 Supervisión' },
                 { id: 'evolucion', name: '📝 Evolución' },
+                { id: 'educationTopics', name: '📚 Temas Educación' },
                 { id: 'reportes', name: '📄 Reportes' }
             ];
         } else if(currentRole === 'FISIOTERAPEUTA') {
             tabs = [
-                { id: 'evalFisio', name: '🦵 Evaluación' },
+                { id: 'evalFisio', name: '🦵 Evaluación Funcional' },
                 { id: 'reportes', name: '📄 Reportes' }
             ];
         } else if(currentRole === 'PSICOLOGO') {
             tabs = [
-                { id: 'evalPsico', name: '🧠 Evaluación' },
+                { id: 'evalPsico', name: '🧠 Evaluación Mental' },
                 { id: 'reportes', name: '📄 Reportes' }
             ];
         } else if(currentRole === 'NUTRICIONISTA') {
             tabs = [
-                { id: 'evalNutri', name: '🥗 Evaluación' },
+                { id: 'evalNutri', name: '🥗 Evaluación Nutricional' },
                 { id: 'reportes', name: '📄 Reportes' }
             ];
         } else if(currentRole === 'FONOAUDIOLOGO') {
             tabs = [
-                { id: 'evalFono', name: '🗣️ Evaluación' },
+                { id: 'evalFono', name: '🗣️ Evaluación Lenguaje' },
                 { id: 'reportes', name: '📄 Reportes' }
             ];
         } else if(currentRole === 'TERAPEUTA_OCUPACIONAL') {
             tabs = [
-                { id: 'evalTO', name: '🧩 Evaluación' },
+                { id: 'evalTO', name: '🧩 Evaluación AVD' },
                 { id: 'reportes', name: '📄 Reportes' }
             ];
         } else if(currentRole === 'TERAPEUTA_RESPIRATORIO') {
             tabs = [
-                { id: 'evalResp', name: '💨 Evaluación' },
+                { id: 'evalResp', name: '💨 Evaluación Respiratoria' },
                 { id: 'reportes', name: '📄 Reportes' }
             ];
         } else if(currentRole === 'MEDICO') {
@@ -391,6 +418,7 @@
         } else if(currentRole === 'COORDINADOR') {
             tabs = [
                 { id: 'turnosCoord', name: '📅 Turnos' },
+                { id: 'educationTopics', name: '📚 Temas Educación' },
                 { id: 'reportes', name: '📄 Reportes' }
             ];
         } else {
@@ -429,14 +457,15 @@
         else if(tabId === 'supervision') contentDiv.innerHTML = getSupervisionContent();
         else if(tabId === 'evolucion') contentDiv.innerHTML = getEvolucionContent();
         else if(tabId === 'evaluacion') contentDiv.innerHTML = getEvaluacionGenerica();
-        else if(tabId === 'evalFisio') contentDiv.innerHTML = getEvaluacionEspecialista('Evaluación Fisioterapéutica', 'evalFisio');
-        else if(tabId === 'evalPsico') contentDiv.innerHTML = getEvaluacionEspecialista('Evaluación Psicológica', 'evalPsico');
-        else if(tabId === 'evalNutri') contentDiv.innerHTML = getEvaluacionEspecialista('Evaluación Nutricional', 'evalNutri');
-        else if(tabId === 'evalFono') contentDiv.innerHTML = getEvaluacionEspecialista('Evaluación Fonoaudiológica', 'evalFono');
-        else if(tabId === 'evalTO') contentDiv.innerHTML = getEvaluacionEspecialista('Evaluación Terapia Ocupacional', 'evalTO');
-        else if(tabId === 'evalResp') contentDiv.innerHTML = getEvaluacionEspecialista('Evaluación Respiratoria', 'evalResp');
+        else if(tabId === 'evalFisio') contentDiv.innerHTML = getEvaluacionEspecialista('Fisioterapeuta', 'evalFisio');
+        else if(tabId === 'evalPsico') contentDiv.innerHTML = getEvaluacionEspecialista('Psicólogo', 'evalPsico');
+        else if(tabId === 'evalNutri') contentDiv.innerHTML = getEvaluacionEspecialista('Nutricionista', 'evalNutri');
+        else if(tabId === 'evalFono') contentDiv.innerHTML = getEvaluacionEspecialista('Fonoaudiólogo', 'evalFono');
+        else if(tabId === 'evalTO') contentDiv.innerHTML = getEvaluacionEspecialista('Terapeuta Ocupacional', 'evalTO');
+        else if(tabId === 'evalResp') contentDiv.innerHTML = getEvaluacionEspecialista('Terapeuta Respiratorio', 'evalResp');
         else if(tabId === 'prescripciones') contentDiv.innerHTML = getPrescripcionesContent();
         else if(tabId === 'turnosCoord') contentDiv.innerHTML = getTurnosCoordContent();
+        else if(tabId === 'educationTopics') contentDiv.innerHTML = getEducationTopicsContent();
         
         if(tabId === 'recibo' || tabId === 'entrega') setTimeout(initSignatures, 100);
         if(tabId === 'signos') cargarLista('signos', 'historialSignos');
@@ -444,6 +473,7 @@
         if(tabId === 'medicamentos') cargarLista('medicamentos', 'historialMedicamentos');
         if(tabId === 'entrega') cargarLista('entregas', 'historialEntregas');
         if(tabId === 'recibo') cargarLista('recibos', 'historialRecibos');
+        if(tabId === 'educationTopics') loadEducationTopics();
     }
 
     // ==================== RECIBO ====================
@@ -481,6 +511,7 @@
 
     // ==================== ACTIVIDADES ====================
     function getActividadesContent() {
+        const topicsHtml = getEducationTopicsForSelect();
         return `<div class="card"><div class="card-title">✅ Actividades Realizadas</div>
             <div id="listaActividades" style="margin-bottom:12px;"></div>
             
@@ -500,13 +531,7 @@
                 <label>🧠 Educación al Paciente/Familia</label>
                 <select id="educacionTipo">
                     <option value="">-- Seleccionar tema --</option>
-                    <option value="Higiene personal">Higiene personal</option>
-                    <option value="Medicamentos">Medicamentos</option>
-                    <option value="Signos de alarma">Signos de alarma</option>
-                    <option value="Movilización">Movilización</option>
-                    <option value="Alimentación">Alimentación</option>
-                    <option value="Prevención de caídas">Prevención de caídas</option>
-                    <option value="Cuidado de heridas">Cuidado de heridas</option>
+                    ${topicsHtml}
                 </select>
                 <textarea id="educacionDesc" rows="2" placeholder="Describa la educación brindada..." style="margin-top:6px;"></textarea>
             </div>
@@ -896,24 +921,137 @@
         showToast('📄 Reporte completo generado con firmas', 'success');
     };
 
-    // ==================== EVALUACIÓN ESPECIALISTA ====================
-    function getEvaluacionEspecialista(titulo, tipo) {
-        return `<div class="card"><div class="card-title">📝 ${titulo}</div>
+    // ==================== EVALUACIÓN ESPECIALISTA (CON CAMPOS ESPECÍFICOS) ====================
+    function getEvaluacionEspecialista(rol, tipo) {
+        let campos = '';
+        let firmaLabel = 'Firma del Profesional';
+        let firmaAdicional = '';
+        
+        if(rol === 'Fisioterapeuta') {
+            campos = `
+                <div class="grid-2">
+                    <div class="form-group"><label>🦵 Rango de movimiento</label><input type="text" placeholder="Ej: 0-120°"></div>
+                    <div class="form-group"><label>💪 Fuerza muscular (1-5)</label><input type="number" min="1" max="5" placeholder="Ej: 4"></div>
+                    <div class="form-group"><label>⚖️ Equilibrio</label><select><option>Normal</option><option>Disminuido</option><option>Alterado</option></select></div>
+                    <div class="form-group"><label>📝 Plan de ejercicios</label><textarea rows="2"></textarea></div>
+                </div>
+            `;
+            firmaAdicional = `<div><label>✍️ Firma del Paciente</label><canvas id="sigPaciente" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas('sigPaciente')">Borrar</button></div>`;
+        } else if(rol === 'Nutricionista') {
+            campos = `
+                <div class="grid-2">
+                    <div class="form-group"><label>⚖️ Peso (kg)</label><input type="number" step="0.1"></div>
+                    <div class="form-group"><label>📏 Talla (cm)</label><input type="number" step="0.1"></div>
+                    <div class="form-group"><label>📊 IMC</label><input type="text" placeholder="Se calcula automáticamente"></div>
+                    <div class="form-group"><label>🥗 Hábitos alimenticios</label><textarea rows="2"></textarea></div>
+                    <div class="form-group"><label>📋 Plan alimenticio</label><textarea rows="2"></textarea></div>
+                </div>
+            `;
+            firmaAdicional = `<div><label>✍️ Firma del Familiar</label><canvas id="sigFamiliar" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas('sigFamiliar')">Borrar</button></div>`;
+        } else if(rol === 'Psicólogo') {
+            campos = `
+                <div class="grid-2">
+                    <div class="form-group"><label>😔 Depresión</label><select><option>Leve</option><option>Moderada</option><option>Grave</option></select></div>
+                    <div class="form-group"><label>😰 Ansiedad</label><select><option>Leve</option><option>Moderada</option><option>Grave</option></select></div>
+                    <div class="form-group"><label>🧭 Orientación</label><select><option>Bien orientado</option><option>Desorientado</option><option>Confuso</option></select></div>
+                    <div class="form-group"><label>📝 Plan terapéutico</label><textarea rows="2"></textarea></div>
+                </div>
+            `;
+            firmaAdicional = `<div><label>✍️ Firma del Paciente</label><canvas id="sigPaciente" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas('sigPaciente')">Borrar</button></div>`;
+        } else if(rol === 'Fonoaudiólogo') {
+            campos = `
+                <div class="grid-2">
+                    <div class="form-group"><label>🗣️ Comprensión</label><select><option>Normal</option><option>Disminuida</option><option>Alterada</option></select></div>
+                    <div class="form-group"><label>🗣️ Expresión</label><select><option>Normal</option><option>Disminuida</option><option>Alterada</option></select></div>
+                    <div class="form-group"><label>🍽️ Deglución</label><select><option>Normal</option><option>Disminuida</option><option>Alterada</option></select></div>
+                    <div class="form-group"><label>📝 Plan de terapia</label><textarea rows="2"></textarea></div>
+                </div>
+            `;
+            firmaAdicional = `<div><label>✍️ Firma del Familiar</label><canvas id="sigFamiliar" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas('sigFamiliar')">Borrar</button></div>`;
+        } else if(rol === 'Terapeuta Ocupacional') {
+            campos = `
+                <div class="grid-2">
+                    <div class="form-group"><label>👕 Vestirse</label><select><option>Independiente</option><option>Asistido</option><option>Dependiente</option></select></div>
+                    <div class="form-group"><label>🍽️ Comer</label><select><option>Independiente</option><option>Asistido</option><option>Dependiente</option></select></div>
+                    <div class="form-group"><label>🚿 Bañarse</label><select><option>Independiente</option><option>Asistido</option><option>Dependiente</option></select></div>
+                    <div class="form-group"><label>🏠 Adaptaciones del hogar</label><textarea rows="2"></textarea></div>
+                </div>
+            `;
+            firmaAdicional = `<div><label>✍️ Firma del Familiar</label><canvas id="sigFamiliar" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas('sigFamiliar')">Borrar</button></div>`;
+        } else if(rol === 'Terapeuta Respiratorio') {
+            campos = `
+                <div class="grid-2">
+                    <div class="form-group"><label>💨 Patrón respiratorio</label><select><option>Normal</option><option>Taquipneico</option><option>Bradipneico</option></select></div>
+                    <div class="form-group"><label>🫁 Oxígeno (lpm)</label><input type="number" step="0.5"></div>
+                    <div class="form-group"><label>🫁 Secreciones</label><select><option>Ausentes</option><option>Escasas</option><option>Abundantes</option></select></div>
+                    <div class="form-group"><label>📋 Plan de tratamiento</label><textarea rows="2"></textarea></div>
+                </div>
+            `;
+            firmaAdicional = `<div><label>✍️ Firma del Familiar</label><canvas id="sigFamiliar" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas('sigFamiliar')">Borrar</button></div>`;
+        } else {
+            campos = `<div class="form-group"><label>📝 Notas clínicas</label><textarea rows="5"></textarea></div>`;
+        }
+
+        // Agregar fotos para ciertos roles
+        let fotosHtml = '';
+        if(['Fisioterapeuta', 'Terapeuta Ocupacional', 'Fonoaudiólogo', 'Terapeuta Respiratorio'].includes(rol)) {
+            fotosHtml = `
+                <div class="form-group" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">
+                    <label>📸 Evidencia Fotográfica</label>
+                    <input type="file" id="photoInputEval" accept="image/*" capture="environment" multiple>
+                    <button class="btn-secondary" style="margin-top:6px; width:100%;" onclick="capturarFotoEval()">📷 Tomar Foto</button>
+                    <div id="photoPreviewEval" class="photo-preview"></div>
+                </div>
+            `;
+        }
+
+        return `<div class="card"><div class="card-title">📝 Evaluación - ${rol}</div>
             <div class="form-group"><label>👤 Paciente</label><select><option>Maria Gonzalez</option><option>Pedro Ramirez</option></select></div>
-            <div class="form-group"><label>📝 Notas clínicas</label><textarea id="evalText" rows="5"></textarea></div>
+            ${campos}
+            ${fotosHtml}
             <button class="btn-voice" onclick="iniciarDictado('evalText')">🎙️ Dictar</button>
-            <button class="btn btn-primary" onclick="guardarEvaluacionEspecialista('${tipo}')">💾 Guardar Evaluación</button>
+            <div class="grid-2" style="margin-top:12px;">
+                <div><label>✍️ ${firmaLabel}</label><canvas id="sigProfesional" class="signature-canvas"></canvas><button class="btn-secondary btn-sm" onclick="clearCanvas('sigProfesional')">Borrar</button></div>
+                ${firmaAdicional}
+            </div>
+            <button class="btn btn-primary" style="margin-top:12px;" onclick="guardarEvaluacionEspecialista('${tipo}')">💾 Guardar Evaluación</button>
         </div><div class="card"><div class="card-title">📋 Historial</div><div id="historial-${tipo}"></div></div>`;
     }
 
-    window.guardarEvaluacionEspecialista = (tipo) => {
-        const texto = document.getElementById('evalText')?.value;
-        if(!texto) { showToast('Ingrese texto', 'error'); return; }
-        saveToLocal(tipo, { texto });
-        document.getElementById('evalText').value = '';
-        cargarLista(tipo, `historial-${tipo}`);
-        showToast('✅ Evaluación guardada', 'success');
-    };
+    // ==================== TEMAS DE EDUCACIÓN ====================
+    function getEducationTopicsContent() {
+        return `<div class="card"><div class="card-title">📚 Temas de Educación al Paciente</div>
+            <div class="form-group"><label>📝 Nuevo Tema</label><input type="text" id="newTopicTitle" placeholder="Ej: Cuidado de heridas"></div>
+            <div class="form-group"><label>📋 Descripción</label><textarea id="newTopicDesc" rows="2" placeholder="Descripción del tema..."></textarea></div>
+            <button class="btn btn-primary" onclick="crearTemaEducacion()">➕ Crear Tema</button>
+        </div>
+        <div class="card"><div class="card-title">📋 Temas Disponibles</div>
+            <div id="listaTemasEducacion"></div>
+        </div>`;
+    }
+
+    async function crearTemaEducacion() {
+        const title = document.getElementById('newTopicTitle').value;
+        const description = document.getElementById('newTopicDesc').value;
+        if(!title || !description) { showToast('Complete título y descripción', 'error'); return; }
+        try {
+            const res = await fetch(`${API_URL}/api/education`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, description, created_by: currentUser.id })
+            });
+            const data = await res.json();
+            if(data.success) {
+                showToast('✅ Tema creado', 'success');
+                document.getElementById('newTopicTitle').value = '';
+                document.getElementById('newTopicDesc').value = '';
+                loadEducationTopics();
+                cargarLista('educationTopics', 'listaTemasEducacion');
+            } else {
+                showToast('Error al crear tema', 'error');
+            }
+        } catch(e) { showToast('Error de conexión', 'error'); }
+    }
 
     // ==================== ADMIN ====================
     function getUsuariosContent() {
@@ -1109,7 +1247,7 @@
 
     // ==================== FIRMAS ====================
     function initSignatures() {
-        ['sigRecibo', 'sigEntrega', 'sigRecibe'].forEach(id => {
+        ['sigRecibo', 'sigEntrega', 'sigRecibe', 'sigProfesional', 'sigPaciente', 'sigFamiliar'].forEach(id => {
             const canvas = document.getElementById(id);
             if(!canvas) return;
             canvas.width = canvas.offsetWidth;
@@ -1188,6 +1326,7 @@
 
     // ==================== INICIALIZAR ====================
     loadMasterData();
+    loadEducationTopics();
     document.getElementById('loginUserSelect').addEventListener('change', cargarDatosUsuario);
 </script>
 </body>
