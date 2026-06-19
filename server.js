@@ -470,3 +470,27 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+// Importar patients
+const patients = require('./routes/patients');
+
+// ============================================================
+//  RUTAS: PACIENTES (PROTEGIDAS)
+// ============================================================
+
+// GET /api/patients - Listar pacientes (autenticación requerida)
+app.get('/api/patients', auth.protect, patients.getPatients);
+
+// GET /api/patients/:id - Obtener paciente específico (autenticación requerida)
+app.get('/api/patients/:id', auth.protect, patients.getPatientById);
+
+// POST /api/patients - Crear paciente (autenticación requerida)
+app.post('/api/patients', auth.protect, patients.createPatient);
+
+// PUT /api/patients/:id - Actualizar paciente (autenticación requerida)
+app.put('/api/patients/:id', auth.protect, patients.updatePatient);
+
+// DELETE /api/patients/:id - Desactivar paciente (SOLO ADMIN)
+app.delete('/api/patients/:id', auth.protect, auth.authorize('ADMIN'), patients.deletePatient);
+
+// PUT /api/patients/:id/reactivate - Reactivar paciente (SOLO ADMIN)
+app.put('/api/patients/:id/reactivate', auth.protect, auth.authorize('ADMIN'), patients.reactivatePatient);
