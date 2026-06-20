@@ -12,7 +12,6 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;color:#e2e8f0;padding:12px;min-height:100vh}
 
-/* HEADER */
 .header{background:linear-gradient(135deg,#1e293b,#0f172a);border-radius:20px;padding:12px 20px;margin-bottom:16px;border:1px solid #334155;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
 .logo-area{display:flex;align-items:center;gap:12px}
 .logo-area img{height:50px;width:auto;object-fit:contain;border-radius:8px}
@@ -27,11 +26,9 @@ body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;c
 .btn-select-pac{background:#8b5cf6;color:white;padding:4px 14px;border-radius:20px;cursor:pointer;font-size:.65rem;font-weight:600;border:none}
 .logout-btn{background:#ef4444;border:none;color:white;padding:4px 14px;border-radius:20px;cursor:pointer;font-size:.65rem;font-weight:600}
 
-/* CARD */
 .card{background:#1e293b;border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid #334155}
 .card-title{font-size:1rem;font-weight:600;color:#22c55e;margin-bottom:16px;border-left:3px solid #22c55e;padding-left:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 
-/* FORM */
 .form-group{margin-bottom:14px;position:relative}
 .form-group label{display:block;font-size:.65rem;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;letter-spacing:.5px;font-weight:600}
 .form-group input,.form-group select,.form-group textarea{width:100%;background:#0f172a!important;border:1px solid #334155;border-radius:10px;padding:10px 14px;color:#e2e8f0!important;font-size:.9rem}
@@ -39,7 +36,6 @@ body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;c
 .form-group select option{background:#1e293b;color:#e2e8f0}
 .form-group textarea{min-height:80px;resize:vertical}
 
-/* BUTTONS */
 .btn{padding:10px 20px;border-radius:12px;font-weight:600;cursor:pointer;border:none;font-size:.85rem;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
 .btn-primary{background:#22c55e;color:white;width:100%}
@@ -52,17 +48,14 @@ body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;c
 .btn-firma-clear{background:#ef4444;color:white;padding:4px 12px;border:none;border-radius:8px;font-size:.65rem;cursor:pointer}
 .btn-firma-clear:hover{background:#dc2626}
 
-/* GRIDS */
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 
-/* TABS */
 .tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;overflow-x:auto;padding-bottom:4px}
 .tab{padding:8px 16px;background:#1e293b;border-radius:30px;cursor:pointer;font-size:.75rem;font-weight:500;white-space:nowrap;border:1px solid transparent}
 .tab:hover{background:#334155}
 .tab.active{background:#22c55e;color:white}
 
-/* FIRMAS - SISTEMA MEJORADO */
 .firma-wrapper{background:#0f172a;border-radius:10px;padding:12px;border:1px solid #334155;margin-bottom:10px}
 .firma-wrapper .firma-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .firma-wrapper .firma-header label{font-size:.7rem;text-transform:uppercase;color:#94a3b8;font-weight:600}
@@ -73,7 +66,6 @@ body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;c
 .firma-wrapper .firma-preview.visible{display:block}
 .signature-canvas{background:white;border-radius:10px;width:100%;height:120px;border:2px solid #22c55e;touch-action:none;cursor:crosshair;display:block}
 
-/* Otros */
 .hidden{display:none!important}
 .text-muted{color:#94a3b8}
 .activity-item{background:#0f172a;padding:10px 14px;border-radius:10px;margin-bottom:6px;border-left:3px solid #22c55e;font-size:.85rem}
@@ -93,14 +85,12 @@ body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;c
 .estado-pendiente{color:#f97316;font-weight:600}
 .estado-completado{color:#22c55e;font-weight:600}
 
-/* Login */
 .login-container{max-width:420px;margin:40px auto}
 .login-container .card{padding:30px}
 .login-container .card-title{font-size:1.2rem;text-align:center;border-left:none;padding-left:0;justify-content:center}
 .login-error{color:#ef4444;font-size:.8rem;margin-bottom:10px;display:none;padding:8px 12px;background:#ef444420;border-radius:8px;border:1px solid #ef4444}
 .password-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1.2rem;padding:0;z-index:10}
 
-/* Responsive */
 @media(max-width:480px){
 body{padding:8px}
 .header{padding:10px 14px;flex-direction:column;text-align:center}
@@ -173,28 +163,28 @@ body{padding:8px}
 
 <script>
 // ============================================================
-// VITAL HOGAR PRO v3.0 - SISTEMA COMPLETO MEJORADO
+// VITAL HOGAR PRO v3.0 - CONECTADO A BACKEND REAL
 // ============================================================
 
-// ---------- CONFIGURACIÓN ----------
+// ==================== CONFIGURACIÓN ====================
 const CONFIG = {
+    // ¡CAMBIAR ESTA URL POR LA DE TU BACKEND EN RENDER!
     API_URL: 'https://vital-backend-1-y4kt.onrender.com',
     LOGO_URL: 'https://i.imgur.com/nOJS04w.jpeg',
     STORAGE_PREFIX: 'vital_'
 };
 
-// ---------- ESTADO GLOBAL ----------
+// ==================== ESTADO GLOBAL ====================
 const STATE = {
     user: null,
     role: null,
     token: null,
     pacienteActual: null,
     educationTopics: [],
-    firmaGuardada: {}, // { canvasId: dataURL }
     horaEntrada: null
 };
 
-// ---------- UTILIDADES ----------
+// ==================== UTILIDADES ====================
 function $(id) { return document.getElementById(id); }
 function qs(sel, ctx) { return (ctx || document).querySelector(sel); }
 function qsa(sel, ctx) { return (ctx || document).querySelectorAll(sel); }
@@ -202,11 +192,6 @@ function qsa(sel, ctx) { return (ctx || document).querySelectorAll(sel); }
 function cleanText(t) {
     if (t === null || t === undefined) return '';
     return String(t).trim();
-}
-
-function getStorageKey() {
-    if (!STATE.user) return null;
-    return CONFIG.STORAGE_PREFIX + STATE.role.toLowerCase() + '_' + STATE.user.id;
 }
 
 function getPacienteId() {
@@ -234,7 +219,7 @@ function formatFecha(fecha) {
     return new Date(fecha).toLocaleString();
 }
 
-// ---------- TOAST ----------
+// ==================== TOAST ====================
 function showToast(msg, type = 'success') {
     const toast = $('toast');
     toast.textContent = msg;
@@ -243,7 +228,7 @@ function showToast(msg, type = 'success') {
     toast._timeout = setTimeout(() => toast.classList.remove('show'), 3500);
 }
 
-// ---------- VALIDACIÓN PACIENTE ----------
+// ==================== VALIDACIÓN PACIENTE ====================
 function validarPaciente() {
     if (!STATE.pacienteActual) {
         showToast('⚠️ Seleccione un paciente primero', 'warning');
@@ -257,19 +242,43 @@ function validarPaciente() {
     return true;
 }
 
-// ============================================================
-// SISTEMA DE FIRMAS - COMPLETAMENTE RENOVADO
-// ============================================================
+// ==================== API HELPER ====================
+async function apiRequest(endpoint, options = {}) {
+    const token = localStorage.getItem(CONFIG.STORAGE_PREFIX + 'token');
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    if (token) {
+        headers['Authorization'] = 'Bearer ' + token;
+    }
 
+    try {
+        const response = await fetch(CONFIG.API_URL + endpoint, {
+            method: options.method || 'GET',
+            headers: headers,
+            body: options.body || null
+        });
+
+        if (response.status === 401) {
+            showToast('Sesión expirada, inicie sesión nuevamente', 'error');
+            logout();
+            throw new Error('Sesión expirada');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
+}
+
+// ==================== SISTEMA DE FIRMAS ====================
 class FirmaManager {
     constructor() {
         this.canvases = {};
         this.inicializado = false;
     }
 
-    /**
-     * Inicializa todos los canvas de firma en el DOM
-     */
     inicializar() {
         if (this.inicializado) return;
         
@@ -288,11 +297,7 @@ class FirmaManager {
         console.log('✅ Sistema de firmas inicializado');
     }
 
-    /**
-     * Inicializa un canvas individual
-     */
     _inicializarCanvas(canvas) {
-        // Configurar tamaño
         const rect = canvas.getBoundingClientRect();
         const width = rect.width || canvas.offsetWidth || 300;
         const height = rect.height || canvas.offsetHeight || 120;
@@ -301,7 +306,6 @@ class FirmaManager {
 
         const ctx = canvas.getContext('2d');
         
-        // Restaurar firma guardada si existe
         const saved = sessionStorage.getItem('firma_' + canvas.id);
         if (saved) {
             this._cargarFirmaGuardada(canvas, saved);
@@ -311,7 +315,6 @@ class FirmaManager {
             this._actualizarStatus(canvas.id, false);
         }
 
-        // Configurar eventos
         let drawing = false;
         let lastX = 0, lastY = 0;
 
@@ -360,21 +363,15 @@ class FirmaManager {
             }
         };
 
-        // Eventos mouse
         canvas.addEventListener('mousedown', startDraw);
         canvas.addEventListener('mousemove', draw);
         canvas.addEventListener('mouseup', endDraw);
         canvas.addEventListener('mouseleave', endDraw);
-
-        // Eventos touch
         canvas.addEventListener('touchstart', startDraw, { passive: false });
         canvas.addEventListener('touchmove', draw, { passive: false });
         canvas.addEventListener('touchend', endDraw);
     }
 
-    /**
-     * Dibuja el placeholder en el canvas
-     */
     _dibujarPlaceholder(canvas) {
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = 'white';
@@ -386,9 +383,6 @@ class FirmaManager {
         ctx.fillText('✍️ Firme aquí', canvas.width / 2, canvas.height / 2);
     }
 
-    /**
-     * Carga una firma guardada en el canvas
-     */
     _cargarFirmaGuardada(canvas, dataURL) {
         const img = new Image();
         img.onload = () => {
@@ -401,21 +395,16 @@ class FirmaManager {
         img.src = dataURL;
     }
 
-    /**
-     * Guarda la firma en sessionStorage
-     */
     _guardarFirma(canvasId) {
         const canvas = $(canvasId);
         if (!canvas) return;
 
         try {
             const ctx = canvas.getContext('2d');
-            // Verificar si hay dibujo (no vacío)
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = imageData.data;
             let hasDrawing = false;
             for (let i = 0; i < data.length; i += 4) {
-                // Umbral más bajo para detectar trazos
                 if (data[i] < 230 || data[i+1] < 230 || data[i+2] < 230) {
                     hasDrawing = true;
                     break;
@@ -429,7 +418,6 @@ class FirmaManager {
                 this._mostrarPreview(canvasId, dataURL);
                 showToast('✅ Firma guardada', 'success');
             } else {
-                // Si está vacío, eliminar guardado
                 sessionStorage.removeItem('firma_' + canvasId);
                 this._actualizarStatus(canvasId, false);
                 this._ocultarPreview(canvasId);
@@ -439,9 +427,6 @@ class FirmaManager {
         }
     }
 
-    /**
-     * Actualiza el indicador de estado de la firma
-     */
     _actualizarStatus(canvasId, guardada) {
         const status = document.getElementById('status_' + canvasId);
         if (!status) return;
@@ -454,9 +439,6 @@ class FirmaManager {
         }
     }
 
-    /**
-     * Muestra preview de la firma
-     */
     _mostrarPreview(canvasId, dataURL) {
         const preview = document.getElementById('preview_' + canvasId);
         if (!preview) return;
@@ -464,9 +446,6 @@ class FirmaManager {
         preview.classList.add('visible');
     }
 
-    /**
-     * Oculta preview de la firma
-     */
     _ocultarPreview(canvasId) {
         const preview = document.getElementById('preview_' + canvasId);
         if (!preview) return;
@@ -474,16 +453,10 @@ class FirmaManager {
         preview.src = '';
     }
 
-    /**
-     * Obtiene la firma como dataURL
-     */
     obtenerFirma(canvasId) {
         return sessionStorage.getItem('firma_' + canvasId) || null;
     }
 
-    /**
-     * Limpia una firma
-     */
     limpiar(canvasId) {
         const canvas = $(canvasId);
         if (!canvas) return;
@@ -494,16 +467,6 @@ class FirmaManager {
         showToast('Firma borrada', 'warning');
     }
 
-    /**
-     * Verifica si una firma está guardada
-     */
-    estaGuardada(canvasId) {
-        return sessionStorage.getItem('firma_' + canvasId) !== null;
-    }
-
-    /**
-     * Limpia todas las firmas
-     */
     limpiarTodas() {
         const canvasIds = [
             'sigRecibo', 'sigEntrega', 'sigRecibe', 
@@ -515,13 +478,9 @@ class FirmaManager {
     }
 }
 
-// Instancia global del sistema de firmas
 const firmaManager = new FirmaManager();
 
-// ============================================================
-// FUNCIONES DE FIRMA - EXPUESTAS GLOBALMENTE
-// ============================================================
-
+// ==================== FUNCIONES DE FIRMA GLOBALES ====================
 window.limpiarFirma = function(canvasId) {
     firmaManager.limpiar(canvasId);
 };
@@ -530,255 +489,100 @@ window.obtenerFirma = function(canvasId) {
     return firmaManager.obtenerFirma(canvasId);
 };
 
-// ============================================================
-// SISTEMA DE DATOS - LOCAL STORAGE MEJORADO
-// ============================================================
-
+// ==================== DATA MANAGER (CON BACKEND) ====================
 class DataManager {
-    /**
-     * Guarda un registro en el localStorage del día actual
-     */
-    guardar(tipo, data) {
-        const key = getStorageKey();
-        if (!key) { showToast('No hay sesión activa', 'error'); return false; }
+    async guardar(tipo, data) {
         if (!validarPaciente()) return false;
-
-        let all;
-        try {
-            all = JSON.parse(localStorage.getItem(key) || '{}');
-        } catch (e) {
-            all = {};
+        if (!STATE.user) {
+            showToast('No hay sesión activa', 'error');
+            return false;
         }
 
-        all[tipo] = all[tipo] || [];
-        
-        const registro = {
+        const payload = {
             ...data,
-            timestamp: getTimestamp(),
-            user_id: STATE.user ? STATE.user.id : null,
-            user_name: STATE.user ? STATE.user.name : 'Anónimo',
-            user_role: STATE.role,
-            tipo_turno: getTipoTurno(),
-            paciente_id: getPacienteId(),
-            paciente_nombre: getPacienteNombre()
+            patient_id: getPacienteId(),
+            user_id: STATE.user.id,
+            tipo_turno: getTipoTurno()
         };
 
-        all[tipo].push(registro);
-        localStorage.setItem(key, JSON.stringify(all));
-        showToast(tipo + ' guardado ✅', 'success');
-        return true;
+        // Mapear tipo a endpoint
+        const endpoints = {
+            'actividades': '/api/actividades',
+            'signos': '/api/signos',
+            'medicamentos': '/api/medicamentos',
+            'entregas': '/api/entregas',
+            'recibos': '/api/recibos'
+        };
+
+        const endpoint = endpoints[tipo];
+        if (!endpoint) {
+            showToast('Tipo no soportado: ' + tipo, 'error');
+            return false;
+        }
+
+        try {
+            const result = await apiRequest(endpoint, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+
+            if (result.success) {
+                showToast(tipo + ' guardado ✅', 'success');
+                return true;
+            } else {
+                showToast('Error: ' + (result.error || 'Desconocido'), 'error');
+                return false;
+            }
+        } catch (error) {
+            showToast('Error al guardar', 'error');
+            return false;
+        }
     }
 
-    /**
-     * Obtiene registros del día de hoy
-     */
-    obtenerHoy(tipo) {
-        const key = getStorageKey();
-        if (!key) return [];
+    async obtener(tipo) {
+        if (!STATE.user) return [];
+
+        const endpoints = {
+            'actividades': `/api/actividades/${STATE.user.id}`,
+            'signos': `/api/signos/${STATE.user.id}`,
+            'medicamentos': `/api/medicamentos/${STATE.user.id}`,
+            'entregas': `/api/entregas/${STATE.user.id}`,
+            'recibos': `/api/recibos/${STATE.user.id}`
+        };
+
+        const endpoint = endpoints[tipo];
+        if (!endpoint) return [];
+
         try {
-            const all = JSON.parse(localStorage.getItem(key) || '{}');
-            const items = all[tipo] || [];
-            const hoy = getHoy();
-            return items.filter(item => {
-                return item.timestamp && new Date(item.timestamp).toDateString() === hoy;
-            });
-        } catch (e) {
+            const result = await apiRequest(endpoint);
+            if (result.success && result.data) {
+                return result.data;
+            }
+            return [];
+        } catch (error) {
+            console.error('Error obteniendo', tipo, error);
             return [];
         }
     }
 
-    /**
-     * Obtiene registros del día de hoy para un paciente específico
-     */
-    obtenerHoyPaciente(tipo, pacienteId) {
+    async obtenerHoy(tipo) {
+        const items = await this.obtener(tipo);
+        const hoy = getHoy();
+        return items.filter(item => {
+            return item.created_at && new Date(item.created_at).toDateString() === hoy;
+        });
+    }
+
+    async obtenerHoyPaciente(tipo, pacienteId) {
         if (!pacienteId) return [];
-        const items = this.obtenerHoy(tipo);
-        return items.filter(item => item.paciente_id === pacienteId);
-    }
-
-    /**
-     * Obtiene el último registro de hoy
-     */
-    obtenerUltimoHoy(tipo) {
-        const items = this.obtenerHoy(tipo);
-        return items.length > 0 ? items[items.length - 1] : null;
-    }
-
-    /**
-     * Obtiene todos los registros de un tipo
-     */
-    obtenerTodos(tipo) {
-        const key = getStorageKey();
-        if (!key) return [];
-        try {
-            const all = JSON.parse(localStorage.getItem(key) || '{}');
-            return all[tipo] || [];
-        } catch (e) {
-            return [];
-        }
-    }
-
-    /**
-     * Limpia los registros del día de hoy
-     */
-    limpiarHoy(tipo) {
-        const key = getStorageKey();
-        if (!key) return;
-        try {
-            const all = JSON.parse(localStorage.getItem(key) || '{}');
-            const hoy = getHoy();
-            all[tipo] = (all[tipo] || []).filter(item => {
-                return !(item.timestamp && new Date(item.timestamp).toDateString() === hoy);
-            });
-            localStorage.setItem(key, JSON.stringify(all));
-        } catch (e) {}
+        const items = await this.obtenerHoy(tipo);
+        return items.filter(item => item.patient_id === pacienteId);
     }
 }
 
 const dataManager = new DataManager();
 
-// ============================================================
-// FUNCIONES DE RENDERIZADO
-// ============================================================
-
-function renderizarLista(tipo, elementId, maxItems = 10) {
-    const div = $(elementId);
-    if (!div) return;
-    
-    const items = dataManager.obtenerHoy(tipo);
-    if (items.length === 0) {
-        div.innerHTML = '<p class="text-muted" style="font-size:0.85rem;">No hay registros hoy</p>';
-        return;
-    }
-
-    div.innerHTML = items.slice(-maxItems).reverse().map((item, idx) => {
-        const timestamp = item.timestamp ? new Date(item.timestamp).toLocaleString() : '--:--';
-        let contenido = item.resumen || item.actividad || item.nombre || item.texto || JSON.stringify(item);
-        if (contenido.length > 100) contenido = contenido.substring(0, 100) + '...';
-        return `<div class="activity-item">
-            <strong>${timestamp}</strong><br>
-            ${contenido}
-            ${item.paciente_nombre ? `<br><span style="color:#94a3b8;font-size:0.7rem;">👤 ${item.paciente_nombre}</span>` : ''}
-        </div>`;
-    }).join('');
-}
-
-// ============================================================
-// FUNCIONES DE REPORTES
-// ============================================================
-
-function getJsPDF() {
-    if (window.jspdf && window.jspdf.jsPDF) return window.jspdf.jsPDF;
-    if (window.jsPDF) return window.jsPDF;
-    return null;
-}
-
-function addLogoToPDF(doc) {
-    try {
-        doc.addImage(CONFIG.LOGO_URL, 'JPEG', 15, 10, 35, 12);
-    } catch (e) {
-        doc.setFontSize(14);
-        doc.setTextColor(34, 197, 94);
-        doc.text('VITAL HOGAR', 15, 18);
-        doc.setTextColor(0, 0, 0);
-    }
-}
-
-function generarReportePDF(paciente, titulo, secciones) {
-    const PDFClass = getJsPDF();
-    if (!PDFClass) { showToast('PDF no disponible', 'error'); return; }
-    
-    const doc = new PDFClass();
-    let y = 30;
-    
-    function checkPage() {
-        if (y > 260) {
-            doc.addPage();
-            y = 20;
-        }
-    }
-
-    // Encabezado
-    addLogoToPDF(doc);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(34, 197, 94);
-    doc.text('VITAL HOGAR PRO IPS', 55, 18);
-    doc.setTextColor(0, 0, 0);
-    y = 30;
-    
-    doc.setFontSize(12);
-    doc.text(titulo || 'REPORTE DEL PACIENTE', 20, y); y += 8;
-    doc.setFontSize(14);
-    doc.text((paciente?.name || 'Sin paciente').toUpperCase(), 20, y); y += 8;
-    doc.setFontSize(9);
-    doc.text('Documento: ' + (paciente?.document || 'N/A'), 20, y); y += 5;
-    doc.text('Fecha: ' + new Date().toLocaleString(), 20, y); y += 5;
-    doc.text('Profesional: ' + (STATE.user?.name || 'Desconocido'), 20, y); y += 5;
-    doc.text('Tipo turno: ' + getTipoTurno(), 20, y); y += 10;
-
-    // Secciones
-    if (secciones) {
-        secciones.forEach(seccion => {
-            checkPage();
-            doc.setFontSize(11);
-            doc.setFont('helvetica', 'bold');
-            doc.text(seccion.titulo, 20, y); y += 7;
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(9);
-            
-            if (seccion.items && seccion.items.length > 0) {
-                seccion.items.slice(-5).forEach((item, idx) => {
-                    checkPage();
-                    doc.text(`${idx+1}. ${seccion.render ? seccion.render(item) : JSON.stringify(item).substring(0, 80)}`, 25, y);
-                    y += 6;
-                });
-            } else {
-                doc.text('Sin registros', 25, y);
-                y += 6;
-            }
-            y += 5;
-        });
-    }
-
-    // Firmas
-    const firmas = secciones?.firmas || [];
-    if (firmas.length > 0) {
-        checkPage();
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text('FIRMAS', 20, y); y += 10;
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-        
-        firmas.forEach(f => {
-            checkPage();
-            const data = firmaManager.obtenerFirma(f.id);
-            if (data) {
-                doc.text(f.label + ':', 20, y);
-                try {
-                    doc.addImage(data, 'PNG', 120, y - 5, 60, 20);
-                } catch (e) {
-                    doc.text('[Firma registrada]', 120, y);
-                }
-                y += 25;
-            } else {
-                doc.text(f.label + ': NO REGISTRADA', 20, y);
-                y += 8;
-            }
-        });
-    }
-
-    const fechaStr = new Date().toISOString().split('T')[0];
-    const nombreArchivo = `reporte_${(paciente?.name || 'paciente').replace(/\s+/g, '')}_${fechaStr}.pdf`;
-    doc.save(nombreArchivo);
-    showToast('Reporte generado ✅', 'success');
-}
-
-// ============================================================
-// FUNCIONES DE LOGIN Y SESIÓN
-// ============================================================
-
+// ==================== LOGIN ====================
 async function login() {
     const email = $('loginEmail').value.trim();
     const password = $('loginPassword').value;
@@ -796,22 +600,20 @@ async function login() {
     btn.innerHTML = 'Verificando...';
 
     try {
-        const response = await fetch(CONFIG.API_URL + '/api/auth/login', {
+        const result = await apiRequest('/api/auth/login', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
-        const data = await response.json();
 
-        if (!data.success) {
-            errorDiv.textContent = data.message || 'Credenciales inválidas';
+        if (!result.success) {
+            errorDiv.textContent = result.message || 'Credenciales inválidas';
             errorDiv.style.display = 'block';
             showToast('Credenciales inválidas', 'error');
             return;
         }
 
-        const user = data.data.user;
-        const token = data.data.token;
+        const user = result.data.user;
+        const token = result.data.token;
 
         localStorage.setItem(CONFIG.STORAGE_PREFIX + 'token', token);
         localStorage.setItem(CONFIG.STORAGE_PREFIX + 'user', JSON.stringify(user));
@@ -924,13 +726,28 @@ function actualizarAlertaPaciente() {
     }
 }
 
-// ============================================================
-// SELECCIÓN DE PACIENTE
-// ============================================================
-
+// ==================== SELECCIÓN DE PACIENTE ====================
 function seleccionarPacienteHeader() {
-    const pacientes = JSON.parse(localStorage.getItem(CONFIG.STORAGE_PREFIX + 'pacientes') || '[]');
-    if (pacientes.length === 0) {
+    cargarPacientesDesdeBackend();
+}
+
+async function cargarPacientesDesdeBackend() {
+    try {
+        const result = await apiRequest('/api/patients');
+        if (result.success && result.data) {
+            const pacientes = result.data;
+            localStorage.setItem(CONFIG.STORAGE_PREFIX + 'pacientes', JSON.stringify(pacientes));
+            mostrarSelectorPaciente(pacientes);
+        } else {
+            showToast('Error al cargar pacientes', 'error');
+        }
+    } catch (error) {
+        showToast('Error al cargar pacientes', 'error');
+    }
+}
+
+function mostrarSelectorPaciente(pacientes) {
+    if (!pacientes || pacientes.length === 0) {
         showToast('No hay pacientes registrados', 'warning');
         return;
     }
@@ -998,10 +815,7 @@ window.cerrarModalPaciente = function() {
     if (modal) modal.remove();
 };
 
-// ============================================================
-// CONSTRUCCIÓN DE TABS
-// ============================================================
-
+// ==================== CONSTRUCCIÓN DE TABS ====================
 function construirTabs() {
     const container = $('tabsContainer');
     let tabs = [];
@@ -1047,10 +861,7 @@ function construirTabs() {
     }
 }
 
-// ============================================================
-// CARGA DE TABS
-// ============================================================
-
+// ==================== CARGA DE TABS ====================
 function cargarTab(tabId) {
     const content = $('dynamicContent');
     let html = '';
@@ -1070,27 +881,42 @@ function cargarTab(tabId) {
 
     content.innerHTML = html;
 
-    // Inicializar firmas después de renderizar
     setTimeout(() => {
         firmaManager.inicializar();
     }, 100);
 
-    // Cargar listas
     setTimeout(() => {
         if (tabId === 'signos') renderizarLista('signos', 'historialSignos');
         if (tabId === 'actividades') renderizarLista('actividades', 'listaActividades');
         if (tabId === 'medicamentos') renderizarLista('medicamentos', 'historialMedicamentos');
         if (tabId === 'entrega') renderizarLista('entregas', 'historialEntregas');
         if (tabId === 'recibo') renderizarLista('recibos', 'historialRecibos');
-        if (tabId === 'usuarios') renderListaUsuarios();
-        if (tabId === 'pacientes') renderListaPacientes();
     }, 200);
 }
 
-// ============================================================
-// RENDERIZADO DE TABS
-// ============================================================
+// ==================== RENDERIZADO DE LISTAS ====================
+async function renderizarLista(tipo, elementId) {
+    const div = $(elementId);
+    if (!div) return;
+    
+    const items = await dataManager.obtenerHoy(tipo);
+    if (items.length === 0) {
+        div.innerHTML = '<p class="text-muted" style="font-size:0.85rem;">No hay registros hoy</p>';
+        return;
+    }
 
+    div.innerHTML = items.slice(-10).reverse().map((item, idx) => {
+        const timestamp = item.created_at ? new Date(item.created_at).toLocaleString() : '--:--';
+        let contenido = item.resumen || item.actividad || item.nombre || item.texto || JSON.stringify(item);
+        if (contenido.length > 100) contenido = contenido.substring(0, 100) + '...';
+        return `<div class="activity-item">
+            <strong>${timestamp}</strong><br>
+            ${contenido}
+        </div>`;
+    }).join('');
+}
+
+// ==================== RENDERIZADO DE TABS ====================
 function renderRecibo() {
     return `
         <div class="card">
@@ -1128,7 +954,7 @@ function renderRecibo() {
     `;
 }
 
-window.confirmarRecibo = function() {
+window.confirmarRecibo = async function() {
     if (!validarPaciente()) return;
     const estado = $('reciboEstado').value.trim();
     if (!estado) {
@@ -1136,7 +962,7 @@ window.confirmarRecibo = function() {
         return;
     }
 
-    dataManager.guardar('recibos', {
+    await dataManager.guardar('recibos', {
         estado: estado,
         quienEntrega: $('reciboQuien').value
     });
@@ -1194,11 +1020,17 @@ window.registrarSalida = function() {
         <p>⏱️ Duración: ${duracion}</p>
     `;
 
-    dataManager.guardar('turnos', {
+    // Guardar turno en localStorage (no en BD porque no hay endpoint específico)
+    const key = CONFIG.STORAGE_PREFIX + 'turnos_' + getPacienteId();
+    let turnos;
+    try { turnos = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) { turnos = []; }
+    turnos.push({
         entrada: STATE.horaEntrada.toISOString(),
         salida: salida.toISOString(),
-        duracion: duracion
+        duracion: duracion,
+        fecha: getTimestamp()
     });
+    localStorage.setItem(key, JSON.stringify(turnos));
 
     STATE.horaEntrada = null;
     showToast('Salida registrada ✅', 'success');
@@ -1238,7 +1070,7 @@ function renderActividades() {
     `;
 }
 
-window.agregarActividad = function() {
+window.agregarActividad = async function() {
     if (!validarPaciente()) return;
     const hora = $('horaActividad').value;
     if (!hora) {
@@ -1246,7 +1078,7 @@ window.agregarActividad = function() {
         return;
     }
 
-    dataManager.guardar('actividades', {
+    await dataManager.guardar('actividades', {
         actividad: $('tipoActividad').value,
         hora: hora,
         observacion: $('obsActividad').value.trim()
@@ -1285,7 +1117,7 @@ function renderSignos() {
     `;
 }
 
-window.guardarSignos = function() {
+window.guardarSignos = async function() {
     if (!validarPaciente()) return;
     const hora = $('horaSignos').value;
     if (!hora) {
@@ -1311,7 +1143,7 @@ window.guardarSignos = function() {
         alertEl.innerHTML = `<div class="alert-box alert-${tipoAlerta}">${alertMsg}</div>`;
     }
 
-    dataManager.guardar('signos', {
+    await dataManager.guardar('signos', {
         spo2: spo2,
         fc: $('fc').value,
         fr: $('fr').value,
@@ -1357,7 +1189,7 @@ function renderMedicamentos() {
     `;
 }
 
-window.guardarMedicamento = function() {
+window.guardarMedicamento = async function() {
     if (!validarPaciente()) return;
     const nombre = $('medNombre').value.trim();
     const hora = $('medHora').value;
@@ -1366,7 +1198,7 @@ window.guardarMedicamento = function() {
         return;
     }
 
-    dataManager.guardar('medicamentos', {
+    await dataManager.guardar('medicamentos', {
         nombre: nombre,
         dosis: $('medDosis').value.trim(),
         hora: hora,
@@ -1434,7 +1266,7 @@ function renderEntrega() {
     `;
 }
 
-window.confirmarEntrega = function() {
+window.confirmarEntrega = async function() {
     if (!validarPaciente()) return;
     const resumen = $('entregaResumen').value.trim();
     if (!resumen) {
@@ -1450,7 +1282,7 @@ window.confirmarEntrega = function() {
         return;
     }
 
-    dataManager.guardar('entregas', {
+    await dataManager.guardar('entregas', {
         resumen: resumen,
         pendientes: $('entregaPendientes').value.trim(),
         quienRecibe: $('entregaQuien').value,
@@ -1470,110 +1302,141 @@ window.confirmarEntrega = function() {
 };
 
 function renderReportes() {
-    const pacientes = JSON.parse(localStorage.getItem(CONFIG.STORAGE_PREFIX + 'pacientes') || '[]');
-    let options = '<option value="">-- Seleccionar paciente --</option>';
-    pacientes.forEach(p => {
-        const selected = STATE.pacienteActual && STATE.pacienteActual.id === p.id ? 'selected' : '';
-        options += `<option value="${p.id}" ${selected}>${p.name}</option>`;
-    });
-
     return `
         <div class="card">
             <div class="card-title">📄 Generar Reporte</div>
             <div class="tip-box"><strong>📌 NOTA:</strong> El reporte incluye TODOS los registros del día de hoy.</div>
-            <div class="form-group">
-                <label>👤 Paciente</label>
-                <select id="reportePaciente">${options}</select>
-            </div>
             <button class="btn btn-primary" onclick="generarReporte()">📥 Generar Reporte</button>
             <button class="btn btn-archive" onclick="archivarDia()">🗂️ Archivar Día y Limpiar</button>
         </div>
     `;
 }
 
-window.generarReporte = function() {
-    const select = $('reportePaciente');
-    const pacienteId = select ? select.value : null;
-    if (!pacienteId) {
-        showToast('Seleccione un paciente', 'warning');
-        return;
-    }
-
-    const pacientes = JSON.parse(localStorage.getItem(CONFIG.STORAGE_PREFIX + 'pacientes') || '[]');
-    const paciente = pacientes.find(p => p.id === pacienteId);
-    if (!paciente) {
-        showToast('Paciente no encontrado', 'error');
-        return;
-    }
-
+window.generarReporte = async function() {
+    if (!validarPaciente()) return;
+    const paciente = STATE.pacienteActual;
+    
     // Obtener datos del día
-    const actividades = dataManager.obtenerHoyPaciente('actividades', pacienteId);
-    const signos = dataManager.obtenerHoyPaciente('signos', pacienteId);
-    const medicamentos = dataManager.obtenerHoyPaciente('medicamentos', pacienteId);
-    const entregas = dataManager.obtenerHoyPaciente('entregas', pacienteId);
-    const recibos = dataManager.obtenerHoyPaciente('recibos', pacienteId);
+    const actividades = await dataManager.obtenerHoyPaciente('actividades', paciente.id);
+    const signos = await dataManager.obtenerHoyPaciente('signos', paciente.id);
+    const medicamentos = await dataManager.obtenerHoyPaciente('medicamentos', paciente.id);
+    const entregas = await dataManager.obtenerHoyPaciente('entregas', paciente.id);
+    const recibos = await dataManager.obtenerHoyPaciente('recibos', paciente.id);
 
     // Verificar firmas
     const firmaEntrega = firmaManager.obtenerFirma('sigEntrega');
     const firmaRecibe = firmaManager.obtenerFirma('sigRecibe');
 
-    const secciones = [
-        {
-            titulo: '1. RECIBO DEL PACIENTE',
-            items: recibos,
-            render: (i) => `Estado: ${i.estado || '-'} | Entrega: ${i.quienEntrega || '-'}`
-        },
-        {
-            titulo: '2. ACTIVIDADES REALIZADAS',
-            items: actividades,
-            render: (i) => `${i.actividad || '-'} - ${i.hora || '--:--'} ${i.observacion ? '| ' + i.observacion.substring(0, 40) : ''}`
-        },
-        {
-            titulo: '3. SIGNOS VITALES',
-            items: signos,
-            render: (i) => `SpO2: ${i.spo2 || '-'}% | FC: ${i.fc || '-'} | FR: ${i.fr || '-'} | Temp: ${i.temp || '-'}°C`
-        },
-        {
-            titulo: '4. MEDICAMENTOS',
-            items: medicamentos,
-            render: (i) => `${i.nombre || '-'} ${i.dosis || ''} - ${i.hora || '--:--'}`
-        },
-        {
-            titulo: '5. ENTREGA DE TURNO',
-            items: entregas,
-            render: (i) => `Resumen: ${i.resumen?.substring(0, 60) || '-'} | Pendientes: ${i.pendientes || 'Ninguna'}`
-        },
-        {
-            titulo: '6. FIRMAS DEL TURNO',
-            items: [],
-            render: () => ''
+    // Generar PDF
+    const PDFClass = getJsPDF();
+    if (!PDFClass) { showToast('PDF no disponible', 'error'); return; }
+    
+    const doc = new PDFClass();
+    let y = 30;
+    
+    function checkPage() {
+        if (y > 260) {
+            doc.addPage();
+            y = 20;
         }
+    }
+
+    // Encabezado
+    addLogoToPDF(doc);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor(34, 197, 94);
+    doc.text('VITAL HOGAR PRO IPS', 55, 18);
+    doc.setTextColor(0, 0, 0);
+    y = 30;
+    
+    doc.setFontSize(12);
+    doc.text('REPORTE DEL PACIENTE', 20, y); y += 8;
+    doc.setFontSize(14);
+    doc.text(paciente.name.toUpperCase(), 20, y); y += 8;
+    doc.setFontSize(9);
+    doc.text('Documento: ' + (paciente.document || 'N/A'), 20, y); y += 5;
+    doc.text('Fecha: ' + new Date().toLocaleString(), 20, y); y += 5;
+    doc.text('Profesional: ' + (STATE.user?.name || 'Desconocido'), 20, y); y += 5;
+    doc.text('Tipo turno: ' + getTipoTurno(), 20, y); y += 10;
+
+    // Secciones
+    const secciones = [
+        { titulo: '1. RECIBO DEL PACIENTE', items: recibos, render: (i) => `Estado: ${i.estado || '-'} | Entrega: ${i.quienEntrega || '-'}` },
+        { titulo: '2. ACTIVIDADES REALIZADAS', items: actividades, render: (i) => `${i.actividad || '-'} - ${i.hora || '--:--'}` },
+        { titulo: '3. SIGNOS VITALES', items: signos, render: (i) => `SpO2: ${i.spo2 || '-'}% | FC: ${i.fc || '-'} | FR: ${i.fr || '-'} | Temp: ${i.temp || '-'}°C` },
+        { titulo: '4. MEDICAMENTOS', items: medicamentos, render: (i) => `${i.nombre || '-'} ${i.dosis || ''} - ${i.hora || '--:--'}` },
+        { titulo: '5. ENTREGA DE TURNO', items: entregas, render: (i) => `Resumen: ${i.resumen?.substring(0, 60) || '-'} | Pendientes: ${i.pendientes || 'Ninguna'}` }
     ];
 
-    // Agregar firmas a las secciones
-    secciones.firmas = [
-        { id: 'sigEntrega', label: 'Firma Auxiliar (ENTREGA)' },
-        { id: 'sigRecibe', label: 'Firma Familiar (RECIBE)' }
-    ];
+    secciones.forEach(seccion => {
+        checkPage();
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text(seccion.titulo, 20, y); y += 7;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        
+        if (seccion.items && seccion.items.length > 0) {
+            seccion.items.slice(-5).forEach((item, idx) => {
+                checkPage();
+                doc.text(`${idx+1}. ${seccion.render ? seccion.render(item) : JSON.stringify(item).substring(0, 80)}`, 25, y);
+                y += 6;
+            });
+        } else {
+            doc.text('Sin registros', 25, y);
+            y += 6;
+        }
+        y += 5;
+    });
 
-    generarReportePDF(paciente, 'REPORTE CLÍNICO DEL DÍA', secciones);
+    // Firmas
+    checkPage();
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('6. FIRMAS DEL TURNO', 20, y); y += 10;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    
+    if (firmaEntrega) {
+        doc.text('Firma Auxiliar (ENTREGA):', 20, y);
+        try { doc.addImage(firmaEntrega, 'PNG', 120, y - 5, 60, 20); } catch(e) { doc.text('[Firma registrada]', 120, y); }
+        y += 25;
+    } else {
+        doc.text('Firma Auxiliar (ENTREGA): NO REGISTRADA', 20, y);
+        y += 8;
+    }
+    
+    if (firmaRecibe) {
+        doc.text('Firma Familiar (RECIBE):', 20, y);
+        try { doc.addImage(firmaRecibe, 'PNG', 120, y - 5, 60, 20); } catch(e) { doc.text('[Firma registrada]', 120, y); }
+        y += 25;
+    } else {
+        doc.text('Firma Familiar (RECIBE): NO REGISTRADA', 20, y);
+        y += 8;
+    }
+
+    const fechaStr = new Date().toISOString().split('T')[0];
+    const nombreArchivo = `reporte_${paciente.name.replace(/\s+/g, '')}_${fechaStr}.pdf`;
+    doc.save(nombreArchivo);
+    showToast('Reporte generado ✅', 'success');
 };
 
-window.archivarDia = function() {
+window.archivarDia = async function() {
     if (!validarPaciente()) return;
     if (!confirm('¿Archivar el día? Los datos se guardarán en el historial.')) return;
+
+    // Obtener datos del día
+    const actividades = await dataManager.obtenerHoy('actividades');
+    const signos = await dataManager.obtenerHoy('signos');
+    const medicamentos = await dataManager.obtenerHoy('medicamentos');
+    const entregas = await dataManager.obtenerHoy('entregas');
+    const recibos = await dataManager.obtenerHoy('recibos');
 
     const pacienteId = getPacienteId();
     const pacienteNombre = getPacienteNombre();
 
-    // Obtener datos del día
-    const actividades = dataManager.obtenerHoy('actividades');
-    const signos = dataManager.obtenerHoy('signos');
-    const medicamentos = dataManager.obtenerHoy('medicamentos');
-    const entregas = dataManager.obtenerHoy('entregas');
-    const recibos = dataManager.obtenerHoy('recibos');
-
-    // Guardar en historial
+    // Guardar en historial (localStorage)
     const historialKey = CONFIG.STORAGE_PREFIX + 'historial_' + pacienteId;
     let historial;
     try {
@@ -1598,33 +1461,31 @@ window.archivarDia = function() {
     };
     localStorage.setItem(historialKey, JSON.stringify(historial));
 
-    // Limpiar datos del día
-    const key = getStorageKey();
-    if (key) {
-        try {
-            const all = JSON.parse(localStorage.getItem(key) || '{}');
-            const hoy = getHoy();
-            ['actividades', 'signos', 'medicamentos', 'entregas', 'recibos', 'turnos'].forEach(tipo => {
-                if (all[tipo]) {
-                    all[tipo] = all[tipo].filter(item => {
-                        return !(item.timestamp && new Date(item.timestamp).toDateString() === hoy);
-                    });
-                }
-            });
-            localStorage.setItem(key, JSON.stringify(all));
-        } catch (e) {}
-    }
-
     // Limpiar firmas
     firmaManager.limpiarTodas();
     
     showToast('Día archivado correctamente ✅', 'success');
 };
 
-// ============================================================
-// RENDERIZADO DE ADMIN
-// ============================================================
+// ==================== FUNCIONES DE SOPORTE PARA PDF ====================
+function getJsPDF() {
+    if (window.jspdf && window.jspdf.jsPDF) return window.jspdf.jsPDF;
+    if (window.jsPDF) return window.jsPDF;
+    return null;
+}
 
+function addLogoToPDF(doc) {
+    try {
+        doc.addImage(CONFIG.LOGO_URL, 'JPEG', 15, 10, 35, 12);
+    } catch (e) {
+        doc.setFontSize(14);
+        doc.setTextColor(34, 197, 94);
+        doc.text('VITAL HOGAR', 15, 18);
+        doc.setTextColor(0, 0, 0);
+    }
+}
+
+// ==================== RENDERIZADO ADMIN ====================
 function renderUsuarios() {
     return `
         <div class="card">
@@ -1667,14 +1528,12 @@ window.crearUsuario = async function() {
     }
 
     try {
-        const response = await fetch(CONFIG.API_URL + '/api/users', {
+        const result = await apiRequest('/api/users', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, role, password })
         });
-        const data = await response.json();
 
-        if (data.success) {
+        if (result.success) {
             ['newUserName', 'newUserEmail', 'newUserPass'].forEach(id => {
                 const el = $(id);
                 if (el) el.value = '';
@@ -1682,44 +1541,48 @@ window.crearUsuario = async function() {
             renderListaUsuarios();
             showToast('Usuario creado ✅', 'success');
         } else {
-            showToast(data.message || 'Error', 'error');
+            showToast(result.message || 'Error', 'error');
         }
     } catch (error) {
         showToast('Error al crear usuario', 'error');
     }
 };
 
-function renderListaUsuarios() {
+async function renderListaUsuarios() {
     const div = $('listaUsuarios');
     if (!div) return;
 
-    const users = JSON.parse(localStorage.getItem(CONFIG.STORAGE_PREFIX + 'usuarios') || '[]');
-    if (users.length === 0) {
-        div.innerHTML = '<p class="text-muted">Sin usuarios</p>';
-        return;
-    }
+    try {
+        const result = await apiRequest('/api/users');
+        if (result.success && result.data) {
+            const users = result.data;
+            if (users.length === 0) {
+                div.innerHTML = '<p class="text-muted">Sin usuarios</p>';
+                return;
+            }
 
-    let html = '<table><thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th></tr></thead><tbody>';
-    users.forEach(u => {
-        html += `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.role}</td>
-                <td><button class="btn-danger btn-sm" onclick="eliminarUsuario('${u.id}')">🗑️</button></td></tr>`;
-    });
-    html += '</tbody></table>';
-    div.innerHTML = html;
+            let html = '<table><thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th></tr></thead><tbody>';
+            users.forEach(u => {
+                html += `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.role}</td>
+                        <td><button class="btn-danger btn-sm" onclick="eliminarUsuario('${u.id}')">🗑️</button></td></tr>`;
+            });
+            html += '</tbody></table>';
+            div.innerHTML = html;
+        }
+    } catch (error) {
+        div.innerHTML = '<p class="text-muted">Error al cargar usuarios</p>';
+    }
 }
 
 window.eliminarUsuario = async function(id) {
     if (!confirm('¿Eliminar este usuario?')) return;
     try {
-        const response = await fetch(CONFIG.API_URL + '/api/users/' + id, {
-            method: 'DELETE'
-        });
-        const data = await response.json();
-        if (data.success) {
+        const result = await apiRequest('/api/users/' + id, { method: 'DELETE' });
+        if (result.success) {
             renderListaUsuarios();
             showToast('Usuario eliminado', 'success');
         } else {
-            showToast(data.message || 'Error', 'error');
+            showToast(result.message || 'Error', 'error');
         }
     } catch (error) {
         showToast('Error al eliminar', 'error');
@@ -1745,7 +1608,7 @@ function renderPacientesAdmin() {
     `;
 }
 
-window.crearPaciente = function() {
+window.crearPaciente = async function() {
     const name = $('newPacienteNombre').value.trim();
     const doc = $('newPacienteDocumento').value.trim();
     if (!name || !doc) {
@@ -1753,47 +1616,58 @@ window.crearPaciente = function() {
         return;
     }
 
-    const pacientes = JSON.parse(localStorage.getItem(CONFIG.STORAGE_PREFIX + 'pacientes') || '[]');
-    pacientes.push({
-        id: 'p' + Date.now(),
-        name: name,
-        document: doc,
-        diagnosis: $('newPacienteDiagnostico').value.trim(),
-        doctor: $('newPacienteMedico').value.trim()
-    });
-    localStorage.setItem(CONFIG.STORAGE_PREFIX + 'pacientes', JSON.stringify(pacientes));
+    try {
+        const result = await apiRequest('/api/patients', {
+            method: 'POST',
+            body: JSON.stringify({
+                name: name,
+                document: doc,
+                diagnosis: $('newPacienteDiagnostico').value.trim(),
+                doctor: $('newPacienteMedico').value.trim()
+            })
+        });
 
-    ['newPacienteNombre', 'newPacienteDocumento', 'newPacienteDiagnostico', 'newPacienteMedico'].forEach(id => {
-        const el = $(id);
-        if (el) el.value = '';
-    });
-
-    renderListaPacientes();
-    showToast('Paciente creado ✅', 'success');
+        if (result.success) {
+            ['newPacienteNombre', 'newPacienteDocumento', 'newPacienteDiagnostico', 'newPacienteMedico'].forEach(id => {
+                const el = $(id);
+                if (el) el.value = '';
+            });
+            renderListaPacientes();
+            showToast('Paciente creado ✅', 'success');
+        } else {
+            showToast(result.message || 'Error', 'error');
+        }
+    } catch (error) {
+        showToast('Error al crear paciente', 'error');
+    }
 };
 
-function renderListaPacientes() {
+async function renderListaPacientes() {
     const div = $('listaPacientes');
     if (!div) return;
 
-    const patients = JSON.parse(localStorage.getItem(CONFIG.STORAGE_PREFIX + 'pacientes') || '[]');
-    if (patients.length === 0) {
-        div.innerHTML = '<p class="text-muted">Sin pacientes</p>';
-        return;
-    }
+    try {
+        const result = await apiRequest('/api/patients');
+        if (result.success && result.data) {
+            const patients = result.data;
+            if (patients.length === 0) {
+                div.innerHTML = '<p class="text-muted">Sin pacientes</p>';
+                return;
+            }
 
-    let html = '<table><thead><tr><th>Nombre</th><th>Documento</th><th>Diagnóstico</th><th>Médico</th></tr></thead><tbody>';
-    patients.forEach(p => {
-        html += `<tr><td>${p.name}</td><td>${p.document}</td><td>${p.diagnosis || '-'}</td><td>${p.doctor || '-'}</td></tr>`;
-    });
-    html += '</tbody></table>';
-    div.innerHTML = html;
+            let html = '<table><thead><tr><th>Nombre</th><th>Documento</th><th>Diagnóstico</th><th>Médico</th></tr></thead><tbody>';
+            patients.forEach(p => {
+                html += `<tr><td>${p.name}</td><td>${p.document}</td><td>${p.diagnosis || '-'}</td><td>${p.doctor || '-'}</td></tr>`;
+            });
+            html += '</tbody></table>';
+            div.innerHTML = html;
+        }
+    } catch (error) {
+        div.innerHTML = '<p class="text-muted">Error al cargar pacientes</p>';
+    }
 }
 
-// ============================================================
-// DICTADO POR VOZ (SPEECH-TO-TEXT)
-// ============================================================
-
+// ==================== DICTADO POR VOZ ====================
 let recognitionActive = false;
 
 window.iniciarDictado = function(targetId) {
@@ -1854,32 +1728,7 @@ window.iniciarDictado = function(targetId) {
     }
 };
 
-// ============================================================
-// CARGA DE DATOS INICIAL
-// ============================================================
-
-async function loadMasterData() {
-    try {
-        const res = await fetch(CONFIG.API_URL + '/api/users');
-        const data = await res.json();
-        if (data.success && data.data) {
-            localStorage.setItem(CONFIG.STORAGE_PREFIX + 'usuarios', JSON.stringify(data.data));
-        }
-    } catch (e) {}
-
-    try {
-        const res2 = await fetch(CONFIG.API_URL + '/api/patients');
-        const data2 = await res2.json();
-        if (data2.success && data2.data) {
-            localStorage.setItem(CONFIG.STORAGE_PREFIX + 'pacientes', JSON.stringify(data2.data));
-        }
-    } catch (e) {}
-}
-
-// ============================================================
-// INICIALIZACIÓN
-// ============================================================
-
+// ==================== INICIALIZACIÓN ====================
 document.addEventListener('DOMContentLoaded', function() {
     // Eventos de login
     $('loginBtn').addEventListener('click', login);
@@ -1894,25 +1743,19 @@ document.addEventListener('DOMContentLoaded', function() {
         this.textContent = type === 'password' ? '👁️' : '🙈';
     });
 
-    // Cargar datos
-    loadMasterData();
-
     // Verificar sesión
     if (!checkSession()) {
         $('loginScreen').classList.remove('hidden');
     }
 });
 
-// ============================================================
-// EXPORTAR FUNCIONES GLOBALES
-// ============================================================
-
+// ==================== EXPORTAR GLOBALES ====================
 window.STATE = STATE;
 window.dataManager = dataManager;
 window.firmaManager = firmaManager;
 
-console.log('✅ Vital Hogar Pro v3.0 cargado correctamente');
-console.log('📌 Sistema de firmas: ' + (firmaManager.inicializado ? 'OK' : 'Pendiente'));
+console.log('✅ VITAL HOGAR PRO v3.0 - Conectado al Backend');
+console.log('📡 API URL:', CONFIG.API_URL);
 </script>
 </body>
 </html>
