@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.0">
-<title>Vital Hogar Pro IPS</title>
+<title>Vital Hogar Pro IPS - v2.0</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;color:#e2e8f0;padding:12px;min-height:100vh}
@@ -83,6 +83,13 @@ tr:hover td{background:#0f172a}
 .historial-item{background:#0f172a;padding:12px;border-radius:10px;margin-bottom:8px;border-left:3px solid #8b5cf6}
 .historial-item .fecha{color:#8b5cf6;font-weight:600;font-size:.85rem;margin-bottom:6px}
 .resumen-turno{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:12px;margin-bottom:12px}
+.paciente-requerido{background:#ef444420;border:1px solid #ef4444;color:#ef4444;padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:.85rem;font-weight:600;display:none}
+.paciente-requerido.visible{display:block}
+.firma-box{background:#0f172a;border:1px solid #334155;border-radius:10px;padding:10px;margin-bottom:10px;text-align:center}
+.firma-box img{max-width:100%;height:auto;border-radius:8px;border:1px solid #334155}
+.firma-box .firma-label{font-size:.7rem;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.foto-evidencia{background:#0f172a;border-radius:10px;padding:10px;margin-bottom:10px;text-align:center}
+.foto-evidencia img{max-width:100%;height:auto;border-radius:8px;max-height:200px;object-fit:contain}
 @media(max-width:480px){
 body{padding:8px}
 .header{padding:10px 14px;flex-direction:column;text-align:center}
@@ -140,6 +147,9 @@ body{padding:8px}
 </div>
 
 <div id="mainScreen" class="hidden">
+<div id="pacienteRequerido" class="paciente-requerido">
+⚠️ <strong>ATENCIÓN:</strong> Debe seleccionar un paciente antes de registrar cualquier información. Haga clic en "👤 Paciente" arriba.
+</div>
 <div id="tabsContainer" class="tabs"></div>
 <div id="dynamicContent"></div>
 </div>
@@ -161,18 +171,12 @@ var recognitionActive = false;
 var horaEntrada = null;
 var pacienteActual = null;
 
-// ============================================================
-// JSPDF HELPER - CORREGIDO
-// ============================================================
 function getJsPDF() {
   if (window.jspdf && window.jspdf.jsPDF) return window.jspdf.jsPDF;
   if (window.jsPDF) return window.jsPDF;
   return null;
 }
 
-// ============================================================
-// PRECARGA DEL LOGO EN BASE64
-// ============================================================
 function precargarLogo() {
   var img = new Image();
   img.crossOrigin = 'anonymous';
@@ -184,17 +188,17 @@ function precargarLogo() {
     ctx.drawImage(img, 0, 0);
     try {
       LOGO_BASE64 = canvas.toDataURL('image/jpeg', 0.9);
-      console.log('✅ Logo precargado en Base64');
+      console.log('Logo precargado en Base64');
     } catch(e) {
       console.warn('No se pudo convertir logo (CORS)');
     }
   };
+  img.onerror = function() {
+    console.warn('No se pudo cargar logo desde URL');
+  };
   img.src = LOGO_URL;
 }
 
-// ============================================================
-// INICIALIZACIÓN
-// ============================================================
 document.addEventListener('DOMContentLoaded', function() {
   precargarLogo();
   initPasswordToggle();
@@ -229,9 +233,27 @@ function showToast(msg, type) {
   toast._timeout = setTimeout(function() { toast.classList.remove('show'); }, 3000);
 }
 
-// ============================================================
-// DICTADO POR VOZ
-// ============================================================
+function validarPacienteSeleccionado() {
+  if (!pacienteActual) {
+    showToast('⚠️ Seleccione un paciente primero', 'warning');
+    var alerta = document.getElementById('pacienteRequerido');
+    if (alerta) {
+      alerta.classList.add('visible');
+      setTimeout(function() { alerta.classList.remove('visible'); }, 5000);
+    }
+    return false;
+  }
+  return true;
+}
+
+function actualizarAlertaPaciente() {
+  var alerta = document.getElementById('pacienteRequerido');
+  if (alerta) {
+    if (!pacienteActual) alerta.classList.add('visible');
+    else alerta.classList.remove('visible');
+  }
+}
+
 function iniciarDictado(targetId) {
   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) { showToast('Voz no soportada', 'error'); return; }
@@ -263,9 +285,6 @@ function iniciarDictado(targetId) {
   try { recognition.start(); } catch(e) { recognitionActive = false; }
 }
 
-// ============================================================
-// API REQUEST
-// ============================================================
 async function apiRequest(endpoint, options) {
   options = options || {};
   var token = localStorage.getItem('vital_token');
@@ -278,9 +297,6 @@ async function apiRequest(endpoint, options) {
   } catch (error) { throw error; }
 }
 
-// ============================================================
-// LOGIN
-// ============================================================
 async function login() {
   var email = document.getElementById('loginEmail').value.trim();
   var password = document.getElementById('loginPassword').value;
@@ -308,6 +324,7 @@ async function login() {
     document.getElementById('userName').textContent = user.name;
     document.getElementById('userRoleDisplay').textContent = user.role;
     actualizarDisplayPaciente();
+    actualizarAlertaPaciente();
     verificarContinuidad();
     buildTabs();
     showToast('Bienvenido ' + user.name, 'success');
@@ -350,6 +367,7 @@ function checkSession() {
       document.getElementById('userName').textContent = user.name;
       document.getElementById('userRoleDisplay').textContent = user.role;
       actualizarDisplayPaciente();
+      actualizarAlertaPaciente();
       verificarContinuidad();
       buildTabs();
       return true;
@@ -358,9 +376,6 @@ function checkSession() {
   return false;
 }
 
-// ============================================================
-// GESTIÓN DE PACIENTE ACTUAL
-// ============================================================
 function cargarPacienteActual() {
   var saved = localStorage.getItem('vital_paciente_actual');
   if (saved) { try { pacienteActual = JSON.parse(saved); } catch (e) { pacienteActual = null; } }
@@ -371,6 +386,7 @@ function guardarPacienteActual(paciente) {
   if (paciente) localStorage.setItem('vital_paciente_actual', JSON.stringify(paciente));
   else localStorage.removeItem('vital_paciente_actual');
   actualizarDisplayPaciente();
+  actualizarAlertaPaciente();
 }
 
 function actualizarDisplayPaciente() {
@@ -427,9 +443,6 @@ window.cerrarModalPaciente = function() {
   if (modal) modal.remove();
 };
 
-// ============================================================
-// CONTINUIDAD TURNO (TITULAR ↔ TURNO)
-// ============================================================
 function verificarContinuidad() {
   if (!pacienteActual) return;
   var tipoTurno = localStorage.getItem('vital_tipo_turno') || 'TITULAR';
@@ -446,23 +459,20 @@ function verificarContinuidad() {
 }
 
 function mostrarResumenTurnoAnterior(dia, fecha) {
-  var resumen = '📋 RESUMEN DEL ÚLTIMO TURNO (' + fecha + ')\n\n';
-  resumen += '👤 Auxiliar anterior: ' + (dia.archivado_por || 'Desconocido') + '\n';
-  resumen += '📝 Actividades: ' + (dia.actividades ? dia.actividades.length : 0) + '\n';
-  resumen += '🩺 Signos: ' + (dia.signos ? dia.signos.length : 0) + '\n';
-  resumen += '💊 Medicamentos: ' + (dia.medicamentos ? dia.medicamentos.length : 0) + '\n';
+  var resumen = 'RESUMEN DEL ULTIMO TURNO (' + fecha + ')\n\n';
+  resumen += 'Auxiliar anterior: ' + (dia.archivado_por || 'Desconocido') + '\n';
+  resumen += 'Actividades: ' + (dia.actividades ? dia.actividades.length : 0) + '\n';
+  resumen += 'Signos: ' + (dia.signos ? dia.signos.length : 0) + '\n';
+  resumen += 'Medicamentos: ' + (dia.medicamentos ? dia.medicamentos.length : 0) + '\n';
   if (dia.entregas && dia.entregas.length > 0) {
     var ultimaEntrega = dia.entregas[dia.entregas.length - 1];
     if (ultimaEntrega.pendientes) {
-      resumen += '\n⚠️ PENDIENTES:\n' + ultimaEntrega.pendientes;
+      resumen += '\nPENDIENTES:\n' + ultimaEntrega.pendientes;
     }
   }
   setTimeout(function() { alert(resumen); }, 500);
 }
 
-// ============================================================
-// CARGA DE DATOS
-// ============================================================
 async function loadMasterData() {
   var token = localStorage.getItem('vital_token');
   var headers = {};
@@ -479,9 +489,6 @@ async function loadMasterData() {
   } catch (e) {}
 }
 
-// ============================================================
-// EDUCACIÓN
-// ============================================================
 function loadEducacionAsignada() {
   try { return JSON.parse(localStorage.getItem('vital_educacion_asignada') || '[]'); } catch (e) { return []; }
 }
@@ -523,11 +530,9 @@ function getEducacionPendiente(profesionalId) {
   return asignadas.filter(function(a) { return a.profesional_id === profesionalId && a.estado === 'PENDIENTE'; });
 }
 
-// ============================================================
-// ALMACENAMIENTO LOCAL CON METADATA
-// ============================================================
 function saveToLocal(key, data) {
   if (!storageKey) { showToast('No hay sesión activa', 'error'); return; }
+  if (!pacienteActual) { showToast('Seleccione un paciente primero', 'warning'); return; }
   var all;
   try { all = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (e) { all = {}; }
   all[key] = all[key] || [];
@@ -556,12 +561,10 @@ function getFromLocalHoy(key) {
 }
 
 function getFromLocalPacienteHoy(key, pacienteId) {
-  var items = getFromLocal(key);
-  var hoy = new Date().toDateString();
+  if (!pacienteId) return [];
+  var items = getFromLocalHoy(key);
   return items.filter(function(item) {
-    var esHoy = item.timestamp && new Date(item.timestamp).toDateString() === hoy;
-    var esPaciente = !pacienteId || item.paciente_id === pacienteId;
-    return esHoy && esPaciente;
+    return item.paciente_id === pacienteId;
   });
 }
 
@@ -597,32 +600,44 @@ function getEducationTopicsForSelect() {
   if (educationTopics.length === 0) return '<option value="">-- Sin temas disponibles --</option>';
   return educationTopics.map(function(t) { return '<option value="' + t.id + '">' + t.title + '</option>'; }).join('');
 }
-
-// ============================================================
-// FIRMAS DIGITALES CON CACHÉ EN SESSIONSTORAGE
-// ============================================================
 function initSignatures() {
   var canvasIds = ['sigRecibo', 'sigEntrega', 'sigRecibe', 'sigProfesional', 'sigPaciente', 'sigFamiliar'];
   canvasIds.forEach(function(id) {
     var canvas = document.getElementById(id);
     if (!canvas) return;
-    if (canvas.dataset.initialized === 'true') return;
+    
+    var savedData = sessionStorage.getItem('firma_' + id);
+    
     var width = canvas.offsetWidth || canvas.clientWidth || 300;
     var height = canvas.offsetHeight || canvas.clientHeight || 120;
     canvas.width = width;
     canvas.height = height;
+    
     var ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '16px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('✍️ Firme aquí', canvas.width / 2, canvas.height / 2);
+    
+    if (savedData) {
+      var img = new Image();
+      img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+      };
+      img.src = savedData;
+    } else {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '16px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✍️ Firme aquí', canvas.width / 2, canvas.height / 2);
+    }
+    
+    if (canvas.dataset.initialized === 'true') return;
+    
     var drawing = false;
     ctx.strokeStyle = '#0f172a';
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
+    
     function getPos(e) {
       var rect = canvas.getBoundingClientRect();
       var scaleX = canvas.width / rect.width;
@@ -632,7 +647,14 @@ function initSignatures() {
       else { clientX = e.clientX; clientY = e.clientY; }
       return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
     }
-    var startDraw = function(e) { drawing = true; ctx.beginPath(); var pos = getPos(e); ctx.moveTo(pos.x, pos.y); };
+    
+    var startDraw = function(e) { 
+      drawing = true; 
+      ctx.beginPath(); 
+      var pos = getPos(e); 
+      ctx.moveTo(pos.x, pos.y); 
+    };
+    
     var draw = function(e) {
       if (!drawing) return;
       e.preventDefault();
@@ -640,7 +662,12 @@ function initSignatures() {
       ctx.lineTo(pos.x, pos.y);
       ctx.stroke();
     };
-    var endDraw = function() { drawing = false; guardarFirmaEnSession(id); };
+    
+    var endDraw = function() { 
+      drawing = false; 
+      guardarFirmaEnSession(id); 
+    };
+    
     canvas.addEventListener('mousedown', startDraw);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', endDraw);
@@ -706,23 +733,28 @@ function getSignatureData(canvasId) {
   } catch (e) { return null; }
 }
 
-// ============================================================
-// ARCHIVAR DÍA
-// ============================================================
 window.archivarDia = function() {
   if (!pacienteActual) { showToast('Seleccione un paciente primero', 'warning'); return; }
+  
+  var firmasEntrega = {
+    sigEntrega: getSignatureData('sigEntrega'),
+    sigRecibe: getSignatureData('sigRecibe')
+  };
+  
   var actividades = getFromLocalHoy('actividades');
   var signos = getFromLocalHoy('signos');
   var medicamentos = getFromLocalHoy('medicamentos');
   var entregas = getFromLocalHoy('entregas');
   var recibos = getFromLocalHoy('recibos');
-  var mensaje = '¿Archivar el día?\n\nSe guardarán:\n';
-  mensaje += '• ' + actividades.length + ' actividades\n';
-  mensaje += '• ' + signos.length + ' signos\n';
-  mensaje += '• ' + medicamentos.length + ' medicamentos\n';
-  mensaje += '• ' + entregas.length + ' entregas\n\n';
+  
+  var mensaje = '¿Archivar el día?\\n\\nSe guardarán:\\n';
+  mensaje += '• ' + actividades.length + ' actividades\\n';
+  mensaje += '• ' + signos.length + ' signos\\n';
+  mensaje += '• ' + medicamentos.length + ' medicamentos\\n';
+  mensaje += '• ' + entregas.length + ' entregas\\n\\n';
   mensaje += 'El área de trabajo se limpiará para el siguiente turno.';
   if (!confirm(mensaje)) return;
+  
   var historialKey = 'vital_historial_' + pacienteActual.id;
   var historial;
   try { historial = JSON.parse(localStorage.getItem(historialKey) || '{}'); } catch(e) { historial = {}; }
@@ -731,11 +763,13 @@ window.archivarDia = function() {
     fecha: fechaHoy, paciente_id: pacienteActual.id, paciente_nombre: pacienteActual.name,
     actividades: actividades, signos: signos, medicamentos: medicamentos,
     entregas: entregas, recibos: recibos,
+    firmas_entrega: firmasEntrega,
     archivado_por: currentUser ? currentUser.name : 'Desconocido',
     tipo_turno: localStorage.getItem('vital_tipo_turno') || 'TITULAR',
     fecha_archivado: new Date().toISOString()
   };
   localStorage.setItem(historialKey, JSON.stringify(historial));
+  
   var all;
   try { all = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch(e) { all = {}; }
   ['actividades', 'signos', 'medicamentos', 'entregas', 'recibos', 'turnos'].forEach(function(k) {
@@ -750,9 +784,6 @@ window.archivarDia = function() {
   showToast('Día archivado correctamente', 'success');
 };
 
-// ============================================================
-// CALCULAR IMC
-// ============================================================
 window.calcularIMC = function() {
   var peso = parseFloat(document.getElementById('pesoNutri') ? document.getElementById('pesoNutri').value : null);
   var tallaCm = parseFloat(document.getElementById('tallaNutri') ? document.getElementById('tallaNutri').value : null);
@@ -770,9 +801,6 @@ window.calcularIMC = function() {
   } else if (imcDisplay) { imcDisplay.textContent = 'IMC: --'; imcDisplay.style.color = '#94a3b8'; }
 };
 
-// ============================================================
-// CONSTRUIR TABS
-// ============================================================
 function buildTabs() {
   var tabsContainer = document.getElementById('tabsContainer');
   var tabs = [];
@@ -868,10 +896,6 @@ function loadTab(tabId) {
     if (tabId === 'historialPaciente') renderHistorialPaciente();
   }, 100);
 }
-
-// ============================================================
-// CONTENIDO: RECIBO
-// ============================================================
 function getReciboContent() {
   return '<div class="card"><div class="card-title">📋 Recibo del Paciente</div>' +
     '<div class="tip-box"><strong>⚠️ IMPORTANTE:</strong> Registre que RECIBE al paciente antes de comenzar.</div>' +
@@ -888,6 +912,7 @@ function getReciboContent() {
     '<div class="card"><div class="card-title">📋 Historial</div><div id="historialRecibos"></div></div>';
 }
 window.confirmarRecibo = function() {
+  if (!validarPacienteSeleccionado()) return;
   var estado = document.getElementById('reciboEstado') ? document.getElementById('reciboEstado').value : '';
   if (!estado) { showToast('Describa el estado', 'error'); return; }
   saveToLocal('recibos', { estado: estado, quienEntrega: document.getElementById('reciboQuien') ? document.getElementById('reciboQuien').value : 'No especificado' });
@@ -896,9 +921,6 @@ window.confirmarRecibo = function() {
   cargarLista('recibos', 'historialRecibos');
 };
 
-// ============================================================
-// CONTENIDO: TURNO
-// ============================================================
 function getTurnoContent() {
   return '<div class="card"><div class="card-title">📅 Control de Turno</div>' +
     '<div class="grid-2">' +
@@ -908,11 +930,13 @@ function getTurnoContent() {
     '<p>🕐 Entrada: --:--</p><p>🕐 Salida: --:--</p><p>⏱️ Duración: --</p></div></div>';
 }
 window.registrarEntrada = function() {
+  if (!validarPacienteSeleccionado()) return;
   horaEntrada = new Date();
   document.getElementById('estadoTurno').innerHTML = '<p>🕐 Entrada: ' + horaEntrada.toLocaleTimeString() + '</p><p>🕐 Salida: --:--</p><p>⏱️ Duración: En curso...</p>';
   showToast('Entrada registrada', 'success');
 };
 window.registrarSalida = function() {
+  if (!validarPacienteSeleccionado()) return;
   if (!horaEntrada) { showToast('Primero registre entrada', 'error'); return; }
   var salida = new Date();
   var diff = Math.floor((salida - horaEntrada) / 60000);
@@ -923,9 +947,6 @@ window.registrarSalida = function() {
   horaEntrada = null;
 };
 
-// ============================================================
-// CONTENIDO: ACTIVIDADES CON EDUCACIÓN Y FOTOS
-// ============================================================
 function getActividadesContent() {
   var temasAsignados = getEducacionPendiente(currentUser ? currentUser.id : '');
   var options = '<option value="">-- Sin educación --</option>';
@@ -949,7 +970,7 @@ function getActividadesContent() {
     '<div class="form-group" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">' +
     '<label>📸 Evidencia Fotográfica (máx 3 fotos para educación)</label>' +
     '<input type="file" id="photoInput" accept="image/*" capture="environment" multiple>' +
-    '<button class="btn-secondary" style="margin-top:6px; width:100%;" onclick="capturarFoto()">📷 Tomar Foto</button>' +
+    '<button class="btn-secondary" style="margin-top:6px; width:100%;" onclick="capturarFoto()">📷 Tomar Foto / Seleccionar</button>' +
     '<div id="photoPreview" class="photo-preview"></div></div>' +
     '<div class="form-group" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">' +
     '<label>🧠 Educación al Paciente/Familia</label>' +
@@ -989,6 +1010,7 @@ window.capturarFoto = function() {
   } else { showToast('Seleccione una imagen', 'error'); }
 };
 window.agregarActividad = function() {
+  if (!validarPacienteSeleccionado()) return;
   var hora = document.getElementById('horaActividad').value;
   if (!hora) { showToast('Ingrese la hora', 'error'); return; }
   var actividad = document.getElementById('tipoActividad').value;
@@ -1038,9 +1060,6 @@ window.agregarActividad = function() {
   cargarLista('actividades', 'listaActividades');
 };
 
-// ============================================================
-// CONTENIDO: SIGNOS VITALES
-// ============================================================
 function getSignosContent() {
   return '<div class="card"><div class="card-title">🩺 Signos Vitales</div>' +
     '<div class="grid-2">' +
@@ -1060,6 +1079,7 @@ function getSignosContent() {
     '<div class="card"><div class="card-title">📊 Últimos registros</div><div id="historialSignos"></div></div>';
 }
 window.guardarSignos = function() {
+  if (!validarPacienteSeleccionado()) return;
   var hora = document.getElementById('horaSignos').value;
   if (!hora) { showToast('Ingrese la hora', 'error'); return; }
   var spo2 = parseInt(document.getElementById('spo2').value) || 0;
@@ -1087,9 +1107,6 @@ window.guardarSignos = function() {
   cargarLista('signos', 'historialSignos');
 };
 
-// ============================================================
-// CONTENIDO: MEDICAMENTOS
-// ============================================================
 function getMedicamentosContent() {
   return '<div class="card"><div class="card-title">💊 Medicamentos</div>' +
     '<div class="form-group"><label>💊 Nombre</label><input type="text" id="medNombre" placeholder="Ej: Enalapril"></div>' +
@@ -1103,6 +1120,7 @@ function getMedicamentosContent() {
     '<div class="card"><div class="card-title">📋 Historial</div><div id="historialMedicamentos"></div></div>';
 }
 window.guardarMedicamento = function() {
+  if (!validarPacienteSeleccionado()) return;
   var nombre = document.getElementById('medNombre').value;
   var hora = document.getElementById('medHora').value;
   if (!nombre || !hora) { showToast('Complete nombre y hora', 'error'); return; }
@@ -1110,10 +1128,6 @@ window.guardarMedicamento = function() {
   ['medNombre','medDosis','medObs'].forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
   cargarLista('medicamentos', 'historialMedicamentos');
 };
-
-// ============================================================
-// CONTENIDO: ENTREGA
-// ============================================================
 function getEntregaContent() {
   return '<div class="card"><div class="card-title">🔄 Entrega de Turno</div>' +
     '<div class="tip-box"><strong>⚠️ IMPORTANTE:</strong> Registre la ENTREGA al finalizar el turno.</div>' +
@@ -1138,16 +1152,17 @@ function getEntregaContent() {
     '<select id="entregaQuien"><option>Familiar</option><option>Auxiliar siguiente</option>' +
     '<option>Enfermero Jefe</option><option>Coordinador</option></select></div>' +
     '<div class="grid-2">' +
-    '<div><label>✍️ Firma ENTREGA</label><canvas id="sigEntrega" class="signature-canvas"></canvas>' +
+    '<div><label>✍️ Firma ENTREGA (Auxiliar)</label><canvas id="sigEntrega" class="signature-canvas"></canvas>' +
     '<button class="btn-secondary btn-sm" onclick="clearCanvas(\'sigEntrega\')">Borrar</button>' +
     '<div class="firma-guardada" id="ind_sigEntrega">✅ Firma guardada</div></div>' +
-    '<div><label>✍️ Firma RECIBE</label><canvas id="sigRecibe" class="signature-canvas"></canvas>' +
+    '<div><label>✍️ Firma RECIBE (Familiar/Acudiente)</label><canvas id="sigRecibe" class="signature-canvas"></canvas>' +
     '<button class="btn-secondary btn-sm" onclick="clearCanvas(\'sigRecibe\')">Borrar</button>' +
     '<div class="firma-guardada" id="ind_sigRecibe">✅ Firma guardada</div></div></div>' +
     '<button class="btn btn-primary" onclick="confirmarEntrega()">✅ Confirmar ENTREGA</button></div>' +
     '<div class="card"><div class="card-title">📋 Historial</div><div id="historialEntregas"></div></div>';
 }
 window.confirmarEntrega = function() {
+  if (!validarPacienteSeleccionado()) return;
   var resumen = document.getElementById('entregaResumen') ? document.getElementById('entregaResumen').value : '';
   if (!resumen) { showToast('Complete el resumen', 'error'); return; }
   var horaEntrega = new Date().toLocaleString();
@@ -1171,9 +1186,6 @@ window.confirmarEntrega = function() {
   cargarLista('entregas', 'historialEntregas');
 };
 
-// ============================================================
-// CONTENIDO: HISTORIAL PACIENTE (HC)
-// ============================================================
 function getHistorialPacienteContent() {
   if (!pacienteActual) {
     return '<div class="card"><div class="card-title">📖 Historia Clínica</div>' +
@@ -1223,14 +1235,14 @@ function renderHistorialPaciente() {
         html += '<strong>⚠️ Pendientes:</strong> ' + ultima.pendientes + '<br>';
       }
     }
+    if (dia.firmas_entrega && dia.firmas_entrega.sigEntrega) {
+      html += '<strong>✍️ Firmas:</strong> Entrega registrada<br>';
+    }
     html += '</div>';
   });
   div.innerHTML = html;
 }
 
-// ============================================================
-// CONTENIDO: REPORTES
-// ============================================================
 function getReportesContent() {
   var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
   var options = pacientes.map(function(p) {
@@ -1245,10 +1257,6 @@ function getReportesContent() {
     '<button class="btn btn-primary" onclick="generarReportePorRol()">📥 Generar Reporte del Día</button>' +
     '<button class="btn btn-archive" onclick="archivarDia()">🗂️ Archivar Día y Limpiar</button></div>';
 }
-
-// ============================================================
-// GENERAR REPORTE POR ROL
-// ============================================================
 function generarReportePorRol() {
   var PDFClass = getJsPDF();
   if (!PDFClass) { showToast('Cargando librería PDF...', 'warning'); setTimeout(generarReportePorRol, 1500); return; }
@@ -1289,14 +1297,14 @@ function addLogoToPDF(doc) {
 }
 
 // ============================================================
-// REPORTE: AUXILIAR (CON FOTOS EDUCACIÓN, FIRMAS, PACIENTE)
+// REPORTE AUXILIAR - CORREGIDO (FIRMAS Y FOTOS)
 // ============================================================
 function generarReporteAuxiliar(paciente) {
   var PDFClass = getJsPDF();
   if (!PDFClass) { showToast('PDF no disponible', 'error'); return; }
   var doc = new PDFClass();
   var y = 30;
-  function checkPage() { if (y > 270) { doc.addPage(); y = 20; } }
+  function checkPage() { if (y > 250) { doc.addPage(); y = 20; } }
   function cleanText(text) { if (text === null || text === undefined) return ''; return String(text).trim(); }
 
   addLogoToPDF(doc);
@@ -1352,22 +1360,29 @@ function generarReporteAuxiliar(paciente) {
       checkPage();
       doc.text((i+1) + '. ' + cleanText(d.actividad) + ' - ' + cleanText(d.hora), 25, y); y += 5;
       if (d.observacion) { doc.text('   Obs: ' + cleanText(d.observacion).substring(0, 80), 30, y); y += 5; }
+      
+      // FOTOS DE EDUCACIÓN - CORREGIDO
+      if (d.educacion_fotos && d.educacion_fotos.length > 0) {
+        doc.setFont('helvetica', 'bold');
+        doc.text('   EVIDENCIA FOTOGRAFICA:', 30, y); y += 6;
+        doc.setFont('helvetica', 'normal');
+        d.educacion_fotos.forEach(function(foto, idx) {
+          try {
+            if (y > 220) { doc.addPage(); y = 20; }
+            doc.addImage(foto, 'JPEG', 40, y, 60, 60);
+            y += 65;
+          } catch (e) { 
+            doc.text('   [Error foto ' + (idx+1) + ']', 40, y); 
+            y += 6; 
+          }
+        });
+      }
+      
       if (d.educacion_realizada) {
         doc.setFont('helvetica', 'bold');
         doc.text('   EDUCACION: ' + cleanText(d.educacion_realizada), 30, y); y += 5;
         doc.setFont('helvetica', 'normal');
         if (d.educacion_descripcion) { doc.text('   Desc: ' + cleanText(d.educacion_descripcion).substring(0, 80), 35, y); y += 5; }
-        if (d.educacion_fotos && d.educacion_fotos.length > 0) {
-          doc.text('   Evidencia fotográfica:', 35, y); y += 6;
-          checkPage();
-          d.educacion_fotos.forEach(function(foto, idx) {
-            try {
-              if (y > 200) { doc.addPage(); y = 20; }
-              doc.addImage(foto, 'JPEG', 40, y, 60, 60);
-              y += 65;
-            } catch (e) { doc.text('   [Error foto ' + (idx+1) + ']', 40, y); y += 6; }
-          });
-        }
       }
       if (d.novedad) { doc.text('   Nov: ' + cleanText(d.novedad).substring(0, 80), 30, y); y += 5; }
       y += 3;
@@ -1422,24 +1437,46 @@ function generarReporteAuxiliar(paciente) {
     }
   }
 
+  // FIRMAS - CORREGIDO: Ahora se obtienen de sessionStorage y se muestran correctamente
   y += 5;
   checkPage();
   doc.setFontSize(11); doc.setFont('helvetica', 'bold');
-  doc.text('7. FIRMAS', 20, y); y += 10;
+  doc.text('7. FIRMAS DEL TURNO', 20, y); y += 10;
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+  
   var firmado = false;
+  
+  // Firma de ENTREGA (Auxiliar)
   var firmaEntrega = getSignatureData('sigEntrega');
   if (firmaEntrega) {
     doc.text('Firma Auxiliar (ENTREGA):', 20, y);
-    try { doc.addImage(firmaEntrega, 'PNG', 120, y - 5, 60, 20); firmado = true; } catch (e) {}
-    y += 25; checkPage();
+    try { 
+      doc.addImage(firmaEntrega, 'PNG', 120, y - 5, 60, 20); 
+      firmado = true; 
+    } catch (e) {
+      doc.text('[Firma no disponible]', 120, y);
+    }
+    y += 25; 
+    checkPage();
+  } else {
+    doc.text('Firma Auxiliar (ENTREGA): NO REGISTRADA', 20, y); y += 8;
   }
+  
+  // Firma de RECIBE (Familiar/Acudiente)
   var firmaRecibe = getSignatureData('sigRecibe');
   if (firmaRecibe) {
-    doc.text('Firma Familiar (RECIBE):', 20, y);
-    try { doc.addImage(firmaRecibe, 'PNG', 120, y - 5, 60, 20); firmado = true; } catch (e) {}
-    y += 25; checkPage();
+    doc.text('Firma Familiar/Acudiente (RECIBE):', 20, y);
+    try { 
+      doc.addImage(firmaRecibe, 'PNG', 120, y - 5, 60, 20); 
+      firmado = true; 
+    } catch (e) {
+      doc.text('[Firma no disponible]', 120, y);
+    }
+    y += 25;
+  } else {
+    doc.text('Firma Familiar/Acudiente (RECIBE): NO REGISTRADA', 20, y); y += 8;
   }
+  
   if (!firmado) doc.text('No se registraron firmas en este turno', 20, y);
 
   var fechaStr = new Date().toISOString().split('T')[0];
@@ -1449,7 +1486,7 @@ function generarReporteAuxiliar(paciente) {
 }
 
 // ============================================================
-// REPORTE: ENFERMERO
+// REPORTE ENFERMERO
 // ============================================================
 function generarReporteEnfermero(paciente) {
   var PDFClass = getJsPDF();
@@ -1529,7 +1566,7 @@ function generarReporteEnfermero(paciente) {
 }
 
 // ============================================================
-// REPORTE: MÉDICO
+// REPORTE MÉDICO
 // ============================================================
 function generarReporteMedico(paciente) {
   var PDFClass = getJsPDF();
@@ -1595,7 +1632,7 @@ function generarReporteMedico(paciente) {
 }
 
 // ============================================================
-// REPORTE: ESPECIALISTAS
+// REPORTE ESPECIALISTAS
 // ============================================================
 function generarReporteEspecialista(rol, paciente) {
   var PDFClass = getJsPDF();
@@ -1663,7 +1700,7 @@ function generarReporteEspecialista(rol, paciente) {
 }
 
 // ============================================================
-// REPORTE: COORDINADOR
+// REPORTE COORDINADOR
 // ============================================================
 function generarReporteCoordinador(paciente) {
   var PDFClass = getJsPDF();
@@ -1709,7 +1746,7 @@ function generarReporteCoordinador(paciente) {
 }
 
 // ============================================================
-// REPORTE: ADMIN
+// REPORTE ADMIN
 // ============================================================
 function generarReporteAdmin(paciente) {
   var PDFClass = getJsPDF();
@@ -1750,10 +1787,6 @@ function generarReporteAdmin(paciente) {
   doc.save('reporte_admin_' + fechaStr + '.pdf');
   showToast('Reporte generado', 'success');
 }
-
-// ============================================================
-// RESTO DE FUNCIONES DE CONTENIDO
-// ============================================================
 function getEducacionPendienteContent() {
   var educacion = loadEducacionAsignada();
   var pendientes = educacion.filter(function(e) { return e.profesional_id === (currentUser ? currentUser.id : '') && e.estado === 'PENDIENTE'; });
@@ -1958,6 +1991,7 @@ function getSupervisionContent() {
     '<div class="card"><div class="card-title">📋 Historial</div><div id="historialSupervisiones"></div></div>';
 }
 window.guardarSupervision = function() {
+  if (!validarPacienteSeleccionado()) return;
   var descripcion = document.getElementById('supervisionDesc') ? document.getElementById('supervisionDesc').value : '';
   if (!descripcion) { showToast('Ingrese descripción', 'error'); return; }
   saveToLocal('supervisiones', { descripcion: descripcion, observacion: document.getElementById('supervisionObs') ? document.getElementById('supervisionObs').value : '' });
@@ -1976,6 +2010,7 @@ function getEvolucionContent() {
     '<div class="card"><div class="card-title">📋 Historial</div><div id="historialEvoluciones"></div></div>';
 }
 window.guardarEvolucion = function() {
+  if (!validarPacienteSeleccionado()) return;
   var texto = document.getElementById('notasEvolucion') ? document.getElementById('notasEvolucion').value : '';
   var paciente = document.getElementById('pacienteEvolucion') ? document.getElementById('pacienteEvolucion').value : '';
   if (!texto) { showToast('Ingrese notas', 'error'); return; }
@@ -1997,6 +2032,7 @@ function getEvaluacionGenerica() {
     '<div class="card"><div class="card-title">📋 Historial</div><div id="historialEvaluacion"></div></div>';
 }
 window.guardarEvaluacionGenerica = function() {
+  if (!validarPacienteSeleccionado()) return;
   var texto = document.getElementById('evalText') ? document.getElementById('evalText').value : '';
   var paciente = document.getElementById('pacienteEvalGenerica') ? document.getElementById('pacienteEvalGenerica').value : '';
   if (!texto) { showToast('Ingrese texto', 'error'); return; }
@@ -2022,6 +2058,7 @@ function getPrescripcionesContent() {
     '<div class="card"><div class="card-title">📋 Historial</div><div id="historialPrescripciones"></div></div>';
 }
 window.guardarPrescripcion = function() {
+  if (!validarPacienteSeleccionado()) return;
   var medicamento = document.getElementById('medPrescripcion') ? document.getElementById('medPrescripcion').value : '';
   var paciente = document.getElementById('pacientePrescripcion') ? document.getElementById('pacientePrescripcion').value : '';
   if (!medicamento) { showToast('Ingrese medicamento', 'error'); return; }
@@ -2048,6 +2085,7 @@ function getTurnosCoordContent() {
     '<div class="card"><div class="card-title">📋 Turnos</div><div id="listaTurnosCoord"></div></div>';
 }
 window.programarTurno = function() {
+  if (!validarPacienteSeleccionado()) return;
   var paciente = document.getElementById('coordPaciente') ? document.getElementById('coordPaciente').value : '';
   var profesional = document.getElementById('coordProfesional') ? document.getElementById('coordProfesional').value : '';
   var fecha = document.getElementById('coordFecha') ? document.getElementById('coordFecha').value : '';
@@ -2109,6 +2147,7 @@ function getEvaluacionEspecialista(rol) {
     '<div class="card"><div class="card-title">📋 Historial</div><div id="historialEvalEspecialista"></div></div>';
 }
 window.guardarEvaluacionEspecialista = function(rol) {
+  if (!validarPacienteSeleccionado()) return;
   var texto = document.getElementById('evalText') ? document.getElementById('evalText').value : '';
   var paciente = document.getElementById('pacienteEval') ? document.getElementById('pacienteEval').value : '';
   if (!texto) { showToast('Ingrese observaciones', 'error'); return; }
@@ -2142,6 +2181,7 @@ function getEvaluacionNutricionista() {
     '<div class="card"><div class="card-title">📋 Historial</div><div id="historialEvalNutri"></div></div>';
 }
 window.guardarEvaluacionNutri = function() {
+  if (!validarPacienteSeleccionado()) return;
   var texto = document.getElementById('evalText') ? document.getElementById('evalText').value : '';
   var paciente = document.getElementById('pacienteEvalNutri') ? document.getElementById('pacienteEvalNutri').value : '';
   if (!texto) { showToast('Ingrese observaciones', 'error'); return; }
@@ -2157,7 +2197,7 @@ window.guardarEvaluacionNutri = function() {
   cargarLista('evalNutri', 'historialEvalNutri');
 };
 
-console.log('✅ Vital Hogar Pro IPS - Sistema Completo');
+console.log('Vital Hogar Pro IPS v2.0 - Sistema Completo Corregido');
 </script>
 </body>
 </html>
