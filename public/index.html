@@ -5,51 +5,194 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vital Hogar Pro IPS</title>
 <style>
-/* ========== ESTILOS BÁSICOS ========== */
+/* ============================================================
+   ESTILOS COMPLETOS - VITAL HOGAR PRO IPS
+   ============================================================ */
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:#0f172a;color:#e2e8f0;padding:20px}
-.card{background:#1e293b;border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid #334155}
-.card-title{font-size:1.1rem;font-weight:600;color:#22c55e;margin-bottom:12px}
-input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;margin-bottom:10px}
-.btn{background:#22c55e;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:600}
-.btn:hover{background:#16a34a}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.hidden{display:none}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.tab{padding:8px 16px;background:#1e293b;border-radius:20px;cursor:pointer;border:1px solid transparent}
-.tab.active{background:#22c55e;color:white}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;padding:12px 24px;border-radius:30px;display:none;z-index:999}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;display:flex;justify-content:center;align-items:center}
+
+/* ========== LOGIN ========== */
+.login-container{width:100%;max-width:420px;padding:20px}
+.login-card{background:#1e293b;border-radius:20px;padding:40px 30px;border:1px solid #334155;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.login-logo{text-align:center;margin-bottom:30px}
+.login-logo img{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #22c55e;padding:4px;background:#0f172a}
+.login-logo h1{font-size:1.5rem;color:#22c55e;margin-top:12px;font-weight:700}
+.login-logo p{color:#94a3b8;font-size:0.85rem;margin-top:4px}
+.login-title{font-size:1rem;color:#e2e8f0;text-align:center;margin-bottom:24px;font-weight:300}
+
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:0.7rem;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;font-weight:600;letter-spacing:0.5px}
+.form-group input{width:100%;padding:12px 16px;background:#0f172a;border:1px solid #334155;border-radius:10px;color:#e2e8f0;font-size:0.95rem;transition:border-color 0.3s}
+.form-group input:focus{outline:none;border-color:#22c55e}
+.form-group input::placeholder{color:#64748b}
+
+.btn-login{width:100%;padding:14px;background:#22c55e;color:white;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;transition:background 0.3s;margin-top:8px}
+.btn-login:hover{background:#16a34a}
+.btn-login:disabled{opacity:0.7;cursor:not-allowed}
+
+.login-error{background:#ef444420;border:1px solid #ef4444;color:#ef4444;padding:10px 14px;border-radius:8px;font-size:0.85rem;display:none;margin-bottom:12px}
+.login-footer{text-align:center;margin-top:20px;font-size:0.75rem;color:#64748b}
+
+/* ========== MAIN ========== */
+.main-container{width:100%;max-width:1200px;padding:20px;display:none}
+.header{background:#1e293b;border-radius:16px;padding:16px 24px;margin-bottom:20px;border:1px solid #334155;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.header-logo{display:flex;align-items:center;gap:12px}
+.header-logo img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+.header-logo h1{font-size:1.1rem;color:#22c55e}
+.header-logo span{font-size:0.65rem;color:#94a3b8;display:block}
+.header-user{display:flex;align-items:center;gap:12px;font-size:0.85rem}
+.header-user .name{color:#22c55e;font-weight:600}
+.header-user .role{background:#22c55e20;color:#22c55e;padding:2px 12px;border-radius:12px;font-size:0.65rem;font-weight:600}
+.btn-logout{background:#ef4444;border:none;color:white;padding:6px 16px;border-radius:20px;cursor:pointer;font-size:0.7rem;font-weight:600}
+.btn-logout:hover{background:#dc2626}
+
+/* ========== TABS ========== */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.tab{padding:10px 20px;background:#1e293b;border-radius:30px;cursor:pointer;font-size:0.8rem;font-weight:500;border:1px solid transparent;transition:all 0.3s;color:#94a3b8}
+.tab:hover{background:#334155;color:#e2e8f0}
+.tab.active{background:#22c55e;color:white;border-color:#22c55e}
+
+/* ========== CARDS ========== */
+.card{background:#1e293b;border-radius:16px;padding:24px;margin-bottom:20px;border:1px solid #334155}
+.card-title{font-size:1.1rem;font-weight:600;color:#22c55e;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #334155;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.card-title .badge{background:#22c55e20;color:#22c55e;padding:2px 12px;border-radius:12px;font-size:0.7rem;font-weight:600}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:0.65rem;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;font-weight:600}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;font-size:0.9rem}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#22c55e}
+.form-group textarea{min-height:60px;resize:vertical}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-weight:600;cursor:pointer;border:none;font-size:0.85rem;transition:all 0.3s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+.btn-primary{background:#22c55e;color:white}
+.btn-primary:hover{background:#16a34a}
+.btn-secondary{background:#334155;color:white}
+.btn-secondary:hover{background:#475569}
+.btn-danger{background:#ef4444;color:white}
+.btn-danger:hover{background:#dc2626}
+.btn-sm{padding:6px 14px;font-size:0.75rem}
+.btn-block{width:100%;justify-content:center}
+
+/* ========== LISTAS ========== */
+.item-list{display:flex;flex-direction:column;gap:8px}
+.item{background:#0f172a;padding:12px 16px;border-radius:10px;border-left:3px solid #22c55e}
+.item .title{font-weight:600;font-size:0.9rem}
+.item .meta{color:#94a3b8;font-size:0.75rem;margin-top:4px}
+.item .actions{margin-top:8px;display:flex;gap:8px}
+
+/* ========== FIRMAS ========== */
+.signature-area{background:#0f172a;border-radius:10px;padding:12px;border:1px solid #334155;margin-bottom:12px}
+.signature-area .signature-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.signature-area .signature-header label{font-size:0.7rem;text-transform:uppercase;color:#94a3b8;font-weight:600}
+.signature-canvas{background:white;border-radius:8px;width:100%;height:100px;border:2px solid #22c55e;touch-action:none;cursor:crosshair}
+.signature-status{font-size:0.6rem;padding:2px 10px;border-radius:12px;font-weight:600}
+.signature-status.saved{background:#22c55e30;color:#22c55e}
+.signature-status.empty{background:#ef444430;color:#ef4444}
+.btn-clear-signature{background:#ef4444;color:white;padding:4px 12px;border:none;border-radius:6px;font-size:0.65rem;cursor:pointer}
+
+/* ========== FOTOS ========== */
+.photo-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.photo-preview img{width:80px;height:80px;border-radius:8px;object-fit:cover;border:1px solid #334155}
+
+/* ========== TOAST ========== */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid #334155;padding:14px 28px;border-radius:30px;display:none;z-index:9999;font-size:0.9rem;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
 .toast.show{display:block}
-.login-container{max-width:400px;margin:40px auto}
+.toast.success{border-left:4px solid #22c55e}
+.toast.error{border-left:4px solid #ef4444}
+.toast.warning{border-left:4px solid #f97316}
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:768px){
+  .header{flex-direction:column;text-align:center}
+  .header-user{flex-wrap:wrap;justify-content:center}
+  .tabs{justify-content:center}
+  .card{padding:16px}
+  .login-card{padding:30px 20px}
+}
+
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0f172a}
+::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#22c55e}
 </style>
 </head>
 <body>
 
-<!-- ========== LOGIN ========== -->
-<div id="loginScreen">
-  <div class="login-container card">
-    <h2 class="card-title">🔐 Vital Hogar Pro IPS</h2>
-    <input type="email" id="loginEmail" placeholder="Email" value="admin@vitalhogar.com">
-    <input type="password" id="loginPassword" placeholder="Contraseña" value="admin123">
-    <button class="btn" onclick="login()">Ingresar</button>
-    <div id="loginError" style="color:#ef4444;margin-top:8px;"></div>
+<!-- ============================================================
+     LOGIN
+     ============================================================ -->
+<div id="loginScreen" class="login-container">
+  <div class="login-card">
+    <div class="login-logo">
+      <!-- LOGO VITAL HOGAR -->
+      <img src="https://i.imgur.com/01YZxey" alt="Vital Hogar" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%2322c55e%22/%3E%3Ctext x=%2250%22 y=%2260%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2232%22 font-weight=%22bold%22%3EVH%3C/text%3E%3C/svg%3E'">
+      <h1>VITAL HOGAR PRO IPS</h1>
+      <p>Cuidados Domiciliarios</p>
+    </div>
+    <div class="login-title">🔐 Iniciar Sesión</div>
+    <div id="loginError" class="login-error"></div>
+    <div class="form-group">
+      <label>📧 Email</label>
+      <input type="email" id="loginEmail" placeholder="usuario@vitalhogar.com">
+    </div>
+    <div class="form-group">
+      <label>🔒 Contraseña</label>
+      <input type="password" id="loginPassword" placeholder="Ingrese su contraseña">
+    </div>
+    <button class="btn-login" id="loginBtn" onclick="login()">Ingresar</button>
+    <div class="login-footer">© 2026 Vital Hogar Pro IPS - Todos los derechos reservados</div>
   </div>
 </div>
 
-<!-- ========== MAIN ========== -->
-<div id="mainScreen" class="hidden">
+<!-- ============================================================
+     MAIN
+     ============================================================ -->
+<div id="mainScreen" class="main-container">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-logo">
+      <img src="https://i.imgur.com/01YZxey" alt="Vital Hogar" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%2322c55e%22/%3E%3Ctext x=%2220%22 y=%2228%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2220%22 font-weight=%22bold%22%3EVH%3C/text%3E%3C/svg%3E'">
+      <div>
+        <h1>VITAL HOGAR PRO IPS</h1>
+        <span>Cuidados Domiciliarios</span>
+      </div>
+    </div>
+    <div class="header-user">
+      <span class="name" id="userName">Usuario</span>
+      <span class="role" id="userRole">ADMIN</span>
+      <button class="btn-logout" onclick="logout()">Salir</button>
+    </div>
+  </header>
+
+  <!-- TABS -->
   <div class="tabs" id="tabsContainer">
-    <div class="tab active" onclick="loadTab('turnos')">📅 Turnos</div>
-    <div class="tab" onclick="loadTab('pacientes')">🏥 Pacientes</div>
-    <div class="tab" onclick="loadTab('actividades')">✅ Actividades</div>
-    <div class="tab" onclick="loadTab('signos')">🩺 Signos</div>
+    <div class="tab active" data-tab="usuarios" onclick="loadTab('usuarios')">👥 Usuarios</div>
+    <div class="tab" data-tab="pacientes" onclick="loadTab('pacientes')">🏥 Pacientes</div>
+    <div class="tab" data-tab="turnos" onclick="loadTab('turnos')">📅 Turnos</div>
+    <div class="tab" data-tab="actividades" onclick="loadTab('actividades')">✅ Actividades</div>
+    <div class="tab" data-tab="signos" onclick="loadTab('signos')">🩺 Signos</div>
+    <div class="tab" data-tab="medicamentos" onclick="loadTab('medicamentos')">💊 Medicamentos</div>
+    <div class="tab" data-tab="entregas" onclick="loadTab('entregas')">🔄 Entregas</div>
+    <div class="tab" data-tab="recibos" onclick="loadTab('recibos')">📋 Recibos</div>
+    <div class="tab" data-tab="educacion" onclick="loadTab('educacion')">📚 Educación</div>
   </div>
+
+  <!-- CONTENIDO DINÁMICO -->
   <div id="dynamicContent"></div>
+
 </div>
 
-<!-- ========== TOAST ========== -->
+<!-- TOAST -->
 <div id="toast" class="toast"></div>
 
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
 <script>
 // ============================================================
 //  CONFIGURACIÓN
@@ -57,17 +200,19 @@ input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid
 const API_URL = 'https://vital-backend-1-y4kt.onrender.com';
 let TOKEN = localStorage.getItem('vital_token') || null;
 let USER = null;
+let firmaGuardada = {};
 
 // ============================================================
 //  UTILIDADES
 // ============================================================
 function $(id) { return document.getElementById(id); }
+
 function showToast(msg, type = 'success') {
   const t = $('toast');
   t.textContent = msg;
-  t.className = 'toast show';
+  t.className = 'toast ' + type + ' show';
   clearTimeout(t._timeout);
-  t._timeout = setTimeout(() => t.classList.remove('show'), 3000);
+  t._timeout = setTimeout(() => t.classList.remove('show'), 3500);
 }
 
 // ============================================================
@@ -77,6 +222,11 @@ async function login() {
   const email = $('loginEmail').value.trim();
   const password = $('loginPassword').value;
   const errorDiv = $('loginError');
+  const btn = $('loginBtn');
+
+  errorDiv.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Verificando...';
 
   try {
     const res = await fetch(API_URL + '/api/auth/login', {
@@ -88,6 +238,9 @@ async function login() {
 
     if (!data.success) {
       errorDiv.textContent = data.message || 'Credenciales inválidas';
+      errorDiv.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Ingresar';
       return;
     }
 
@@ -96,13 +249,34 @@ async function login() {
     localStorage.setItem('vital_token', TOKEN);
     localStorage.setItem('vital_user', JSON.stringify(USER));
 
-    $('loginScreen').classList.add('hidden');
-    $('mainScreen').classList.remove('hidden');
+    $('loginScreen').style.display = 'none';
+    $('mainScreen').style.display = 'block';
+    $('userName').textContent = USER.name;
+    $('userRole').textContent = USER.role;
+
     showToast('Bienvenido ' + USER.name);
-    loadTab('turnos');
+    loadTab('usuarios');
+
   } catch (e) {
-    errorDiv.textContent = 'Error de conexión';
+    errorDiv.textContent = 'Error de conexión con el servidor';
+    errorDiv.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Ingresar';
   }
+}
+
+// ============================================================
+//  LOGOUT
+// ============================================================
+function logout() {
+  localStorage.removeItem('vital_token');
+  localStorage.removeItem('vital_user');
+  TOKEN = null;
+  USER = null;
+  $('loginScreen').style.display = 'flex';
+  $('mainScreen').style.display = 'none';
+  showToast('Sesión cerrada');
 }
 
 // ============================================================
@@ -110,19 +284,22 @@ async function login() {
 // ============================================================
 function checkSession() {
   const token = localStorage.getItem('vital_token');
-  if (token) {
+  const userData = localStorage.getItem('vital_user');
+  if (token && userData) {
     TOKEN = token;
-    USER = JSON.parse(localStorage.getItem('vital_user') || '{}');
-    $('loginScreen').classList.add('hidden');
-    $('mainScreen').classList.remove('hidden');
-    loadTab('turnos');
+    USER = JSON.parse(userData);
+    $('loginScreen').style.display = 'none';
+    $('mainScreen').style.display = 'block';
+    $('userName').textContent = USER.name;
+    $('userRole').textContent = USER.role;
+    loadTab('usuarios');
     return true;
   }
   return false;
 }
 
 // ============================================================
-//  PETICIONES AUTENTICADAS
+//  API REQUEST
 // ============================================================
 async function apiRequest(endpoint, options = {}) {
   const res = await fetch(API_URL + endpoint, {
@@ -137,48 +314,349 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 // ============================================================
+//  SISTEMA DE FIRMAS
+// ============================================================
+function initSignature(canvasId) {
+  const canvas = $(canvasId);
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width || 300;
+  canvas.height = rect.height || 100;
+  
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '16px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('✍️ Firme aquí', canvas.width / 2, canvas.height / 2);
+  
+  let drawing = false;
+  
+  const startDraw = (e) => {
+    e.preventDefault();
+    drawing = true;
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  };
+  
+  const draw = (e) => {
+    e.preventDefault();
+    if (!drawing) return;
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  };
+  
+  const endDraw = () => {
+    if (drawing) {
+      drawing = false;
+      firmaGuardada[canvasId] = canvas.toDataURL('image/png');
+      updateSignatureStatus(canvasId, true);
+    }
+  };
+  
+  const getPos = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX || e.touches[0].clientX) - rect.left;
+    const y = (e.clientY || e.touches[0].clientY) - rect.top;
+    return { x, y };
+  };
+  
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('mouseleave', endDraw);
+  canvas.addEventListener('touchstart', startDraw, { passive: false });
+  canvas.addEventListener('touchmove', draw, { passive: false });
+  canvas.addEventListener('touchend', endDraw);
+}
+
+function updateSignatureStatus(canvasId, saved) {
+  const status = document.getElementById('status_' + canvasId);
+  if (!status) return;
+  if (saved) {
+    status.textContent = '✅ Firmado';
+    status.className = 'signature-status saved';
+  } else {
+    status.textContent = '⏳ Sin firmar';
+    status.className = 'signature-status empty';
+  }
+}
+
+function clearSignature(canvasId) {
+  const canvas = $(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '16px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('✍️ Firme aquí', canvas.width / 2, canvas.height / 2);
+  delete firmaGuardada[canvasId];
+  updateSignatureStatus(canvasId, false);
+}
+
+function getSignature(canvasId) {
+  return firmaGuardada[canvasId] || null;
+}
+
+// ============================================================
+//  SISTEMA DE FOTOS
+// ============================================================
+let fotosCapturadas = [];
+
+function capturarFoto(inputId, previewId) {
+  const input = $(inputId);
+  if (!input || !input.files || input.files.length === 0) {
+    showToast('Seleccione una imagen', 'warning');
+    return;
+  }
+  
+  const preview = $(previewId);
+  if (!preview) return;
+  
+  preview.innerHTML = '';
+  const maxFotos = Math.min(input.files.length, 3);
+  
+  for (let i = 0; i < maxFotos; i++) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(input.files[i]);
+  }
+  
+  if (input.files.length > 3) {
+    showToast('Solo se tomaron las primeras 3 fotos', 'warning');
+  } else {
+    showToast('Fotos capturadas ✅', 'success');
+  }
+}
+
+function getFotos(previewId) {
+  const preview = $(previewId);
+  if (!preview) return [];
+  const fotos = [];
+  for (let img of preview.children) {
+    if (img.tagName === 'IMG') {
+      fotos.push(img.src);
+    }
+  }
+  return fotos;
+}
+
+// ============================================================
 //  CARGAR TABS
 // ============================================================
 function loadTab(tabName) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => {
-    if (t.textContent.includes(tabName) || t.dataset.tab === tabName) {
+    if (t.dataset.tab === tabName) {
       t.classList.add('active');
     }
   });
 
   const content = $('dynamicContent');
   switch(tabName) {
-    case 'turnos': content.innerHTML = renderTurnos(); break;
+    case 'usuarios': content.innerHTML = renderUsuarios(); break;
     case 'pacientes': content.innerHTML = renderPacientes(); break;
+    case 'turnos': content.innerHTML = renderTurnos(); break;
     case 'actividades': content.innerHTML = renderActividades(); break;
     case 'signos': content.innerHTML = renderSignos(); break;
+    case 'medicamentos': content.innerHTML = renderMedicamentos(); break;
+    case 'entregas': content.innerHTML = renderEntregas(); break;
+    case 'recibos': content.innerHTML = renderRecibos(); break;
+    case 'educacion': content.innerHTML = renderEducacion(); break;
     default: content.innerHTML = '<div class="card"><p>Contenido no disponible</p></div>';
   }
+
+  // Inicializar firmas después de renderizar
+  setTimeout(() => {
+    const canvasIds = ['sigEntrega', 'sigRecibe', 'sigProfesional', 'sigPaciente'];
+    canvasIds.forEach(id => {
+      if ($(id)) initSignature(id);
+    });
+  }, 200);
+
+  // Cargar datos automáticamente
+  setTimeout(() => {
+    if (tabName === 'usuarios') cargarUsuarios();
+    if (tabName === 'pacientes') cargarPacientes();
+    if (tabName === 'turnos') cargarTurnos();
+    if (tabName === 'actividades') cargarActividades();
+    if (tabName === 'signos') cargarSignos();
+    if (tabName === 'medicamentos') cargarMedicamentos();
+    if (tabName === 'entregas') cargarEntregas();
+    if (tabName === 'recibos') cargarRecibos();
+    if (tabName === 'educacion') cargarEducacion();
+  }, 300);
 }
 
 // ============================================================
-//  RENDER TURNOS
+//  RENDER FUNCTIONS
 // ============================================================
+
+// ---------- USUARIOS ----------
+function renderUsuarios() {
+  if (USER.role !== 'ADMIN') {
+    return `<div class="card"><p style="color:#ef4444;">⛔ No tienes permisos para ver esta sección</p></div>`;
+  }
+  return `
+    <div class="card">
+      <div class="card-title">👥 Usuarios <span class="badge">Lista</span></div>
+      <div id="listaUsuarios" class="item-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">➕ Crear Usuario</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Nombre</label><input type="text" id="newUserName" placeholder="Ej: Juan Pérez"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="newUserEmail" placeholder="ejemplo@vitalhogar.com"></div>
+        <div class="form-group"><label>Rol</label>
+          <select id="newUserRole">
+            <option value="AUXILIAR">AUXILIAR</option>
+            <option value="ENFERMERO">ENFERMERO</option>
+            <option value="MEDICO">MEDICO</option>
+            <option value="FISIOTERAPEUTA">FISIOTERAPEUTA</option>
+            <option value="PSICOLOGO">PSICOLOGO</option>
+            <option value="NUTRICIONISTA">NUTRICIONISTA</option>
+            <option value="FONOAUDIOLOGO">FONOAUDIOLOGO</option>
+            <option value="TERAPEUTA_OCUPACIONAL">TERAPEUTA OCUPACIONAL</option>
+            <option value="TERAPEUTA_RESPIRATORIO">TERAPEUTA RESPIRATORIO</option>
+            <option value="COORDINADOR">COORDINADOR</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Contraseña</label><input type="password" id="newUserPass" placeholder="******"></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="crearUsuario()">➕ Crear usuario</button>
+    </div>
+  `;
+}
+
+async function cargarUsuarios() {
+  if (USER.role !== 'ADMIN') return;
+  const data = await apiRequest('/api/users');
+  const div = $('listaUsuarios');
+  if (data.success && data.data.length > 0) {
+    div.innerHTML = data.data.map(u => `
+      <div class="item">
+        <div class="title">${u.name} <span style="font-size:0.7rem;color:#94a3b8;">(${u.role})</span></div>
+        <div class="meta">📧 ${u.email}</div>
+      </div>
+    `).join('');
+  } else {
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay usuarios registrados</p>';
+  }
+}
+
+async function crearUsuario() {
+  if (USER.role !== 'ADMIN') {
+    showToast('No tienes permisos', 'error');
+    return;
+  }
+  const data = await apiRequest('/api/users', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: $('newUserName').value,
+      email: $('newUserEmail').value,
+      role: $('newUserRole').value,
+      password: $('newUserPass').value
+    })
+  });
+  if (data.success) {
+    showToast('✅ Usuario creado');
+    cargarUsuarios();
+    ['newUserName','newUserEmail','newUserPass'].forEach(id => $(id).value = '');
+  } else {
+    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+  }
+}
+
+// ---------- PACIENTES ----------
+function renderPacientes() {
+  return `
+    <div class="card">
+      <div class="card-title">🏥 Pacientes <span class="badge">Lista</span></div>
+      <div id="listaPacientes" class="item-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">➕ Crear Paciente</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Nombre completo</label><input type="text" id="nombrePaciente" placeholder="Ej: Juan Pérez"></div>
+        <div class="form-group"><label>Documento</label><input type="text" id="documentoPaciente" placeholder="Ej: 123456789"></div>
+        <div class="form-group"><label>Diagnóstico</label><input type="text" id="diagnosticoPaciente" placeholder="Ej: Hipertensión"></div>
+        <div class="form-group"><label>Médico</label><input type="text" id="medicoPaciente" placeholder="Ej: Dr. Gómez"></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="crearPaciente()">➕ Crear paciente</button>
+    </div>
+  `;
+}
+
+async function cargarPacientes() {
+  const data = await apiRequest('/api/patients');
+  const div = $('listaPacientes');
+  if (data.success && data.data.length > 0) {
+    div.innerHTML = data.data.map(p => `
+      <div class="item">
+        <div class="title">${p.name}</div>
+        <div class="meta">📄 ${p.document} | ${p.diagnosis || 'Sin diagnóstico'}</div>
+      </div>
+    `).join('');
+  } else {
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay pacientes registrados</p>';
+  }
+}
+
+async function crearPaciente() {
+  const data = await apiRequest('/api/patients', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: $('nombrePaciente').value,
+      document: $('documentoPaciente').value,
+      diagnosis: $('diagnosticoPaciente').value,
+      doctor: $('medicoPaciente').value
+    })
+  });
+  if (data.success) {
+    showToast('✅ Paciente creado');
+    cargarPacientes();
+    ['nombrePaciente','documentoPaciente','diagnosticoPaciente','medicoPaciente'].forEach(id => $(id).value = '');
+  } else {
+    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+  }
+}
+
+// ---------- TURNOS ----------
 function renderTurnos() {
   return `
     <div class="card">
-      <div class="card-title">📅 Turnos</div>
-      <button class="btn" onclick="cargarTurnos()">🔄 Cargar turnos</button>
-      <div id="listaTurnos" style="margin-top:10px;"></div>
+      <div class="card-title">📅 Turnos <span class="badge">Lista</span></div>
+      <div id="listaTurnos" class="item-list"></div>
     </div>
     <div class="card">
       <div class="card-title">➕ Crear Turno</div>
-      <input type="text" id="pacienteId" placeholder="ID del paciente">
-      <input type="text" id="profesionalId" placeholder="ID del profesional">
-      <input type="date" id="fechaTurno">
-      <select id="tipoTurno">
-        <option value="6h">6 horas</option>
-        <option value="8h">8 horas</option>
-        <option value="12h">12 horas</option>
-        <option value="24h">24 horas</option>
-      </select>
-      <button class="btn" onclick="crearTurno()">📅 Crear turno</button>
+      <div class="form-grid">
+        <div class="form-group"><label>ID del paciente</label><input type="text" id="pacienteId" placeholder="Ej: 123e4567"></div>
+        <div class="form-group"><label>ID del profesional</label><input type="text" id="profesionalId" placeholder="Ej: 987e6543"></div>
+        <div class="form-group"><label>Fecha</label><input type="date" id="fechaTurno"></div>
+        <div class="form-group"><label>Tipo de turno</label>
+          <select id="tipoTurno">
+            <option value="6h">6 horas</option>
+            <option value="8h">8 horas</option>
+            <option value="12h">12 horas</option>
+            <option value="24h">24 horas</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="crearTurno()">📅 Crear turno</button>
     </div>
   `;
 }
@@ -188,15 +666,13 @@ async function cargarTurnos() {
   const div = $('listaTurnos');
   if (data.success && data.data.length > 0) {
     div.innerHTML = data.data.map(t => `
-      <div style="background:#0f172a;padding:10px;border-radius:8px;margin-bottom:6px;">
-        <strong>Paciente:</strong> ${t.patient_id} <br>
-        <strong>Fecha:</strong> ${t.shift_date} <br>
-        <strong>Tipo:</strong> ${t.shift_type} <br>
-        <strong>Estado:</strong> ${t.estado || 'PENDIENTE'}
+      <div class="item">
+        <div class="title">Paciente: ${t.patient_id}</div>
+        <div class="meta">📅 ${t.shift_date} | ⏰ ${t.shift_type} | ${t.estado || 'PENDIENTE'}</div>
       </div>
     `).join('');
   } else {
-    div.innerHTML = '<p style="color:#94a3b8;">No hay turnos registrados</p>';
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay turnos registrados</p>';
   }
 }
 
@@ -213,80 +689,34 @@ async function crearTurno() {
   if (data.success) {
     showToast('✅ Turno creado');
     cargarTurnos();
+    ['pacienteId','profesionalId','fechaTurno'].forEach(id => $(id).value = '');
   } else {
     showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
   }
 }
 
-// ============================================================
-//  RENDER PACIENTES
-// ============================================================
-function renderPacientes() {
-  return `
-    <div class="card">
-      <div class="card-title">🏥 Pacientes</div>
-      <button class="btn" onclick="cargarPacientes()">🔄 Cargar pacientes</button>
-      <div id="listaPacientes" style="margin-top:10px;"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">➕ Crear Paciente</div>
-      <input type="text" id="nombrePaciente" placeholder="Nombre completo">
-      <input type="text" id="documentoPaciente" placeholder="Documento">
-      <input type="text" id="diagnosticoPaciente" placeholder="Diagnóstico">
-      <button class="btn" onclick="crearPaciente()">➕ Crear paciente</button>
-    </div>
-  `;
-}
-
-async function cargarPacientes() {
-  const data = await apiRequest('/api/patients');
-  const div = $('listaPacientes');
-  if (data.success && data.data.length > 0) {
-    div.innerHTML = data.data.map(p => `
-      <div style="background:#0f172a;padding:10px;border-radius:8px;margin-bottom:6px;">
-        <strong>${p.name}</strong> - ${p.document} <br>
-        <span style="color:#94a3b8;">${p.diagnosis || 'Sin diagnóstico'}</span>
-      </div>
-    `).join('');
-  } else {
-    div.innerHTML = '<p style="color:#94a3b8;">No hay pacientes registrados</p>';
-  }
-}
-
-async function crearPaciente() {
-  const data = await apiRequest('/api/patients', {
-    method: 'POST',
-    body: JSON.stringify({
-      name: $('nombrePaciente').value,
-      document: $('documentoPaciente').value,
-      diagnosis: $('diagnosticoPaciente').value
-    })
-  });
-  if (data.success) {
-    showToast('✅ Paciente creado');
-    cargarPacientes();
-  } else {
-    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
-  }
-}
-
-// ============================================================
-//  RENDER ACTIVIDADES
-// ============================================================
+// ---------- ACTIVIDADES ----------
 function renderActividades() {
   return `
     <div class="card">
-      <div class="card-title">✅ Actividades</div>
-      <button class="btn" onclick="cargarActividades()">🔄 Cargar actividades</button>
-      <div id="listaActividades" style="margin-top:10px;"></div>
+      <div class="card-title">✅ Actividades <span class="badge">Lista</span></div>
+      <div id="listaActividades" class="item-list"></div>
     </div>
     <div class="card">
       <div class="card-title">➕ Crear Actividad</div>
-      <input type="text" id="pacienteActividad" placeholder="ID del paciente">
-      <input type="text" id="actividadNombre" placeholder="Nombre de la actividad">
-      <input type="time" id="horaActividad">
-      <textarea id="obsActividad" placeholder="Observaciones"></textarea>
-      <button class="btn" onclick="crearActividad()">➕ Crear actividad</button>
+      <div class="form-grid">
+        <div class="form-group"><label>ID del paciente</label><input type="text" id="pacienteActividad" placeholder="ID del paciente"></div>
+        <div class="form-group"><label>Actividad</label><input type="text" id="actividadNombre" placeholder="Ej: Aseo del paciente"></div>
+        <div class="form-group"><label>Hora</label><input type="time" id="horaActividad"></div>
+        <div class="form-group"><label>Observaciones</label><textarea id="obsActividad" placeholder="Detalle..."></textarea></div>
+      </div>
+      <div class="form-group">
+        <label>📸 Evidencia Fotográfica</label>
+        <input type="file" id="fotosActividad" accept="image/*" capture="environment" multiple>
+        <button class="btn btn-secondary btn-sm" onclick="capturarFoto('fotosActividad', 'previewFotosActividad')">📷 Capturar</button>
+        <div id="previewFotosActividad" class="photo-preview"></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="crearActividad()">➕ Crear actividad</button>
     </div>
   `;
 }
@@ -296,17 +726,19 @@ async function cargarActividades() {
   const div = $('listaActividades');
   if (data.success && data.data.length > 0) {
     div.innerHTML = data.data.map(a => `
-      <div style="background:#0f172a;padding:10px;border-radius:8px;margin-bottom:6px;">
-        <strong>${a.actividad}</strong> - ${a.hora} <br>
-        <span style="color:#94a3b8;">${a.observacion || 'Sin observaciones'}</span>
+      <div class="item">
+        <div class="title">${a.actividad}</div>
+        <div class="meta">🕐 ${a.hora || '--:--'} | ${a.observacion || 'Sin observaciones'}</div>
+        ${a.fotos && a.fotos.length > 0 ? `<div class="meta">📸 ${a.fotos.length} foto(s)</div>` : ''}
       </div>
     `).join('');
   } else {
-    div.innerHTML = '<p style="color:#94a3b8;">No hay actividades registradas</p>';
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay actividades registradas</p>';
   }
 }
 
 async function crearActividad() {
+  const fotos = getFotos('previewFotosActividad');
   const data = await apiRequest('/api/actividades', {
     method: 'POST',
     body: JSON.stringify({
@@ -314,39 +746,40 @@ async function crearActividad() {
       user_id: USER.id,
       actividad: $('actividadNombre').value,
       hora: $('horaActividad').value,
-      observacion: $('obsActividad').value
+      observacion: $('obsActividad').value,
+      fotos: fotos
     })
   });
   if (data.success) {
     showToast('✅ Actividad creada');
     cargarActividades();
+    ['pacienteActividad','actividadNombre','horaActividad','obsActividad'].forEach(id => $(id).value = '');
+    $('previewFotosActividad').innerHTML = '';
+    $('fotosActividad').value = '';
   } else {
     showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
   }
 }
 
-// ============================================================
-//  RENDER SIGNOS
-// ============================================================
+// ---------- SIGNOS ----------
 function renderSignos() {
   return `
     <div class="card">
-      <div class="card-title">🩺 Signos Vitales</div>
-      <button class="btn" onclick="cargarSignos()">🔄 Cargar signos</button>
-      <div id="listaSignos" style="margin-top:10px;"></div>
+      <div class="card-title">🩺 Signos Vitales <span class="badge">Lista</span></div>
+      <div id="listaSignos" class="item-list"></div>
     </div>
     <div class="card">
       <div class="card-title">➕ Registrar Signos</div>
-      <div class="grid-2">
-        <input type="number" id="spo2" placeholder="SpO2 (%)">
-        <input type="number" id="fc" placeholder="FC (lpm)">
-        <input type="number" id="fr" placeholder="FR (rpm)">
-        <input type="number" id="temp" placeholder="Temp (°C)" step="0.1">
+      <div class="form-grid">
+        <div class="form-group"><label>SpO2 (%)</label><input type="number" id="spo2" placeholder="Ej: 98"></div>
+        <div class="form-group"><label>FC (lpm)</label><input type="number" id="fc" placeholder="Ej: 72"></div>
+        <div class="form-group"><label>FR (rpm)</label><input type="number" id="fr" placeholder="Ej: 16"></div>
+        <div class="form-group"><label>Temp (°C)</label><input type="number" id="temp" placeholder="Ej: 36.5" step="0.1"></div>
+        <div class="form-group"><label>TA</label><input type="text" id="bp" placeholder="Ej: 120/80"></div>
+        <div class="form-group"><label>Hora</label><input type="time" id="horaSignos"></div>
+        <div class="form-group" style="grid-column: 1 / -1;"><label>Observaciones</label><textarea id="obsSignos" placeholder="Detalle..."></textarea></div>
       </div>
-      <input type="text" id="bp" placeholder="TA (ej: 120/80)">
-      <input type="time" id="horaSignos">
-      <textarea id="obsSignos" placeholder="Observaciones"></textarea>
-      <button class="btn" onclick="crearSignos()">💾 Guardar signos</button>
+      <button class="btn btn-primary btn-block" onclick="crearSignos()">💾 Guardar signos</button>
     </div>
   `;
 }
@@ -356,13 +789,13 @@ async function cargarSignos() {
   const div = $('listaSignos');
   if (data.success && data.data.length > 0) {
     div.innerHTML = data.data.map(s => `
-      <div style="background:#0f172a;padding:10px;border-radius:8px;margin-bottom:6px;">
-        <strong>SpO2:</strong> ${s.spo2 || '-'}% | <strong>FC:</strong> ${s.fc || '-'} | <strong>FR:</strong> ${s.fr || '-'} | <strong>Temp:</strong> ${s.temp || '-'}°C
-        <br><span style="color:#94a3b8;">${s.obs || 'Sin observaciones'}</span>
+      <div class="item">
+        <div class="title">SpO2: ${s.spo2 || '-'}% | FC: ${s.fc || '-'} | FR: ${s.fr || '-'}</div>
+        <div class="meta">🌡️ ${s.temp || '-'}°C | ${s.bp || 'Sin TA'} | ${s.obs || 'Sin observaciones'}</div>
       </div>
     `).join('');
   } else {
-    div.innerHTML = '<p style="color:#94a3b8;">No hay signos registrados</p>';
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay signos registrados</p>';
   }
 }
 
@@ -384,9 +817,281 @@ async function crearSignos() {
   if (data.success) {
     showToast('✅ Signos guardados');
     cargarSignos();
+    ['spo2','fc','fr','temp','bp','horaSignos','obsSignos'].forEach(id => $(id).value = '');
   } else {
     showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
   }
+}
+
+// ---------- MEDICAMENTOS ----------
+function renderMedicamentos() {
+  return `
+    <div class="card">
+      <div class="card-title">💊 Medicamentos <span class="badge">Lista</span></div>
+      <div id="listaMedicamentos" class="item-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">➕ Registrar Medicamento</div>
+      <div class="form-grid">
+        <div class="form-group"><label>ID del paciente</label><input type="text" id="pacienteMedicamento" placeholder="ID del paciente"></div>
+        <div class="form-group"><label>Nombre</label><input type="text" id="nombreMedicamento" placeholder="Ej: Enalapril"></div>
+        <div class="form-group"><label>Dosis</label><input type="text" id="dosisMedicamento" placeholder="Ej: 10mg"></div>
+        <div class="form-group"><label>Hora</label><input type="time" id="horaMedicamento"></div>
+        <div class="form-group" style="grid-column: 1 / -1;"><label>Observaciones</label><textarea id="obsMedicamento" placeholder="Detalle..."></textarea></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="crearMedicamento()">💾 Registrar medicamento</button>
+    </div>
+  `;
+}
+
+async function cargarMedicamentos() {
+  const data = await apiRequest('/api/medicamentos/' + USER.id);
+  const div = $('listaMedicamentos');
+  if (data.success && data.data.length > 0) {
+    div.innerHTML = data.data.map(m => `
+      <div class="item">
+        <div class="title">${m.nombre} - ${m.dosis || 'Sin dosis'}</div>
+        <div class="meta">🕐 ${m.hora || '--:--'} | ${m.obs || 'Sin observaciones'}</div>
+      </div>
+    `).join('');
+  } else {
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay medicamentos registrados</p>';
+  }
+}
+
+async function crearMedicamento() {
+  const data = await apiRequest('/api/medicamentos', {
+    method: 'POST',
+    body: JSON.stringify({
+      patient_id: $('pacienteMedicamento').value,
+      user_id: USER.id,
+      nombre: $('nombreMedicamento').value,
+      dosis: $('dosisMedicamento').value,
+      hora: $('horaMedicamento').value,
+      obs: $('obsMedicamento').value
+    })
+  });
+  if (data.success) {
+    showToast('✅ Medicamento registrado');
+    cargarMedicamentos();
+    ['pacienteMedicamento','nombreMedicamento','dosisMedicamento','horaMedicamento','obsMedicamento'].forEach(id => $(id).value = '');
+  } else {
+    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+  }
+}
+
+// ---------- ENTREGAS ----------
+function renderEntregas() {
+  return `
+    <div class="card">
+      <div class="card-title">🔄 Entregas <span class="badge">Lista</span></div>
+      <div id="listaEntregas" class="item-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">➕ Registrar Entrega</div>
+      <div class="form-group"><label>Resumen</label><textarea id="resumenEntrega" placeholder="Resumen de la entrega..."></textarea></div>
+      <div class="form-group"><label>Pendientes</label><textarea id="pendientesEntrega" placeholder="Pendientes..."></textarea></div>
+      <div class="form-group"><label>¿Quién recibe?</label>
+        <select id="quienRecibe">
+          <option>Familiar</option>
+          <option>Auxiliar siguiente</option>
+          <option>Enfermero Jefe</option>
+          <option>Coordinador</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="signature-area">
+          <div class="signature-header">
+            <label>✍️ Firma ENTREGA (Auxiliar)</label>
+            <span class="signature-status empty" id="status_sigEntrega">⏳ Sin firmar</span>
+          </div>
+          <canvas id="sigEntrega" class="signature-canvas"></canvas>
+          <button class="btn-clear-signature" onclick="clearSignature('sigEntrega')">🗑️ Borrar</button>
+        </div>
+        <div class="signature-area">
+          <div class="signature-header">
+            <label>✍️ Firma RECIBE (Familiar)</label>
+            <span class="signature-status empty" id="status_sigRecibe">⏳ Sin firmar</span>
+          </div>
+          <canvas id="sigRecibe" class="signature-canvas"></canvas>
+          <button class="btn-clear-signature" onclick="clearSignature('sigRecibe')">🗑️ Borrar</button>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="crearEntrega()">✅ Confirmar entrega</button>
+    </div>
+  `;
+}
+
+async function cargarEntregas() {
+  const data = await apiRequest('/api/entregas/' + USER.id);
+  const div = $('listaEntregas');
+  if (data.success && data.data.length > 0) {
+    div.innerHTML = data.data.map(e => `
+      <div class="item">
+        <div class="title">${e.resumen || 'Sin resumen'}</div>
+        <div class="meta">${e.pendientes ? '⚠️ Pendientes: ' + e.pendientes : ''}</div>
+      </div>
+    `).join('');
+  } else {
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay entregas registradas</p>';
+  }
+}
+
+async function crearEntrega() {
+  const firmaEntrega = getSignature('sigEntrega');
+  const firmaRecibe = getSignature('sigRecibe');
+  
+  if (!firmaEntrega || !firmaRecibe) {
+    showToast('⚠️ Ambas firmas son requeridas', 'warning');
+    return;
+  }
+  
+  const data = await apiRequest('/api/entregas', {
+    method: 'POST',
+    body: JSON.stringify({
+      user_id: USER.id,
+      resumen: $('resumenEntrega').value,
+      pendientes: $('pendientesEntrega').value,
+      quienRecibe: $('quienRecibe').value,
+      firmaEntrega: firmaEntrega,
+      firmaRecibe: firmaRecibe
+    })
+  });
+  if (data.success) {
+    showToast('✅ Entrega registrada');
+    cargarEntregas();
+    ['resumenEntrega','pendientesEntrega'].forEach(id => $(id).value = '');
+    clearSignature('sigEntrega');
+    clearSignature('sigRecibe');
+  } else {
+    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+  }
+}
+
+// ---------- RECIBOS ----------
+function renderRecibos() {
+  return `
+    <div class="card">
+      <div class="card-title">📋 Recibos <span class="badge">Lista</span></div>
+      <div id="listaRecibos" class="item-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">➕ Registrar Recibo</div>
+      <div class="form-group"><label>Estado del paciente</label><textarea id="estadoRecibo" placeholder="Describa el estado del paciente..."></textarea></div>
+      <div class="form-group"><label>¿Quién entrega?</label>
+        <select id="quienEntrega">
+          <option>Familiar</option>
+          <option>Auxiliar anterior</option>
+          <option>Enfermero Jefe</option>
+          <option>Coordinador</option>
+        </select>
+      </div>
+      <div class="signature-area">
+        <div class="signature-header">
+          <label>✍️ Firma RECIBO (Auxiliar)</label>
+          <span class="signature-status empty" id="status_sigProfesional">⏳ Sin firmar</span>
+        </div>
+        <canvas id="sigProfesional" class="signature-canvas"></canvas>
+        <button class="btn-clear-signature" onclick="clearSignature('sigProfesional')">🗑️ Borrar</button>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="crearRecibo()">✅ Confirmar recibo</button>
+    </div>
+  `;
+}
+
+async function cargarRecibos() {
+  const data = await apiRequest('/api/recibos/' + USER.id);
+  const div = $('listaRecibos');
+  if (data.success && data.data.length > 0) {
+    div.innerHTML = data.data.map(r => `
+      <div class="item">
+        <div class="title">Estado: ${r.estado || 'Sin estado'}</div>
+        <div class="meta">👤 ${r.quienEntrega || 'No especificado'}</div>
+      </div>
+    `).join('');
+  } else {
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay recibos registrados</p>';
+  }
+}
+
+async function crearRecibo() {
+  const firma = getSignature('sigProfesional');
+  
+  if (!firma) {
+    showToast('⚠️ La firma es requerida', 'warning');
+    return;
+  }
+  
+  const data = await apiRequest('/api/recibos', {
+    method: 'POST',
+    body: JSON.stringify({
+      user_id: USER.id,
+      estado: $('estadoRecibo').value,
+      quienEntrega: $('quienEntrega').value,
+      firma: firma
+    })
+  });
+  if (data.success) {
+    showToast('✅ Recibo registrado');
+    cargarRecibos();
+    $('estadoRecibo').value = '';
+    clearSignature('sigProfesional');
+  } else {
+    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+  }
+}
+
+// ---------- EDUCACION ----------
+function renderEducacion() {
+  if (USER.role === 'ADMIN') {
+    return `
+      <div class="card">
+        <div class="card-title">📚 Asignar Educación</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Tema</label><input type="text" id="temaEducacion" placeholder="Ej: Cuidado de heridas"></div>
+          <div class="form-group"><label>ID del paciente</label><input type="text" id="pacienteEducacion" placeholder="ID del paciente"></div>
+          <div class="form-group"><label>ID del profesional</label><input type="text" id="profesionalEducacion" placeholder="ID del profesional"></div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="asignarEducacion()">📤 Asignar educación</button>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Educación Asignada</div>
+        <div id="listaEducacionAsignada" class="item-list"></div>
+      </div>
+    `;
+  } else {
+    return `
+      <div class="card">
+        <div class="card-title">📚 Educación Pendiente</div>
+        <div id="listaEducacionPendiente" class="item-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">✅ Completar Educación</div>
+        <div class="form-group"><label>ID de la asignación</label><input type="text" id="idAsignacionEducacion" placeholder="ID de la asignación"></div>
+        <div class="form-group"><label>Evidencia</label><textarea id="evidenciaEducacion" placeholder="Describa la educación realizada..."></textarea></div>
+        <div class="form-group">
+          <label>📸 Evidencia Fotográfica</label>
+          <input type="file" id="fotosEducacion" accept="image/*" capture="environment" multiple>
+          <button class="btn btn-secondary btn-sm" onclick="capturarFoto('fotosEducacion', 'previewFotosEducacion')">📷 Capturar</button>
+          <div id="previewFotosEducacion" class="photo-preview"></div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="completarEducacion()">✅ Completar educación</button>
+      </div>
+    `;
+  }
+}
+
+async function cargarEducacion() {
+  // Esta función se implementará cuando tengamos el endpoint de educación
+  showToast('Módulo de educación en desarrollo', 'warning');
+}
+
+async function asignarEducacion() {
+  showToast('Función en desarrollo', 'warning');
+}
+
+async function completarEducacion() {
+  showToast('Función en desarrollo', 'warning');
 }
 
 // ============================================================
@@ -394,7 +1099,7 @@ async function crearSignos() {
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   if (!checkSession()) {
-    $('loginScreen').classList.remove('hidden');
+    $('loginScreen').style.display = 'flex';
   }
 });
 
@@ -402,17 +1107,31 @@ document.addEventListener('DOMContentLoaded', () => {
 //  EXPONER FUNCIONES GLOBALES
 // ============================================================
 window.login = login;
+window.logout = logout;
 window.loadTab = loadTab;
-window.cargarTurnos = cargarTurnos;
-window.crearTurno = crearTurno;
+window.cargarUsuarios = cargarUsuarios;
+window.crearUsuario = crearUsuario;
 window.cargarPacientes = cargarPacientes;
 window.crearPaciente = crearPaciente;
+window.cargarTurnos = cargarTurnos;
+window.crearTurno = crearTurno;
 window.cargarActividades = cargarActividades;
 window.crearActividad = crearActividad;
+window.capturarFoto = capturarFoto;
 window.cargarSignos = cargarSignos;
 window.crearSignos = crearSignos;
+window.cargarMedicamentos = cargarMedicamentos;
+window.crearMedicamento = crearMedicamento;
+window.cargarEntregas = cargarEntregas;
+window.crearEntrega = crearEntrega;
+window.clearSignature = clearSignature;
+window.cargarRecibos = cargarRecibos;
+window.crearRecibo = crearRecibo;
+window.cargarEducacion = cargarEducacion;
+window.asignarEducacion = asignarEducacion;
+window.completarEducacion = completarEducacion;
 
-console.log('✅ Vital Hogar Pro - Conectado al backend:', API_URL);
+console.log('✅ Vital Hogar Pro IPS - Frontend conectado al backend:', API_URL);
 </script>
 </body>
 </html>
