@@ -3,10 +3,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // ==================== SUPABASE ====================
-// ✅ USAR LA MISMA CONFIGURACIÓN QUE SERVER.JS
+// ✅ USAR ANON_KEY (la misma que en server.js)
 const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY  // ← CAMBIADO A ANON_KEY
+    process.env.SUPABASE_ANON_KEY
 );
 
 // ============================================================
@@ -16,7 +16,6 @@ async function login(req, res) {
     try {
         const { email, password } = req.body;
 
-        // Validar campos obligatorios
         if (!email || !password) {
             return res.status(400).json({
                 success: false,
@@ -24,7 +23,6 @@ async function login(req, res) {
             });
         }
 
-        // Buscar usuario por email
         const { data: users, error } = await supabase
             .from('users')
             .select('*')
@@ -41,7 +39,7 @@ async function login(req, res) {
 
         const user = users[0];
 
-        // VERIFICAR CONTRASEÑA (comparar hash)
+        // VERIFICAR CONTRASEÑA
         const validPassword = await bcrypt.compare(password, user.password_hash);
         if (!validPassword) {
             return res.status(401).json({
@@ -50,7 +48,7 @@ async function login(req, res) {
             });
         }
 
-        // GENERAR TOKEN JWT SEGURO
+        // GENERAR TOKEN
         const token = jwt.sign(
             {
                 id: user.id,
@@ -62,7 +60,6 @@ async function login(req, res) {
             { expiresIn: '24h' }
         );
 
-        // Devolver usuario (sin password) + token
         const userData = {
             id: user.id,
             name: user.name,
@@ -85,7 +82,7 @@ async function login(req, res) {
 }
 
 // ============================================================
-//  VERIFY TOKEN - Validar token JWT
+//  VERIFY TOKEN
 // ============================================================
 async function verifyToken(req, res) {
     try {
@@ -98,10 +95,8 @@ async function verifyToken(req, res) {
             });
         }
 
-        // VERIFICAR TOKEN JWT
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Buscar usuario en la base de datos
         const { data: user, error } = await supabase
             .from('users')
             .select('id, email, name, role')
@@ -121,7 +116,6 @@ async function verifyToken(req, res) {
         });
 
     } catch (error) {
-        // Manejar errores específicos de JWT
         if (error.name === 'JsonWebTokenError') {
             return res.status(401).json({
                 success: false,
@@ -144,7 +138,7 @@ async function verifyToken(req, res) {
 }
 
 // ============================================================
-//  MIDDLEWARE - Proteger rutas (autenticación requerida)
+//  MIDDLEWARE - PROTECT
 // ============================================================
 async function protect(req, res, next) {
     try {
@@ -157,10 +151,8 @@ async function protect(req, res, next) {
             });
         }
 
-        // Verificar token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Buscar usuario
         const { data: user, error } = await supabase
             .from('users')
             .select('id, email, name, role')
@@ -174,7 +166,6 @@ async function protect(req, res, next) {
             });
         }
 
-        // Agregar usuario a la request
         req.user = user;
         next();
 
@@ -201,7 +192,7 @@ async function protect(req, res, next) {
 }
 
 // ============================================================
-//  MIDDLEWARE - Verificar rol (autorización)
+//  MIDDLEWARE - AUTHORIZE
 // ============================================================
 function authorize(...roles) {
     return (req, res, next) => {
@@ -224,11 +215,10 @@ function authorize(...roles) {
 }
 
 // ============================================================
-//  CREAR ADMIN POR DEFECTO (si no existe)
+//  CREAR ADMIN POR DEFECTO
 // ============================================================
 async function createDefaultAdmin() {
     try {
-        // Verificar si ya existe un admin
         const { data: existing, error } = await supabase
             .from('users')
             .select('id')
@@ -240,7 +230,6 @@ async function createDefaultAdmin() {
             return;
         }
 
-        // Crear admin
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash('admin123', salt);
 
