@@ -1,9 +1,10 @@
 const { createClient } = require('@supabase/supabase-js');
 
 // ==================== SUPABASE ====================
+// ✅ USAR ANON_KEY (la misma que en server.js)
 const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_KEY  // ← CAMBIADO: SERVICE_KEY
+    process.env.SUPABASE_ANON_KEY  // ← CAMBIADO: ANON_KEY
 );
 
 // ============================================================
@@ -11,7 +12,6 @@ const supabase = createClient(
 // ============================================================
 async function getShifts(req, res) {
     try {
-        // ✅ Incluir información del paciente y profesional
         const { data, error } = await supabase
             .from('shifts')
             .select(`
@@ -19,7 +19,7 @@ async function getShifts(req, res) {
                 patients:patient_id (id, name, document),
                 users:professional_id (id, name, email, role)
             `)
-            .order('date', { ascending: false });
+            .order('shift_date', { ascending: false });  // ← CAMBIADO: shift_date
 
         if (error) throw error;
         res.json({ success: true, data });
@@ -73,19 +73,19 @@ async function getShiftById(req, res) {
 // ============================================================
 async function createShift(req, res) {
     try {
-        const { patient_id, professional_id, date, type, notes } = req.body;
+        const { patient_id, professional_id, shift_date, shift_type, notes } = req.body;  // ← CAMBIADO
 
         // ✅ Validar campos obligatorios
-        if (!patient_id || !professional_id || !date || !type) {
+        if (!patient_id || !professional_id || !shift_date || !shift_type) {
             return res.status(400).json({
                 success: false,
-                message: 'Todos los campos son obligatorios: patient_id, professional_id, date, type'
+                message: 'Todos los campos son obligatorios: patient_id, professional_id, shift_date, shift_type'
             });
         }
 
         // ✅ Validar tipo de turno válido
         const validTypes = ['6h', '8h', '12h', '24h'];
-        if (!validTypes.includes(type)) {
+        if (!validTypes.includes(shift_type)) {
             return res.status(400).json({
                 success: false,
                 message: `Tipo de turno inválido. Tipos válidos: ${validTypes.join(', ')}`
@@ -99,7 +99,7 @@ async function createShift(req, res) {
             .eq('id', patient_id)
             .single();
 
-        if (!patient) {
+        if (patientError || !patient) {
             return res.status(404).json({
                 success: false,
                 message: 'Paciente no encontrado'
@@ -113,7 +113,7 @@ async function createShift(req, res) {
             .eq('id', professional_id)
             .single();
 
-        if (!professional) {
+        if (profError || !professional) {
             return res.status(404).json({
                 success: false,
                 message: 'Profesional no encontrado'
@@ -121,7 +121,7 @@ async function createShift(req, res) {
         }
 
         // ✅ Validar fecha
-        const shiftDate = new Date(date);
+        const shiftDate = new Date(shift_date);
         if (isNaN(shiftDate.getTime())) {
             return res.status(400).json({
                 success: false,
@@ -135,10 +135,10 @@ async function createShift(req, res) {
             .insert([{
                 patient_id,
                 professional_id,
-                date: shiftDate.toISOString(),
-                type,
+                shift_date: shiftDate.toISOString().split('T')[0],  // ← CAMBIADO: shift_date
+                shift_type,  // ← CAMBIADO: shift_type
                 notes: notes || '',
-                status: 'PENDING',  // ← Estado por defecto
+                estado: 'PENDIENTE',  // ← CAMBIADO: estado (coincide con la BD)
                 created_at: new Date().toISOString()
             }])
             .select();
@@ -179,85 +179,89 @@ async function updateShift(req, res) {
             .eq('id', id)
             .single();
 
-        if (!existing) {
+        if (checkError || !existing) {
             return res.status(404).json({
                 success: false,
                 message: 'Turno no encontrado'
             });
         }
 
-        // ✅ Validar tipo de turno si se actualiza
-        if (updates.type) {
-            const validTypes = ['6h', '8h', '12h', '24h'];
-            if (!validTypes.includes(updates.type)) {
-                return res.status(400).json({
-                    success: false,
-                    message: `Tipo de turno inválido. Tipos válidos: ${validTypes.join(', ')}`
-                });
-            }
-        }
-
-        // ✅ Validar paciente si se actualiza
+        // ✅ Mapear campos para la BD
+        const dbUpdates = {};
+        
         if (updates.patient_id) {
             const { data: patient } = await supabase
                 .from('patients')
                 .select('id')
                 .eq('id', updates.patient_id)
                 .single();
-
             if (!patient) {
                 return res.status(404).json({
                     success: false,
                     message: 'Paciente no encontrado'
                 });
             }
+            dbUpdates.patient_id = updates.patient_id;
         }
 
-        // ✅ Validar profesional si se actualiza
         if (updates.professional_id) {
             const { data: professional } = await supabase
                 .from('users')
                 .select('id')
                 .eq('id', updates.professional_id)
                 .single();
-
             if (!professional) {
                 return res.status(404).json({
                     success: false,
                     message: 'Profesional no encontrado'
                 });
             }
+            dbUpdates.professional_id = updates.professional_id;
         }
 
-        // ✅ Validar fecha si se actualiza
-        if (updates.date) {
-            const shiftDate = new Date(updates.date);
+        if (updates.shift_date) {  // ← CAMBIADO
+            const shiftDate = new Date(updates.shift_date);
             if (isNaN(shiftDate.getTime())) {
                 return res.status(400).json({
                     success: false,
                     message: 'Fecha inválida'
                 });
             }
-            updates.date = shiftDate.toISOString();
+            dbUpdates.shift_date = shiftDate.toISOString().split('T')[0];  // ← CAMBIADO
         }
 
-        // ✅ Validar status si se actualiza
-        if (updates.status) {
-            const validStatus = ['PENDING', 'COMPLETED', 'CANCELLED'];
-            if (!validStatus.includes(updates.status)) {
+        if (updates.shift_type) {  // ← CAMBIADO
+            const validTypes = ['6h', '8h', '12h', '24h'];
+            if (!validTypes.includes(updates.shift_type)) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Tipo de turno inválido. Tipos válidos: ${validTypes.join(', ')}`
+                });
+            }
+            dbUpdates.shift_type = updates.shift_type;  // ← CAMBIADO
+        }
+
+        if (updates.estado) {  // ← CAMBIADO
+            const validStatus = ['PENDIENTE', 'COMPLETADO', 'CANCELADO'];  // ← CAMBIADO
+            if (!validStatus.includes(updates.estado)) {
                 return res.status(400).json({
                     success: false,
                     message: `Estado inválido. Estados válidos: ${validStatus.join(', ')}`
                 });
             }
+            dbUpdates.estado = updates.estado;  // ← CAMBIADO
+        }
+
+        if (updates.notes !== undefined) {
+            dbUpdates.notes = updates.notes;
         }
 
         // ✅ Agregar fecha de actualización
-        updates.updated_at = new Date().toISOString();
+        dbUpdates.updated_at = new Date().toISOString();
 
         const { data, error } = await supabase
             .from('shifts')
-            .update(updates)
+            .update(dbUpdates)
             .eq('id', id)
             .select();
 
@@ -289,14 +293,13 @@ async function deleteShift(req, res) {
             });
         }
 
-        // ✅ Verificar que el turno existe
         const { data: existing, error: checkError } = await supabase
             .from('shifts')
             .select('id')
             .eq('id', id)
             .single();
 
-        if (!existing) {
+        if (checkError || !existing) {
             return res.status(404).json({
                 success: false,
                 message: 'Turno no encontrado'
@@ -342,7 +345,7 @@ async function getShiftsByProfessional(req, res) {
                 patients:patient_id (id, name, document)
             `)
             .eq('professional_id', professionalId)
-            .order('date', { ascending: false });
+            .order('shift_date', { ascending: false });  // ← CAMBIADO
 
         if (error) throw error;
         res.json({ success: true, data });
@@ -374,7 +377,7 @@ async function getShiftsByPatient(req, res) {
                 users:professional_id (id, name, email, role)
             `)
             .eq('patient_id', patientId)
-            .order('date', { ascending: false });
+            .order('shift_date', { ascending: false });  // ← CAMBIADO
 
         if (error) throw error;
         res.json({ success: true, data });
