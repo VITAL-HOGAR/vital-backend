@@ -3,9 +3,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // ==================== SUPABASE ====================
+// ✅ USAR LA MISMA CONFIGURACIÓN QUE SERVER.JS
 const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_KEY  // SERVICE_KEY para backend (NO ANON_KEY)
+    process.env.SUPABASE_ANON_KEY  // ← CAMBIADO A ANON_KEY
 );
 
 // ============================================================
