@@ -1649,7 +1649,6 @@ async function generarPDF() {
     const addText = (text, x, y, size = 10, style = 'normal') => {
       doc.setFontSize(size);
       doc.setFont('helvetica', style);
-      const lines = doc.splitTextToSize(text, pageWidth - margin * 2);
       doc.text(lines, x, y);
       return y + (lines.length * 5) + 2;
     };
