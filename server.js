@@ -182,7 +182,7 @@ app.post('/api/recibos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), 
                 patient_id, 
                 user_id, 
                 estado, 
-                quien_entrega: quienEntrega,  // ← CAMBIADO
+                quien_entrega: quienEntrega,  // ← MAPEO CORRECTO
                 hora: hora || new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
             }])
             .select();
@@ -195,22 +195,6 @@ app.post('/api/recibos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), 
         res.json({ success: true, data: data[0] });
     } catch (error) {
         console.error('❌ Error en recibos POST:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-app.get('/api/recibos/:userId', auth.protect, async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const { data, error } = await supabase
-            .from('recibos')
-            .select('*')
-            .eq('user_id', userId)
-            .order('created_at', { ascending: false });
-        if (error) throw error;
-        res.json({ success: true, data });
-    } catch (error) {
-        console.error('❌ Error en recibos GET:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -231,11 +215,11 @@ app.post('/api/entregas', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'),
                 user_id, 
                 resumen, 
                 pendientes, 
-                quien_recibe: quienRecibe,  // ← CAMBIADO
+                quien_recibe: quienRecibe,
                 hora_entrega: horaEntrega || new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
                 sbar,
-                firma_entrega: firmaEntrega,  // ← CAMBIADO
-                firma_recibe: firmaRecibe     // ← CAMBIADO
+                firma_entrega: firmaEntrega,   // ← MAPEO CORRECTO
+                firma_recibe: firmaRecibe      // ← MAPEO CORRECTO
             }])
             .select();
 
@@ -249,7 +233,7 @@ app.post('/api/entregas', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'),
         console.error('❌ Error en entregas POST:', error);
         res.status(500).json({ success: false, error: error.message });
     }
-});
+})
 
 app.get('/api/entregas/:userId', auth.protect, async (req, res) => {
     try {
