@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>Vital Hogar Pro IPS v4.2</title>
+<title>Vital Hogar Pro IPS v4.3</title>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -111,7 +111,7 @@ body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:#0f172a;color:#e2
       <label>🔒 Contraseña</label>
       <div class="password-wrapper">
         <input type="password" id="loginPassword" placeholder="Ingrese su contraseña">
-        <button type="button" class="password-toggle" onclick="togglePassword()" aria-label="Mostrar contraseña">👁️</button>
+        <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
       </div>
     </div>
     <button class="btn-login" id="loginBtn" onclick="login()">Ingresar</button>
@@ -179,18 +179,13 @@ function showToast(msg, type = 'success') {
 function togglePassword() {
   const input = $('loginPassword');
   const btn = document.querySelector('.password-toggle');
-  if (!input || !btn) {
-    console.warn('⚠️ togglePassword: Elementos no encontrados');
-    return;
-  }
+  if (!input || !btn) return;
   if (input.type === 'password') {
     input.type = 'text';
     btn.textContent = '🙈';
-    btn.setAttribute('aria-label', 'Ocultar contraseña');
   } else {
     input.type = 'password';
     btn.textContent = '👁️';
-    btn.setAttribute('aria-label', 'Mostrar contraseña');
   }
 }
 
@@ -264,8 +259,6 @@ async function login() {
   btn.disabled = true;
   btn.textContent = 'Verificando...';
 
-  console.log('📤 Intentando login con:', email);
-
   try {
     const res = await fetch(API_URL + '/api/auth/login', {
       method: 'POST',
@@ -273,7 +266,6 @@ async function login() {
       body: JSON.stringify({ email, password })
     });
     const data = await res.json();
-    console.log('📥 Respuesta login:', data);
 
     if (!data.success) {
       errorDiv.textContent = data.message || 'Credenciales inválidas';
@@ -298,7 +290,6 @@ async function login() {
     construirTabs();
 
   } catch (e) {
-    console.error('❌ Error en login:', e);
     errorDiv.textContent = 'Error de conexión con el servidor';
     errorDiv.style.display = 'block';
   } finally {
@@ -650,7 +641,6 @@ function evaluarSignos(spo2, fc, fr, temp, ta, glucosa, edad, ciudad) {
   const alertas = [];
   let nivel = 'success';
 
-  // SpO2 con ajuste por altitud
   const spo2Min = ciudadInfo.spo2.min;
   const spo2Max = ciudadInfo.spo2.max;
   if (spo2 > 0) {
@@ -665,7 +655,6 @@ function evaluarSignos(spo2, fc, fr, temp, ta, glucosa, edad, ciudad) {
     }
   }
 
-  // FC
   if (fc > 0) {
     if (fc < rangos.fc.min - 10 || fc > rangos.fc.max + 20) {
       alertas.push({ signo: 'FC', valor: fc + ' lpm', mensaje: '🚨 CRÍTICO', nivel: 'danger' });
@@ -678,7 +667,6 @@ function evaluarSignos(spo2, fc, fr, temp, ta, glucosa, edad, ciudad) {
     }
   }
 
-  // FR
   if (fr > 0) {
     if (fr < rangos.fr.min - 5 || fr > rangos.fr.max + 10) {
       alertas.push({ signo: 'FR', valor: fr + ' rpm', mensaje: '🚨 CRÍTICO', nivel: 'danger' });
@@ -691,7 +679,6 @@ function evaluarSignos(spo2, fc, fr, temp, ta, glucosa, edad, ciudad) {
     }
   }
 
-  // Temp
   if (temp > 0) {
     if (temp < rangos.temp.min - 1 || temp > rangos.temp.max + 1) {
       alertas.push({ signo: 'Temp', valor: temp + '°C', mensaje: '🚨 CRÍTICO', nivel: 'danger' });
@@ -704,7 +691,6 @@ function evaluarSignos(spo2, fc, fr, temp, ta, glucosa, edad, ciudad) {
     }
   }
 
-  // TA
   if (ta) {
     const parts = ta.split('/');
     if (parts.length === 2) {
@@ -724,7 +710,6 @@ function evaluarSignos(spo2, fc, fr, temp, ta, glucosa, edad, ciudad) {
     }
   }
 
-  // Glucosa - RANGOS CORREGIDOS
   if (glucosa > 0) {
     if (glucosa < 50 || glucosa > 180) {
       alertas.push({ signo: 'Glucosa', valor: glucosa + ' mg/dL', mensaje: '🚨 CRÍTICO', nivel: 'danger' });
@@ -832,17 +817,17 @@ function cargarTab(tabId) {
   }
 
   switch (tabId) {
-    case 'usuarios': content.innerHTML = renderUsuarios(); break;
-    case 'pacientes': content.innerHTML = renderPacientes(); break;
+    case 'usuarios': content.innerHTML = renderUsuarios(); cargarUsuarios(); break;
+    case 'pacientes': content.innerHTML = renderPacientes(); cargarPacientesLista(); break;
     case 'educacion_admin': content.innerHTML = renderEducacionAdmin(); break;
     case 'reportes_admin': content.innerHTML = renderReportesAdmin(); break;
-    case 'recibo': content.innerHTML = renderRecibo(); break;
-    case 'actividades': content.innerHTML = renderActividades(); break;
-    case 'signos': content.innerHTML = renderSignos(); break;
-    case 'medicamentos': content.innerHTML = renderMedicamentos(); break;
-    case 'educacion': content.innerHTML = renderEducacion(); break;
-    case 'entrega': content.innerHTML = renderEntrega(); break;
-    case 'reportes': content.innerHTML = renderReportes(); break;
+    case 'recibo': content.innerHTML = renderRecibo(); cargarRecibos(); break;
+    case 'actividades': content.innerHTML = renderActividades(); cargarActividadesLista(); break;
+    case 'signos': content.innerHTML = renderSignos(); cargarSignosLista(); break;
+    case 'medicamentos': content.innerHTML = renderMedicamentos(); cargarMedicamentosLista(); break;
+    case 'educacion': content.innerHTML = renderEducacion(); cargarEducacionPendiente(); break;
+    case 'entrega': content.innerHTML = renderEntrega(); cargarEntregasLista(); break;
+    case 'reportes': content.innerHTML = renderReportes(); generarReporte(); break;
     default: content.innerHTML = '<div class="card"><p>Módulo en construcción</p></div>';
   }
 
@@ -851,22 +836,10 @@ function cargarTab(tabId) {
       if ($(id)) initSignature(id);
     });
   }, 200);
-
-  setTimeout(() => {
-    if (tabId === 'usuarios') cargarUsuarios();
-    if (tabId === 'pacientes') cargarPacientesLista();
-    if (tabId === 'recibo') cargarRecibos();
-    if (tabId === 'actividades') cargarActividadesLista();
-    if (tabId === 'signos') cargarSignosLista();
-    if (tabId === 'medicamentos') cargarMedicamentosLista();
-    if (tabId === 'educacion') cargarEducacionPendiente();
-    if (tabId === 'entrega') cargarEntregasLista();
-    if (tabId === 'reportes') generarReporte();
-  }, 300);
 }
 
 // ============================================================
-//  RENDER FUNCTIONS (solo las principales)
+//  RENDER FUNCTIONS
 // ============================================================
 function renderUsuarios() {
   if (USER.role !== 'ADMIN') {
@@ -902,6 +875,42 @@ function renderUsuarios() {
       <button class="btn btn-primary btn-block" onclick="crearUsuario()">➕ Crear usuario</button>
     </div>
   `;
+}
+
+async function cargarUsuarios() {
+  if (USER.role !== 'ADMIN') return;
+  const data = await apiRequest('/api/users');
+  const div = $('listaUsuarios');
+  if (data.success && data.data && data.data.length > 0) {
+    div.innerHTML = data.data.map(u => `
+      <div class="item">
+        <div class="title">${u.name} <span style="font-size:0.7rem;color:#94a3b8;">(${u.role})</span></div>
+        <div class="meta">📧 ${u.email}</div>
+      </div>
+    `).join('');
+  } else {
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay usuarios registrados</p>';
+  }
+}
+
+async function crearUsuario() {
+  if (USER.role !== 'ADMIN') { showToast('No tienes permisos', 'error'); return; }
+  const data = await apiRequest('/api/users', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: $('newUserName').value,
+      email: $('newUserEmail').value,
+      role: $('newUserRole').value,
+      password: $('newUserPass').value
+    })
+  });
+  if (data.success) {
+    showToast('✅ Usuario creado');
+    cargarUsuarios();
+    ['newUserName','newUserEmail','newUserPass'].forEach(id => $(id).value = '');
+  } else {
+    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+  }
 }
 
 function renderPacientes() {
@@ -950,6 +959,43 @@ function renderPacientes() {
   `;
 }
 
+async function cargarPacientesLista() {
+  const data = await apiRequest('/api/patients');
+  const div = $('listaPacientes');
+  if (data.success && data.data && data.data.length > 0) {
+    localStorage.setItem('vital_pacientes_cache', JSON.stringify(data.data));
+    div.innerHTML = data.data.map(p => `
+      <div class="item">
+        <div class="title">${p.name}</div>
+        <div class="meta">📄 ${p.document || 'N/A'} | ${p.diagnosis || 'Sin diagnóstico'} | 📍 ${p.ciudad || 'No especificada'}</div>
+      </div>
+    `).join('');
+  } else {
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay pacientes registrados</p>';
+  }
+}
+
+async function crearPaciente() {
+  const data = await apiRequest('/api/patients', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: $('nombrePaciente').value,
+      document: $('documentoPaciente').value,
+      diagnosis: $('diagnosticoPaciente').value,
+      doctor: $('medicoPaciente').value,
+      ciudad: $('ciudadPaciente').value,
+      fecha_nacimiento: $('fechaNacimientoPaciente').value
+    })
+  });
+  if (data.success) {
+    showToast('✅ Paciente creado');
+    cargarPacientesLista();
+    ['nombrePaciente','documentoPaciente','diagnosticoPaciente','medicoPaciente','fechaNacimientoPaciente'].forEach(id => $(id).value = '');
+  } else {
+    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+  }
+}
+
 function renderRecibo() {
   return `
     <div class="card">
@@ -981,26 +1027,695 @@ function renderRecibo() {
   `;
 }
 
+async function confirmarRecibo() {
+  if (!pacienteActual) { showToast('Seleccione un paciente', 'warning'); return; }
+  const estado = document.getElementById('estadoRecibo').value.trim();
+  if (!estado) { showToast('Describa el estado del paciente', 'error'); return; }
+
+  const data = {
+    patient_id: pacienteActual.id,
+    user_id: USER.id,
+    estado: estado,
+    quienEntrega: document.getElementById('quienEntregaRecibo').value,
+    hora: getCurrentTime()
+  };
+
+  try {
+    const response = await fetch(API_URL + '/api/recibos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (result.success) {
+      showToast('✅ Recibo registrado');
+      document.getElementById('estadoRecibo').value = '';
+      cargarRecibos();
+      horaEntrada = new Date();
+      actualizarTurnoInfo();
+    } else {
+      showToast('❌ Error: ' + (result.message || result.error || 'Desconocido'), 'error');
+    }
+  } catch (e) {
+    showToast('❌ Error de conexión', 'error');
+  }
+}
+
+async function cargarRecibos() {
+  if (!pacienteActual) return;
+  const data = await apiRequest('/api/recibos/' + USER.id);
+  const div = $('historialRecibos');
+  if (data.success && data.data && data.data.length > 0) {
+    const hoy = getCurrentDate();
+    const items = data.data.filter(r => r.created_at && new Date(r.created_at).toISOString().split('T')[0] === hoy);
+    if (items.length === 0) {
+      div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay recibos hoy</p>';
+      return;
+    }
+    div.innerHTML = items.slice(-5).reverse().map(r => `
+      <div class="item">
+        <div class="title">🕐 ${r.hora || formatTime(r.created_at)}</div>
+        <div class="meta">📝 ${r.estado || 'Sin estado'} | 👤 ${r.quienEntrega || 'N/A'}</div>
+      </div>
+    `).join('');
+  } else {
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay recibos registrados</p>';
+  }
+}
+
 // ============================================================
-//  FUNCIONES RESTANTES
+//  ACTIVIDADES
 // ============================================================
-// (Las funciones de renderActividades, renderSignos, renderMedicamentos,
-// renderEducacion, renderEntrega, renderReportes, y sus respectivas
-// funciones de carga y guardado están completas en el código original.
-// Por brevedad, se mantienen igual que en la versión corregida.)
+function renderActividades() {
+  return `
+    <div class="card">
+      <div class="card-title">✅ ACTIVIDADES REALIZADAS <span class="badge">Registro</span></div>
+      <div id="listaActividades" class="item-list" style="margin-bottom:12px;"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">➕ NUEVA ACTIVIDAD</div>
+      <div class="grid-2">
+        <div class="form-group"><label>📋 Actividad</label><select id="tipoActividad">
+          <option value="Aseo del paciente">Aseo del paciente</option>
+          <option value="Cambio de posición">Cambio de posición</option>
+          <option value="Alimentación asistida">Alimentación asistida</option>
+          <option value="Administrar medicamentos">Administrar medicamentos</option>
+          <option value="Curación de heridas">Curación de heridas</option>
+          <option value="Movilización">Movilización</option>
+          <option value="Terapia respiratoria">Terapia respiratoria</option>
+          <option value="Otro">Otro</option>
+        </select></div>
+        <div class="form-group"><label>🕐 Hora</label><input type="time" id="horaActividad" value="${getCurrentTime()}">
+          <button class="btn-secondary btn-sm" onclick="document.getElementById('horaActividad').value='${getCurrentTime()}'">🔄 Ahora</button>
+        </div>
+      </div>
+      <div class="form-group"><label>📝 Observación</label><textarea id="obsActividad" rows="2"></textarea><button class="btn-voice" onclick="iniciarDictado('obsActividad')">🎙️ Dictar</button></div>
+      <details style="margin-top:12px;padding:12px;background:#0f172a;border-radius:8px;">
+        <summary style="cursor:pointer;color:#94a3b8;">📋 Escalas</summary>
+        <div style="margin-top:12px;">
+          <div style="margin-bottom:12px;padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;">
+            <label style="font-weight:600;color:#22c55e;">🧠 Glasgow</label>
+            <div class="grid-2">
+              <div class="form-group"><label>👁️ Ojos</label><select id="glasgowOjos" onchange="calcularGlasgow()"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+              <div class="form-group"><label>🗣️ Verbal</label><select id="glasgowVerbal" onchange="calcularGlasgow()"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+              <div class="form-group"><label>💪 Motor</label><select id="glasgowMotor" onchange="calcularGlasgow()"><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+              <div class="form-group"><label>📊 Total</label><input type="text" id="glasgowTotal" readonly></div>
+            </div>
+          </div>
+          <div style="margin-bottom:12px;padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;">
+            <label style="font-weight:600;color:#22c55e;">😣 EVA</label>
+            <input type="range" id="evaValor" min="0" max="10" value="0" oninput="document.getElementById('evaDisplay').textContent=this.value">
+            <span id="evaDisplay" style="color:#22c55e;">0</span>
+          </div>
+          <div style="padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;">
+            <label style="font-weight:600;color:#22c55e;">📋 Braden</label>
+            <div class="grid-2">
+              <div class="form-group"><label>Percepción</label><select id="bradenPercepcion" onchange="calcularBraden()"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+              <div class="form-group"><label>Humedad</label><select id="bradenHumedad" onchange="calcularBraden()"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+              <div class="form-group"><label>Actividad</label><select id="bradenActividad" onchange="calcularBraden()"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+              <div class="form-group"><label>Movilidad</label><select id="bradenMovilidad" onchange="calcularBraden()"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+              <div class="form-group"><label>Nutrición</label><select id="bradenNutricion" onchange="calcularBraden()"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+              <div class="form-group"><label>Fricción</label><select id="bradenFriccion" onchange="calcularBraden()"><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+              <div class="form-group" style="grid-column:1/-1;"><label>Total</label><input type="text" id="bradenTotal" readonly></div>
+            </div>
+          </div>
+        </div>
+      </details>
+      <div class="form-group" style="margin-top:12px;border-top:1px solid #334155;padding-top:12px;">
+        <label>📸 Evidencia (solo curación o educación)</label>
+        <input type="file" id="fotosActividad" accept="image/*" multiple>
+        <button class="btn-secondary btn-sm" onclick="capturarFoto('fotosActividad', 'previewFotosActividad')">📷 Capturar</button>
+        <div id="previewFotosActividad" class="photo-preview"></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="guardarActividad()">➕ GUARDAR ACTIVIDAD</button>
+    </div>
+  `;
+}
+
+async function guardarActividad() {
+  if (!pacienteActual) { showToast('Seleccione un paciente', 'warning'); return; }
+  const actividad = $('tipoActividad').value;
+  const hora = $('horaActividad').value;
+  if (!hora) { showToast('Ingrese la hora', 'error'); return; }
+
+  const fotos = getFotos('previewFotosActividad');
+  calcularGlasgow();
+  calcularBraden();
+  const glasgowTotal = parseInt($('glasgowTotal')?.value) || 0;
+  const eva = parseInt($('evaValor')?.value) || 0;
+  const bradenTotal = parseInt($('bradenTotal')?.value) || 0;
+
+  try {
+    const data = await apiRequest('/api/actividades', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: USER.id,
+        actividad: actividad,
+        hora: hora,
+        observacion: $('obsActividad').value,
+        fotos: fotos,
+        glasgow: glasgowTotal,
+        eva: eva,
+        braden: bradenTotal
+      })
+    });
+    if (data.success) {
+      showToast('✅ Actividad guardada');
+      $('obsActividad').value = '';
+      $('previewFotosActividad').innerHTML = '';
+      $('fotosActividad').value = '';
+      cargarActividadesLista();
+    } else {
+      showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    }
+  } catch (e) {
+    showToast('❌ Error de conexión', 'error');
+  }
+}
+
+async function cargarActividadesLista() {
+  if (!pacienteActual) return;
+  const data = await apiRequest('/api/actividades/' + USER.id);
+  const div = $('listaActividades');
+  if (data.success && data.data && data.data.length > 0) {
+    const hoy = getCurrentDate();
+    const items = data.data.filter(a => a.created_at && new Date(a.created_at).toISOString().split('T')[0] === hoy);
+    if (items.length === 0) {
+      div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay actividades hoy</p>';
+      return;
+    }
+    div.innerHTML = items.slice(-10).reverse().map(a => `
+      <div class="item">
+        <div class="title">🕐 ${a.hora || formatTime(a.created_at)} | ${a.actividad}</div>
+        <div class="meta">${a.observacion || ''} ${a.glasgow ? '🧠 Glasgow: ' + a.glasgow : ''} ${a.eva !== undefined ? '😣 EVA: ' + a.eva : ''}</div>
+      </div>
+    `).join('');
+  } else {
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay actividades registradas</p>';
+  }
+}
+
+// ============================================================
+//  SIGNOS
+// ============================================================
+function renderSignos() {
+  const ciudad = pacienteActual?.ciudad || 'Bogotá';
+  const ciudadInfo = getCiudadInfo(ciudad);
+  return `
+    <div class="card">
+      <div class="card-title">🩺 SIGNOS VITALES <span class="badge">Registro</span></div>
+      <div style="background:#0f172a;padding:12px;border-radius:8px;margin-bottom:12px;">
+        <p style="font-size:0.8rem;color:#94a3b8;">📍 ${ciudad} | ${ciudadInfo.altitud} msnm | SpO2 normal: ${ciudadInfo.spo2.min}-${ciudadInfo.spo2.max}%</p>
+      </div>
+      <div class="grid-2">
+        <div class="form-group"><label>🫀 SpO2</label><input type="number" id="spo2" oninput="evaluarSignosUI()"></div>
+        <div class="form-group"><label>❤️ FC</label><input type="number" id="fc" oninput="evaluarSignosUI()"></div>
+        <div class="form-group"><label>💨 FR</label><input type="number" id="fr" oninput="evaluarSignosUI()"></div>
+        <div class="form-group"><label>🌡️ Temp</label><input type="number" id="temp" step="0.1" oninput="evaluarSignosUI()"></div>
+        <div class="form-group"><label>📏 TA</label><input type="text" id="bp" oninput="evaluarSignosUI()"></div>
+        <div class="form-group"><label>🩸 Glucosa</label><input type="number" id="glucosa" oninput="evaluarSignosUI()"></div>
+      </div>
+      <div id="alertasSignos"></div>
+      <div class="form-group"><label>🕐 Hora</label><input type="time" id="horaSignos" value="${getCurrentTime()}">
+        <button class="btn-secondary btn-sm" onclick="document.getElementById('horaSignos').value='${getCurrentTime()}'">🔄 Ahora</button>
+      </div>
+      <div class="form-group"><label>📝 Observación</label><textarea id="obsSignos" rows="2"></textarea><button class="btn-voice" onclick="iniciarDictado('obsSignos')">🎙️ Dictar</button></div>
+      <button class="btn btn-primary btn-block" onclick="guardarSignos()">💾 GUARDAR SIGNOS</button>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 ÚLTIMOS REGISTROS</div>
+      <div id="historialSignos" class="item-list"></div>
+    </div>
+  `;
+}
+
+async function guardarSignos() {
+  if (!pacienteActual) { showToast('Seleccione un paciente', 'warning'); return; }
+  const hora = $('horaSignos').value;
+  if (!hora) { showToast('Ingrese la hora', 'error'); return; }
+  evaluarSignosUI();
+  try {
+    const data = await apiRequest('/api/signos', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: USER.id,
+        spo2: parseInt($('spo2').value) || 0,
+        fc: parseInt($('fc').value) || 0,
+        fr: parseInt($('fr').value) || 0,
+        temp: parseFloat($('temp').value) || 0,
+        bp: $('bp').value,
+        glucosa: parseInt($('glucosa').value) || 0,
+        hora: hora,
+        obs: $('obsSignos').value,
+        ciudad: pacienteActual.ciudad || 'Bogotá'
+      })
+    });
+    if (data.success) {
+      showToast('✅ Signos guardados');
+      ['spo2','fc','fr','temp','bp','glucosa','obsSignos'].forEach(id => $(id).value = '');
+      cargarSignosLista();
+    } else {
+      showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    }
+  } catch (e) {
+    showToast('❌ Error de conexión', 'error');
+  }
+}
+
+async function cargarSignosLista() {
+  if (!pacienteActual) return;
+  const data = await apiRequest('/api/signos/' + USER.id);
+  const div = $('historialSignos');
+  if (data.success && data.data && data.data.length > 0) {
+    const hoy = getCurrentDate();
+    const items = data.data.filter(s => s.created_at && new Date(s.created_at).toISOString().split('T')[0] === hoy);
+    if (items.length === 0) {
+      div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay signos hoy</p>';
+      return;
+    }
+    div.innerHTML = items.slice(-5).reverse().map(s => `
+      <div class="item">
+        <div class="title">🕐 ${s.hora || formatTime(s.created_at)}</div>
+        <div class="meta">SpO2: ${s.spo2 || '-'}% | FC: ${s.fc || '-'} | FR: ${s.fr || '-'}</div>
+        <div class="meta">Temp: ${s.temp || '-'}°C | TA: ${s.bp || '-'} | Glucosa: ${s.glucosa || '-'}</div>
+      </div>
+    `).join('');
+  } else {
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay signos registrados</p>';
+  }
+}
+
+// ============================================================
+//  MEDICAMENTOS
+// ============================================================
+function renderMedicamentos() {
+  return `
+    <div class="card">
+      <div class="card-title">💊 MEDICAMENTOS <span class="badge">Registro</span></div>
+      <div id="listaMedicamentos" class="item-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">➕ REGISTRAR MEDICAMENTO</div>
+      <div class="grid-2">
+        <div class="form-group"><label>💊 Nombre</label><input type="text" id="medNombre"></div>
+        <div class="form-group"><label>💊 Dosis</label><input type="text" id="medDosis"></div>
+        <div class="form-group"><label>🕐 Hora</label><input type="time" id="medHora" value="${getCurrentTime()}">
+          <button class="btn-secondary btn-sm" onclick="document.getElementById('medHora').value='${getCurrentTime()}'">🔄 Ahora</button>
+        </div>
+      </div>
+      <div class="form-group"><label>📝 Observación</label><textarea id="medObs" rows="2"></textarea><button class="btn-voice" onclick="iniciarDictado('medObs')">🎙️ Dictar</button></div>
+      <button class="btn btn-primary btn-block" onclick="guardarMedicamento()">💾 REGISTRAR MEDICAMENTO</button>
+    </div>
+  `;
+}
+
+async function guardarMedicamento() {
+  if (!pacienteActual) { showToast('Seleccione un paciente', 'warning'); return; }
+  const nombre = $('medNombre').value.trim();
+  const hora = $('medHora').value;
+  if (!nombre || !hora) { showToast('Complete nombre y hora', 'error'); return; }
+  try {
+    const data = await apiRequest('/api/medicamentos', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: USER.id,
+        nombre: nombre,
+        dosis: $('medDosis').value,
+        hora: hora,
+        obs: $('medObs').value
+      })
+    });
+    if (data.success) {
+      showToast('✅ Medicamento registrado');
+      ['medNombre','medDosis','medObs'].forEach(id => $(id).value = '');
+      cargarMedicamentosLista();
+    } else {
+      showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    }
+  } catch (e) {
+    showToast('❌ Error de conexión', 'error');
+  }
+}
+
+async function cargarMedicamentosLista() {
+  if (!pacienteActual) return;
+  const data = await apiRequest('/api/medicamentos/' + USER.id);
+  const div = $('listaMedicamentos');
+  if (data.success && data.data && data.data.length > 0) {
+    const hoy = getCurrentDate();
+    const items = data.data.filter(m => m.created_at && new Date(m.created_at).toISOString().split('T')[0] === hoy);
+    if (items.length === 0) {
+      div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay medicamentos hoy</p>';
+      return;
+    }
+    div.innerHTML = items.slice(-10).reverse().map(m => `
+      <div class="item">
+        <div class="title">🕐 ${m.hora || formatTime(m.created_at)} | ${m.nombre}</div>
+        <div class="meta">${m.dosis || ''} ${m.obs || ''}</div>
+      </div>
+    `).join('');
+  } else {
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay medicamentos registrados</p>';
+  }
+}
+
+// ============================================================
+//  EDUCACIÓN
+// ============================================================
+function renderEducacion() {
+  return `
+    <div class="card">
+      <div class="card-title">📚 EDUCACIÓN PENDIENTE</div>
+      <div id="listaEducacionPendiente" class="item-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">✅ COMPLETAR EDUCACIÓN</div>
+      <div class="form-group"><label>ID Asignación</label><input type="text" id="idAsignacionEducacion"></div>
+      <div class="form-group"><label>📝 Evidencia</label><textarea id="evidenciaEducacion" rows="3"></textarea><button class="btn-voice" onclick="iniciarDictado('evidenciaEducacion')">🎙️ Dictar</button></div>
+      <div class="form-group"><label>📸 Evidencia Foto</label><input type="file" id="fotosEducacion" accept="image/*" multiple>
+        <button class="btn-secondary btn-sm" onclick="capturarFoto('fotosEducacion', 'previewFotosEducacion')">📷 Capturar</button>
+        <div id="previewFotosEducacion" class="photo-preview"></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="completarEducacion()">✅ COMPLETAR</button>
+    </div>
+  `;
+}
+
+async function cargarEducacionPendiente() {
+  const div = $('listaEducacionPendiente');
+  if (div) div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay educación pendiente</p>';
+}
+
+async function completarEducacion() {
+  showToast('Función en desarrollo', 'warning');
+}
+
+// ============================================================
+//  ENTREGA
+// ============================================================
+function renderEntrega() {
+  return `
+    <div class="card">
+      <div class="card-title">🔄 ENTREGA DEL PACIENTE <span class="badge">Fin de turno</span></div>
+      <p style="color:#94a3b8;font-size:0.8rem;margin-bottom:12px;">⏱️ Hora: <strong id="horaEntrega">${getCurrentTime()}</strong></p>
+      <div style="background:#0f172a;padding:12px;border-radius:8px;margin-bottom:12px;border-left:3px solid #22c55e;">
+        <p style="font-weight:600;color:#22c55e;">📋 SBAR</p>
+      </div>
+      <div class="form-group"><label>S - Situación</label><textarea id="sbarSituacion" rows="2"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarSituacion')">🎙️</button></div>
+      <div class="form-group"><label>A - Antecedentes</label><textarea id="sbarAntecedentes" rows="2"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarAntecedentes')">🎙️</button></div>
+      <div class="form-group"><label>B - Evaluación</label><textarea id="sbarEvaluacion" rows="2"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarEvaluacion')">🎙️</button></div>
+      <div class="form-group"><label>R - Recomendación</label><textarea id="sbarRecomendacion" rows="2"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarRecomendacion')">🎙️</button></div>
+      <div class="form-group"><label>⚠️ Pendientes</label><textarea id="entregaPendientes" rows="2"></textarea><button class="btn-voice" onclick="iniciarDictado('entregaPendientes')">🎙️</button></div>
+      <div class="form-group"><label>👤 ¿Quién recibe?</label><select id="quienRecibe"><option>Familiar</option><option>Auxiliar siguiente</option><option>Enfermero Jefe</option><option>Coordinador</option></select></div>
+      <div class="grid-2">
+        <div class="signature-area">
+          <div class="signature-header"><label>✍️ Firma ENTREGA</label><span class="signature-status empty" id="status_sigEntrega">⏳ Sin firmar</span></div>
+          <canvas id="sigEntrega" class="signature-canvas"></canvas>
+          <button class="btn-clear-signature" onclick="clearSignature('sigEntrega')">🗑️ Borrar</button>
+        </div>
+        <div class="signature-area">
+          <div class="signature-header"><label>✍️ Firma RECIBE</label><span class="signature-status empty" id="status_sigRecibe">⏳ Sin firmar</span></div>
+          <canvas id="sigRecibe" class="signature-canvas"></canvas>
+          <button class="btn-clear-signature" onclick="clearSignature('sigRecibe')">🗑️ Borrar</button>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="confirmarEntrega()">✅ CONFIRMAR ENTREGA</button>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 HISTORIAL DE ENTREGAS</div>
+      <div id="historialEntregas" class="item-list"></div>
+    </div>
+  `;
+}
+
+async function confirmarEntrega() {
+  if (!pacienteActual) { showToast('Seleccione un paciente', 'warning'); return; }
+  const firmaEntrega = getSignature('sigEntrega');
+  const firmaRecibe = getSignature('sigRecibe');
+  if (!firmaEntrega || !firmaRecibe) {
+    showToast('⚠️ Ambas firmas son requeridas', 'warning');
+    return;
+  }
+  const sbar = {
+    situacion: $('sbarSituacion').value,
+    antecedentes: $('sbarAntecedentes').value,
+    evaluacion: $('sbarEvaluacion').value,
+    recomendacion: $('sbarRecomendacion').value
+  };
+  try {
+    const data = await apiRequest('/api/entregas', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: USER.id,
+        resumen: `SBAR: ${sbar.situacion} | ${sbar.antecedentes} | ${sbar.evaluacion} | ${sbar.recomendacion}`,
+        pendientes: $('entregaPendientes').value,
+        quienRecibe: $('quienRecibe').value,
+        horaEntrega: getCurrentTime(),
+        sbar: sbar,
+        firmaEntrega: firmaEntrega,
+        firmaRecibe: firmaRecibe
+      })
+    });
+    if (data.success) {
+      showToast('✅ Entrega confirmada');
+      ['sbarSituacion','sbarAntecedentes','sbarEvaluacion','sbarRecomendacion','entregaPendientes'].forEach(id => $(id).value = '');
+      clearSignature('sigEntrega');
+      clearSignature('sigRecibe');
+      cargarEntregasLista();
+      horaEntrada = null;
+      actualizarTurnoInfo();
+    } else {
+      showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    }
+  } catch (e) {
+    showToast('❌ Error de conexión', 'error');
+  }
+}
+
+async function cargarEntregasLista() {
+  if (!pacienteActual) return;
+  const data = await apiRequest('/api/entregas/' + USER.id);
+  const div = $('historialEntregas');
+  if (data.success && data.data && data.data.length > 0) {
+    const hoy = getCurrentDate();
+    const items = data.data.filter(e => e.created_at && new Date(e.created_at).toISOString().split('T')[0] === hoy);
+    if (items.length === 0) {
+      div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay entregas hoy</p>';
+      return;
+    }
+    div.innerHTML = items.slice(-5).reverse().map(e => `
+      <div class="item">
+        <div class="title">🕐 ${e.horaEntrega || formatTime(e.created_at)}</div>
+        <div class="meta">${e.resumen ? e.resumen.substring(0,60) : 'Sin resumen'}</div>
+      </div>
+    `).join('');
+  } else {
+    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay entregas registradas</p>';
+  }
+}
+
+// ============================================================
+//  REPORTES
+// ============================================================
+function renderReportes() {
+  return `
+    <div class="card">
+      <div class="card-title">📄 REPORTE DEL DÍA <span class="badge">${getCurrentDate()}</span></div>
+      <div id="reporteContenido" style="background:#0f172a;border-radius:8px;padding:16px;font-size:0.85rem;line-height:1.6;max-height:500px;overflow-y:auto;"></div>
+      <button class="btn btn-primary btn-block" onclick="generarPDF()">📥 DESCARGAR PDF</button>
+    </div>
+  `;
+}
+
+async function generarReporte() {
+  if (!pacienteActual) {
+    const div = $('reporteContenido');
+    if (div) div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">Seleccione un paciente</p>';
+    return;
+  }
+  const paciente = pacienteActual;
+  const hoy = getCurrentDate();
+  const [recibos, actividades, signos, medicamentos, entregas] = await Promise.all([
+    apiRequest('/api/recibos/' + USER.id),
+    apiRequest('/api/actividades/' + USER.id),
+    apiRequest('/api/signos/' + USER.id),
+    apiRequest('/api/medicamentos/' + USER.id),
+    apiRequest('/api/entregas/' + USER.id)
+  ]);
+  const filtrarHoy = (items) => {
+    if (!items || !items.data) return [];
+    return items.data.filter(i => i.created_at && new Date(i.created_at).toISOString().split('T')[0] === hoy);
+  };
+  const recHoy = filtrarHoy(recibos);
+  const actHoy = filtrarHoy(actividades);
+  const sigHoy = filtrarHoy(signos);
+  const medHoy = filtrarHoy(medicamentos);
+  const entHoy = filtrarHoy(entregas);
+  let html = `
+    <div style="text-align:center;border-bottom:1px solid #334155;padding-bottom:12px;margin-bottom:12px;">
+      <h2 style="color:#22c55e;">VITAL HOGAR PRO IPS</h2>
+      <p style="color:#94a3b8;">Cuidados Domiciliarios</p>
+      <p style="color:#e2e8f0;font-weight:bold;">${paciente.name}</p>
+      <p style="color:#94a3b8;">${hoy}</p>
+      <p style="color:#94a3b8;">Auxiliar: ${USER.name}</p>
+    </div>
+  `;
+  html += `<div><strong style="color:#22c55e;">📋 RECIBO</strong></div>`;
+  if (recHoy.length > 0) recHoy.forEach(r => html += `<div>🕐 ${r.hora || formatTime(r.created_at)} | ${r.estado || 'Sin estado'}</div>`);
+  else html += `<div style="color:#94a3b8;">No hay recibo</div>`;
+  html += `<div style="margin-top:8px;"><strong style="color:#22c55e;">✅ ACTIVIDADES</strong></div>`;
+  if (actHoy.length > 0) actHoy.forEach(a => html += `<div>🕐 ${a.hora || formatTime(a.created_at)} | ${a.actividad}</div>`);
+  else html += `<div style="color:#94a3b8;">No hay actividades</div>`;
+  html += `<div style="margin-top:8px;"><strong style="color:#22c55e;">🩺 SIGNOS</strong></div>`;
+  if (sigHoy.length > 0) sigHoy.forEach(s => html += `<div>🕐 ${s.hora || formatTime(s.created_at)} | SpO2: ${s.spo2 || '-'}% | FC: ${s.fc || '-'}</div>`);
+  else html += `<div style="color:#94a3b8;">No hay signos</div>`;
+  html += `<div style="margin-top:8px;"><strong style="color:#22c55e;">💊 MEDICAMENTOS</strong></div>`;
+  if (medHoy.length > 0) medHoy.forEach(m => html += `<div>🕐 ${m.hora || formatTime(m.created_at)} | ${m.nombre}</div>`);
+  else html += `<div style="color:#94a3b8;">No hay medicamentos</div>`;
+  html += `<div style="margin-top:8px;"><strong style="color:#22c55e;">🔄 ENTREGA</strong></div>`;
+  if (entHoy.length > 0) entHoy.forEach(e => html += `<div>🕐 ${e.horaEntrega || formatTime(e.created_at)} | ${e.resumen ? e.resumen.substring(0,60) : 'Sin resumen'}</div>`);
+  else html += `<div style="color:#94a3b8;">No hay entrega</div>`;
+  html += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:0.8rem;color:#94a3b8;text-align:center;">Reporte generado: ${new Date().toLocaleString('es-CO')}</div>`;
+  const div = $('reporteContenido');
+  if (div) div.innerHTML = html;
+}
+
+async function generarPDF() {
+  const PDFClass = window.jspdf?.jsPDF || window.jsPDF;
+  if (!PDFClass) { showToast('📄 PDF no disponible', 'error'); return; }
+  if (!pacienteActual) { showToast('Seleccione un paciente', 'warning'); return; }
+  try {
+    const hoy = getCurrentDate();
+    const [recibos, actividades, signos, medicamentos, entregas] = await Promise.all([
+      apiRequest('/api/recibos/' + USER.id),
+      apiRequest('/api/actividades/' + USER.id),
+      apiRequest('/api/signos/' + USER.id),
+      apiRequest('/api/medicamentos/' + USER.id),
+      apiRequest('/api/entregas/' + USER.id)
+    ]);
+    const filtrarHoy = (items) => {
+      if (!items || !items.data) return [];
+      return items.data.filter(i => i.created_at && new Date(i.created_at).toISOString().split('T')[0] === hoy);
+    };
+    const recHoy = filtrarHoy(recibos);
+    const actHoy = filtrarHoy(actividades);
+    const sigHoy = filtrarHoy(signos);
+    const medHoy = filtrarHoy(medicamentos);
+    const entHoy = filtrarHoy(entregas);
+    const doc = new PDFClass('p', 'mm', 'a4');
+    const pageWidth = 210, margin = 20;
+    let y = 20;
+    const addText = (text, x, y, size = 10, style = 'normal') => {
+      doc.setFontSize(size);
+      doc.setFont('helvetica', style);
+      const lines = doc.splitTextToSize(text, pageWidth - margin * 2);
+      doc.text(lines, x, y);
+      return y + (lines.length * 5) + 2;
+    };
+    try { doc.addImage('https://i.imgur.com/01YZxey.jpeg', 'JPEG', margin, y - 10, 25, 25); } catch (e) {}
+    y = addText('VITAL HOGAR PRO IPS', pageWidth / 2, y, 16, 'bold');
+    y = addText('Cuidados Domiciliarios', pageWidth / 2, y, 10);
+    y = addText(`Paciente: ${pacienteActual.name}`, margin, y, 12, 'bold');
+    y = addText(`Fecha: ${new Date().toLocaleDateString('es-CO')}`, margin, y);
+    y = addText(`Auxiliar: ${USER.name}`, margin, y);
+    y += 4;
+    y = addText('📋 RECIBO', margin, y, 11, 'bold');
+    if (recHoy.length > 0) recHoy.forEach(r => y = addText(`🕐 ${r.hora || formatTime(r.created_at)} | ${r.estado || 'Sin estado'}`, margin + 4, y, 9));
+    else y = addText('No hay recibo', margin + 4, y, 9);
+    y += 2;
+    y = addText('✅ ACTIVIDADES', margin, y, 11, 'bold');
+    if (actHoy.length > 0) actHoy.forEach(a => y = addText(`🕐 ${a.hora || formatTime(a.created_at)} | ${a.actividad}`, margin + 4, y, 9));
+    else y = addText('No hay actividades', margin + 4, y, 9);
+    y += 2;
+    y = addText('🩺 SIGNOS', margin, y, 11, 'bold');
+    if (sigHoy.length > 0) sigHoy.forEach(s => y = addText(`🕐 ${s.hora || formatTime(s.created_at)} | SpO2: ${s.spo2 || '-'}% | FC: ${s.fc || '-'}`, margin + 4, y, 9));
+    else y = addText('No hay signos', margin + 4, y, 9);
+    y += 2;
+    y = addText('💊 MEDICAMENTOS', margin, y, 11, 'bold');
+    if (medHoy.length > 0) medHoy.forEach(m => y = addText(`🕐 ${m.hora || formatTime(m.created_at)} | ${m.nombre}`, margin + 4, y, 9));
+    else y = addText('No hay medicamentos', margin + 4, y, 9);
+    y += 2;
+    y = addText('🔄 ENTREGA', margin, y, 11, 'bold');
+    if (entHoy.length > 0) entHoy.forEach(e => y = addText(`🕐 ${e.horaEntrega || formatTime(e.created_at)} | ${e.resumen ? e.resumen.substring(0,60) : 'Sin resumen'}`, margin + 4, y, 9));
+    else y = addText('No hay entrega', margin + 4, y, 9);
+    y += 4;
+    doc.save(`Reporte_${pacienteActual.name}_${getCurrentDate()}.pdf`);
+    showToast('✅ PDF generado', 'success');
+  } catch (e) { showToast('❌ Error en PDF', 'error'); }
+}
+
+// ============================================================
+//  REPORTES ADMIN
+// ============================================================
+function renderReportesAdmin() {
+  return `
+    <div class="card">
+      <div class="card-title">📊 REPORTES ADMIN</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div style="background:#0f172a;padding:16px;border-radius:8px;text-align:center;">
+          <p style="font-size:2rem;color:#22c55e;" id="totalUsuarios">0</p>
+          <p style="color:#94a3b8;">Usuarios</p>
+        </div>
+        <div style="background:#0f172a;padding:16px;border-radius:8px;text-align:center;">
+          <p style="font-size:2rem;color:#8b5cf6;" id="totalPacientes">0</p>
+          <p style="color:#94a3b8;">Pacientes</p>
+        </div>
+        <div style="background:#0f172a;padding:16px;border-radius:8px;text-align:center;">
+          <p style="font-size:2rem;color:#f97316;" id="totalActividadesHoy">0</p>
+          <p style="color:#94a3b8;">Actividades hoy</p>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="cargarReportesAdmin()">🔄 Actualizar</button>
+    </div>
+  `;
+}
+
+async function cargarReportesAdmin() {
+  try {
+    const [users, patients, actividades] = await Promise.all([
+      apiRequest('/api/users'),
+      apiRequest('/api/patients'),
+      apiRequest('/api/actividades/' + (USER?.id || ''))
+    ]);
+    if ($('totalUsuarios')) $('totalUsuarios').textContent = users?.data?.length || 0;
+    if ($('totalPacientes')) $('totalPacientes').textContent = patients?.data?.length || 0;
+    if ($('totalActividadesHoy')) {
+      const hoy = getCurrentDate();
+      const items = actividades?.data || [];
+      $('totalActividadesHoy').textContent = items.filter(a => a.created_at && new Date(a.created_at).toISOString().split('T')[0] === hoy).length;
+    }
+    showToast('✅ Reportes actualizados', 'success');
+  } catch (e) { showToast('Error al cargar reportes', 'error'); }
+}
+
+function renderEducacionAdmin() {
+  return `
+    <div class="card">
+      <div class="card-title">📚 ASIGNAR EDUCACIÓN</div>
+      <div class="form-group"><label>Tema</label><input type="text" id="temaEducacionTitulo"></div>
+      <div class="form-group"><label>Descripción</label><textarea id="temaEducacionDesc" rows="3"></textarea></div>
+      <button class="btn btn-primary btn-block" onclick="crearTemaEducacion()">📤 Asignar</button>
+    </div>
+  `;
+}
+
+async function crearTemaEducacion() { showToast('Función en desarrollo', 'warning'); }
 
 // ============================================================
 //  INICIALIZACIÓN
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-  if (!checkSession()) {
-    $('loginScreen').style.display = 'flex';
-  }
+  if (!checkSession()) $('loginScreen').style.display = 'flex';
   setInterval(() => {
-    const horaRecibo = $('horaRecibo');
-    if (horaRecibo) horaRecibo.textContent = getCurrentTime();
-    const horaEntrega = $('horaEntrega');
-    if (horaEntrega) horaEntrega.textContent = getCurrentTime();
+    if ($('horaRecibo')) $('horaRecibo').textContent = getCurrentTime();
+    if ($('horaEntrega')) $('horaEntrega').textContent = getCurrentTime();
     if (horaEntrada) actualizarTurnoInfo();
   }, 60000);
 });
@@ -1013,18 +1728,11 @@ function actualizarTurnoInfo() {
     texto += `🕐 Entrada: ${formatTime(horaEntrada)}`;
     const ahora = new Date();
     const diff = Math.floor((ahora - horaEntrada) / 60000);
-    const h = Math.floor(diff / 60);
-    const m = diff % 60;
-    texto += ` | ⏱️ ${h}h ${m}min`;
-  } else {
-    texto += '🕐 Entrada: --:-- | ⏱️ --';
-  }
+    texto += ` | ⏱️ ${Math.floor(diff/60)}h ${diff%60}min`;
+  } else texto += '🕐 Entrada: --:-- | ⏱️ --';
   info.textContent = texto;
 }
 
-// ============================================================
-//  EXPONER FUNCIONES GLOBALES
-// ============================================================
 window.login = login;
 window.logout = logout;
 window.togglePassword = togglePassword;
@@ -1043,7 +1751,7 @@ window.generarPDF = generarPDF;
 window.confirmarRecibo = confirmarRecibo;
 window.confirmarEntrega = confirmarEntrega;
 
-console.log('🚀 VITAL HOGAR PRO IPS v4.2 - Cargado correctamente');
+console.log('🚀 VITAL HOGAR PRO IPS v4.3 - COMPLETO');
 console.log('👤 Usuario:', USER?.name || 'No autenticado');
 console.log('📡 API:', API_URL);
 </script>
