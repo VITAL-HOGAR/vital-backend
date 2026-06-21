@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -24,7 +23,7 @@ const supabase = createClient(
 
 // ==================== MIDDLEWARES ====================
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));  // ← CRÍTICO PARA EL LOGIN
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static('public'));
 
 // ==================== CREAR ADMIN POR DEFECTO ====================
@@ -77,6 +76,7 @@ app.post('/api/actividades', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO
         if (error) throw error;
         res.json({ success: true, data });
     } catch (error) {
+        console.error('❌ Error en actividades:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -92,6 +92,7 @@ app.get('/api/actividades/:userId', auth.protect, async (req, res) => {
         if (error) throw error;
         res.json({ success: true, data });
     } catch (error) {
+        console.error('❌ Error en actividades GET:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -110,6 +111,7 @@ app.post('/api/signos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), a
         if (error) throw error;
         res.json({ success: true, data });
     } catch (error) {
+        console.error('❌ Error en signos:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -125,6 +127,7 @@ app.get('/api/signos/:userId', auth.protect, async (req, res) => {
         if (error) throw error;
         res.json({ success: true, data });
     } catch (error) {
+        console.error('❌ Error en signos GET:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -143,6 +146,7 @@ app.post('/api/medicamentos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMER
         if (error) throw error;
         res.json({ success: true, data });
     } catch (error) {
+        console.error('❌ Error en medicamentos:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -158,12 +162,13 @@ app.get('/api/medicamentos/:userId', auth.protect, async (req, res) => {
         if (error) throw error;
         res.json({ success: true, data });
     } catch (error) {
+        console.error('❌ Error en medicamentos GET:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
 // ============================================================
-//  RUTAS: ENTREGAS (PROTEGIDAS)
+//  RUTAS: RECIBOS (PROTEGIDAS) - CORREGIDO (SIN DUPLICADO)
 // ============================================================
 
 app.post('/api/recibos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
@@ -182,25 +187,7 @@ app.post('/api/recibos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), 
         if (error) throw error;
         res.json({ success: true, data });
     } catch (error) {
-        console.error('❌ Error en recibos:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// ============================================================
-//  RUTAS: RECIBOS (PROTEGIDAS)
-// ============================================================
-
-app.post('/api/recibos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
-    try {
-        const { patient_id, user_id, estado, quienEntrega } = req.body;
-        const { data, error } = await supabase
-            .from('recibos')
-            .insert([{ patient_id, user_id, estado, quienEntrega }])
-            .select();
-        if (error) throw error;
-        res.json({ success: true, data });
-    } catch (error) {
+        console.error('❌ Error en recibos POST:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -216,6 +203,52 @@ app.get('/api/recibos/:userId', auth.protect, async (req, res) => {
         if (error) throw error;
         res.json({ success: true, data });
     } catch (error) {
+        console.error('❌ Error en recibos GET:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============================================================
+//  RUTAS: ENTREGAS (PROTEGIDAS) - AGREGADO
+// ============================================================
+
+app.post('/api/entregas', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
+    try {
+        const { patient_id, user_id, resumen, pendientes, quienRecibe, horaEntrega, sbar, firmaEntrega, firmaRecibe } = req.body;
+        const { data, error } = await supabase
+            .from('entregas')
+            .insert([{ 
+                patient_id, 
+                user_id, 
+                resumen, 
+                pendientes, 
+                quienRecibe, 
+                horaEntrega: horaEntrega || new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
+                sbar,
+                firmaEntrega,
+                firmaRecibe
+            }])
+            .select();
+        if (error) throw error;
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('❌ Error en entregas POST:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.get('/api/entregas/:userId', auth.protect, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { data, error } = await supabase
+            .from('entregas')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('❌ Error en entregas GET:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
@@ -261,6 +294,8 @@ app.listen(PORT, () => {
     console.log(`📡 Health check: http://localhost:${PORT}/`);
     console.log(`🔐 Login: POST http://localhost:${PORT}/api/auth/login`);
     console.log(`👥 Usuarios: GET http://localhost:${PORT}/api/users`);
+    console.log(`📋 Recibos: POST http://localhost:${PORT}/api/recibos`);
+    console.log(`🔄 Entregas: POST http://localhost:${PORT}/api/entregas`);
 });
 
 module.exports = app;
