@@ -11,12 +11,10 @@ const supabase = createClient(
 // ============================================================
 async function getPatients(req, res) {
     try {
-        // ✅ Solo mostrar pacientes activos (si usas soft delete)
+        // ✅ Mostrar TODOS los pacientes (sin filtro de status)
         const { data, error } = await supabase
             .from('patients')
-            .select('*')
-            .is('status', null)  // Si no tiene status, está activo
-            .or('status.eq.ACTIVE');  // O si tiene status ACTIVE
+            .select('*');
 
         if (error) throw error;
         res.json({ success: true, data });
