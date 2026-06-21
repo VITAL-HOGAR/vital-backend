@@ -166,31 +166,23 @@ app.get('/api/medicamentos/:userId', auth.protect, async (req, res) => {
 //  RUTAS: ENTREGAS (PROTEGIDAS)
 // ============================================================
 
-app.post('/api/entregas', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
+app.post('/api/recibos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
     try {
-        const { patient_id, user_id, resumen, pendientes, quienRecibe, horaEntrega, sbar } = req.body;
+        const { patient_id, user_id, estado, quienEntrega, hora } = req.body;
         const { data, error } = await supabase
-            .from('entregas')
-            .insert([{ patient_id, user_id, resumen, pendientes, quienRecibe, horaEntrega, sbar }])
+            .from('recibos')
+            .insert([{ 
+                patient_id, 
+                user_id, 
+                estado, 
+                quienEntrega,
+                hora: hora || new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+            }])
             .select();
         if (error) throw error;
         res.json({ success: true, data });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-app.get('/api/entregas/:userId', auth.protect, async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const { data, error } = await supabase
-            .from('entregas')
-            .select('*')
-            .eq('user_id', userId)
-            .order('created_at', { ascending: false });
-        if (error) throw error;
-        res.json({ success: true, data });
-    } catch (error) {
+        console.error('❌ Error en recibos:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
