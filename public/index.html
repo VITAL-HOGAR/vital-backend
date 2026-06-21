@@ -1078,54 +1078,44 @@ function renderRecibo() {
 
 async function confirmarRecibo() {
   if (!pacienteActual) { showToast('Seleccione un paciente', 'warning'); return; }
-  const estado = $('estadoRecibo').value.trim();
+  const estado = document.getElementById('estadoRecibo').value.trim();
   if (!estado) { showToast('Describa el estado del paciente', 'error'); return; }
 
+  const data = {
+    patient_id: pacienteActual.id,
+    user_id: USER.id,
+    estado: estado,
+    quienEntrega: document.getElementById('quienEntregaRecibo').value,
+    hora: getCurrentTime()
+  };
+
+  console.log('📤 Enviando recibo:', data); // ← Para depurar
+
   try {
-    const data = await apiRequest('/api/recibos', {
+    const response = await fetch(API_URL + '/api/recibos', {
       method: 'POST',
-      body: JSON.stringify({
-        patient_id: pacienteActual.id,
-        user_id: USER.id,
-        estado: estado,
-        quienEntrega: $('quienEntregaRecibo').value,
-        hora: getCurrentTime()
-      })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + TOKEN
+      },
+      body: JSON.stringify(data)
     });
 
-    if (data.success) {
+    const result = await response.json();
+    console.log('📥 Respuesta recibo:', result);
+
+    if (result.success) {
       showToast('✅ Recibo registrado');
-      $('estadoRecibo').value = '';
+      document.getElementById('estadoRecibo').value = '';
       cargarRecibos();
       horaEntrada = new Date();
       actualizarTurnoInfo();
     } else {
-      showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+      showToast('❌ Error: ' + (result.message || result.error || 'Desconocido'), 'error');
     }
-  } catch (e) {
-    showToast('❌ Error al conectar con el servidor', 'error');
-  }
-}
-
-async function cargarRecibos() {
-  if (!pacienteActual) return;
-  const data = await apiRequest('/api/recibos/' + USER.id);
-  const div = $('historialRecibos');
-  if (data.success && data.data && data.data.length > 0) {
-    const hoy = getCurrentDate();
-    const items = data.data.filter(r => r.created_at && new Date(r.created_at).toISOString().split('T')[0] === hoy);
-    if (items.length === 0) {
-      div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay recibos hoy</p>';
-      return;
-    }
-    div.innerHTML = items.slice(-5).reverse().map(r => `
-      <div class="item">
-        <div class="title">🕐 ${r.hora || formatTime(r.created_at)}</div>
-        <div class="meta">📝 ${r.estado || 'Sin estado'} | 👤 ${r.quienEntrega || 'N/A'}</div>
-      </div>
-    `).join('');
-  } else {
-    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay recibos registrados</p>';
+  } catch (error) {
+    console.error('❌ Error en confirmarRecibo:', error);
+    showToast('❌ Error de conexión', 'error');
   }
 }
 
