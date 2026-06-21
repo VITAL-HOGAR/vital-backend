@@ -8,10 +8,10 @@ require('dotenv').config();
 // ==================== IMPORTAR RUTAS ====================
 const auth = require('./routes/auth');
 const users = require('./routes/users');
-const patients = require('./routes/patients');    // ← MOVIDO AQUÍ
-const education = require('./routes/education');  // ← MOVIDO AQUÍ
-const shifts = require('./routes/shifts');        // ← MOVIDO AQUÍ
-const reports = require('./routes/reports');      // ← MOVIDO AQUÍ
+const patients = require('./routes/patients');
+const education = require('./routes/education');
+const shifts = require('./routes/shifts');
+const reports = require('./routes/reports');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,12 +19,12 @@ const PORT = process.env.PORT || 3000;
 // ==================== SUPABASE ====================
 const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY  // ← USAR ANON_KEY
+    process.env.SUPABASE_ANON_KEY
 );
 
 // ==================== MIDDLEWARES ====================
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));  // ← AGREGAR ESTA LÍNEA
+app.use(express.json({ limit: '10mb' }));  // ← AGREGADO
 app.use(express.static('public'));
 
 // ==================== CREAR ADMIN POR DEFECTO ====================
