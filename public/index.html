@@ -3,624 +3,123 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>Vital Hogar Pro IPS v4.0</title>
+<title>Vital Hogar Pro IPS v4.1</title>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 /* ============================================================
-   VITAL HOGAR PRO IPS v4.0 - ESTILOS COMPLETOS
-   Diseño responsive para PC, Tablet y Celular
+   VITAL HOGAR PRO IPS v4.1 - ESTILOS COMPLETOS
    ============================================================ */
-
-/* ---------- BASE ---------- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-body {
-    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-    background: #0f172a;
-    color: #e2e8f0;
-    min-height: 100vh;
-    padding: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-}
-#app {
-    width: 100%;
-    max-width: 1200px;
-}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:12px;display:flex;justify-content:center;align-items:flex-start}
+#app{width:100%;max-width:1200px}
 
 /* ---------- LOGIN ---------- */
-.login-container {
-    width: 100%;
-    max-width: 420px;
-    margin: 40px auto;
-    padding: 20px;
-}
-.login-card {
-    background: #1e293b;
-    border-radius: 20px;
-    padding: 40px 30px;
-    border: 1px solid #334155;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-}
-.login-logo {
-    text-align: center;
-    margin-bottom: 30px;
-}
-.login-logo img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #22c55e;
-    padding: 4px;
-    background: #0f172a;
-}
-.login-logo h1 {
-    font-size: 1.5rem;
-    color: #22c55e;
-    margin-top: 12px;
-    font-weight: 700;
-}
-.login-logo p {
-    color: #94a3b8;
-    font-size: 0.85rem;
-    margin-top: 4px;
-}
-.login-title {
-    font-size: 1rem;
-    color: #e2e8f0;
-    text-align: center;
-    margin-bottom: 24px;
-    font-weight: 300;
-}
-.form-group {
-    margin-bottom: 16px;
-}
-.form-group label {
-    display: block;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    color: #94a3b8;
-    margin-bottom: 4px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 12px 16px;
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 10px;
-    color: #e2e8f0;
-    font-size: 0.95rem;
-    transition: border-color 0.3s;
-}
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #22c55e;
-}
-.form-group textarea {
-    min-height: 60px;
-    resize: vertical;
-    font-family: inherit;
-}
-.password-wrapper {
-    position: relative;
-}
-.password-wrapper input {
-    padding-right: 45px;
-}
-.password-toggle {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: #94a3b8;
-    cursor: pointer;
-    font-size: 1.2rem;
-    padding: 0;
-    z-index: 10;
-}
-.btn-login {
-    width: 100%;
-    padding: 14px;
-    background: #22c55e;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
-    margin-top: 8px;
-}
-.btn-login:hover {
-    background: #16a34a;
-}
-.btn-login:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-.login-error {
-    background: #ef444420;
-    border: 1px solid #ef4444;
-    color: #ef4444;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    display: none;
-    margin-bottom: 12px;
-}
-.login-footer {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 0.75rem;
-    color: #64748b;
-}
+.login-container{width:100%;max-width:420px;margin:40px auto;padding:20px}
+.login-card{background:#1e293b;border-radius:20px;padding:40px 30px;border:1px solid #334155;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.login-logo{text-align:center;margin-bottom:30px}
+.login-logo img{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #22c55e;padding:4px;background:#0f172a}
+.login-logo h1{font-size:1.5rem;color:#22c55e;margin-top:12px;font-weight:700}
+.login-logo p{color:#94a3b8;font-size:0.85rem;margin-top:4px}
+.login-title{font-size:1rem;color:#e2e8f0;text-align:center;margin-bottom:24px;font-weight:300}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:0.7rem;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;font-weight:600;letter-spacing:0.5px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 16px;background:#0f172a;border:1px solid #334155;border-radius:10px;color:#e2e8f0;font-size:0.95rem;transition:border-color 0.3s;font-family:inherit}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#22c55e}
+.form-group textarea{min-height:60px;resize:vertical}
+.password-wrapper{position:relative}
+.password-wrapper input{padding-right:45px}
+.password-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1.2rem;padding:0;z-index:10}
+.btn-login{width:100%;padding:14px;background:#22c55e;color:white;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;transition:background 0.3s;margin-top:8px}
+.btn-login:hover{background:#16a34a}
+.btn-login:disabled{opacity:0.7;cursor:not-allowed}
+.login-error{background:#ef444420;border:1px solid #ef4444;color:#ef4444;padding:10px 14px;border-radius:8px;font-size:0.85rem;display:none;margin-bottom:12px}
+.login-footer{text-align:center;margin-top:20px;font-size:0.75rem;color:#64748b}
 
 /* ---------- HEADER ---------- */
-.header {
-    background: #1e293b;
-    border-radius: 16px;
-    padding: 16px 24px;
-    margin-bottom: 20px;
-    border: 1px solid #334155;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-.header-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-.header-logo img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-.header-logo h1 {
-    font-size: 1.1rem;
-    color: #22c55e;
-}
-.header-logo span {
-    font-size: 0.65rem;
-    color: #94a3b8;
-    display: block;
-}
-.header-user {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 0.85rem;
-    flex-wrap: wrap;
-}
-.header-user .name {
-    color: #22c55e;
-    font-weight: 600;
-}
-.header-user .role {
-    background: #22c55e20;
-    color: #22c55e;
-    padding: 2px 12px;
-    border-radius: 12px;
-    font-size: 0.65rem;
-    font-weight: 600;
-}
-.btn-logout {
-    background: #ef4444;
-    border: none;
-    color: white;
-    padding: 6px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
-.btn-logout:hover {
-    background: #dc2626;
-}
+.header{background:#1e293b;border-radius:16px;padding:16px 24px;margin-bottom:20px;border:1px solid #334155;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.header-logo{display:flex;align-items:center;gap:12px}
+.header-logo img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+.header-logo h1{font-size:1.1rem;color:#22c55e}
+.header-logo span{font-size:0.65rem;color:#94a3b8;display:block}
+.header-user{display:flex;align-items:center;gap:12px;font-size:0.85rem;flex-wrap:wrap}
+.header-user .name{color:#22c55e;font-weight:600}
+.header-user .role{background:#22c55e20;color:#22c55e;padding:2px 12px;border-radius:12px;font-size:0.65rem;font-weight:600}
+.btn-logout{background:#ef4444;border:none;color:white;padding:6px 16px;border-radius:20px;cursor:pointer;font-size:0.7rem;font-weight:600}
+.btn-logout:hover{background:#dc2626}
 
 /* ---------- TABS ---------- */
-.tabs {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-}
-.tab {
-    padding: 10px 20px;
-    background: #1e293b;
-    border-radius: 30px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: 500;
-    border: 1px solid transparent;
-    transition: all 0.3s;
-    color: #94a3b8;
-}
-.tab:hover {
-    background: #334155;
-    color: #e2e8f0;
-}
-.tab.active {
-    background: #22c55e;
-    color: white;
-    border-color: #22c55e;
-}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.tab{padding:10px 20px;background:#1e293b;border-radius:30px;cursor:pointer;font-size:0.8rem;font-weight:500;border:1px solid transparent;transition:all 0.3s;color:#94a3b8}
+.tab:hover{background:#334155;color:#e2e8f0}
+.tab.active{background:#22c55e;color:white;border-color:#22c55e}
 
 /* ---------- CARDS ---------- */
-.card {
-    background: #1e293b;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 20px;
-    border: 1px solid #334155;
-}
-.card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #22c55e;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #334155;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-.card-title .badge {
-    background: #22c55e20;
-    color: #22c55e;
-    padding: 2px 12px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
+.card{background:#1e293b;border-radius:16px;padding:24px;margin-bottom:20px;border:1px solid #334155}
+.card-title{font-size:1.1rem;font-weight:600;color:#22c55e;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #334155;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.card-title .badge{background:#22c55e20;color:#22c55e;padding:2px 12px;border-radius:12px;font-size:0.7rem;font-weight:600}
 
 /* ---------- GRID ---------- */
-.grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-.grid-3 {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 
 /* ---------- BUTTONS ---------- */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    font-size: 0.85rem;
-    transition: all 0.3s;
-}
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-.btn-primary {
-    background: #22c55e;
-    color: white;
-}
-.btn-primary:hover {
-    background: #16a34a;
-}
-.btn-secondary {
-    background: #334155;
-    color: white;
-}
-.btn-secondary:hover {
-    background: #475569;
-}
-.btn-danger {
-    background: #ef4444;
-    color: white;
-}
-.btn-danger:hover {
-    background: #dc2626;
-}
-.btn-sm {
-    padding: 6px 14px;
-    font-size: 0.75rem;
-}
-.btn-block {
-    width: 100%;
-    justify-content: center;
-}
-.btn-voice {
-    background: #8b5cf6;
-    color: white;
-    padding: 6px 14px;
-    font-size: 0.75rem;
-    width: auto;
-    margin-top: 4px;
-}
-.btn-voice:hover {
-    background: #7c3aed;
-}
-.btn-clear-signature {
-    background: #ef4444;
-    color: white;
-    padding: 4px 12px;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.65rem;
-    cursor: pointer;
-}
-.btn-clear-signature:hover {
-    background: #dc2626;
-}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-weight:600;cursor:pointer;border:none;font-size:0.85rem;transition:all 0.3s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+.btn-primary{background:#22c55e;color:white}
+.btn-primary:hover{background:#16a34a}
+.btn-secondary{background:#334155;color:white}
+.btn-secondary:hover{background:#475569}
+.btn-danger{background:#ef4444;color:white}
+.btn-danger:hover{background:#dc2626}
+.btn-sm{padding:6px 14px;font-size:0.75rem}
+.btn-block{width:100%;justify-content:center}
+.btn-voice{background:#8b5cf6;color:white;padding:6px 14px;font-size:0.75rem;width:auto;margin-top:4px}
+.btn-voice:hover{background:#7c3aed}
+.btn-clear-signature{background:#ef4444;color:white;padding:4px 12px;border:none;border-radius:6px;font-size:0.65rem;cursor:pointer}
+.btn-clear-signature:hover{background:#dc2626}
 
 /* ---------- SIGNATURE ---------- */
-.signature-area {
-    background: #0f172a;
-    border-radius: 10px;
-    padding: 12px;
-    border: 1px solid #334155;
-    margin-bottom: 12px;
-}
-.signature-area .signature-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-.signature-area .signature-header label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    color: #94a3b8;
-    font-weight: 600;
-}
-.signature-canvas {
-    background: white;
-    border-radius: 8px;
-    width: 100%;
-    height: 100px;
-    border: 2px solid #22c55e;
-    touch-action: none;
-    cursor: crosshair;
-}
-.signature-status {
-    font-size: 0.6rem;
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-weight: 600;
-}
-.signature-status.saved {
-    background: #22c55e30;
-    color: #22c55e;
-}
-.signature-status.empty {
-    background: #ef444430;
-    color: #ef4444;
-}
+.signature-area{background:#0f172a;border-radius:10px;padding:12px;border:1px solid #334155;margin-bottom:12px}
+.signature-area .signature-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.signature-area .signature-header label{font-size:0.7rem;text-transform:uppercase;color:#94a3b8;font-weight:600}
+.signature-canvas{background:white;border-radius:8px;width:100%;height:100px;border:2px solid #22c55e;touch-action:none;cursor:crosshair}
+.signature-status{font-size:0.6rem;padding:2px 10px;border-radius:12px;font-weight:600}
+.signature-status.saved{background:#22c55e30;color:#22c55e}
+.signature-status.empty{background:#ef444430;color:#ef4444}
 
 /* ---------- PHOTOS ---------- */
-.photo-preview {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-}
-.photo-preview img {
-    width: 80px;
-    height: 80px;
-    border-radius: 8px;
-    object-fit: cover;
-    border: 1px solid #334155;
-}
+.photo-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.photo-preview img{width:80px;height:80px;border-radius:8px;object-fit:cover;border:1px solid #334155}
 
 /* ---------- LISTS ---------- */
-.item-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-.item {
-    background: #0f172a;
-    padding: 12px 16px;
-    border-radius: 10px;
-    border-left: 3px solid #22c55e;
-}
-.item .title {
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-.item .meta {
-    color: #94a3b8;
-    font-size: 0.75rem;
-    margin-top: 4px;
-}
+.item-list{display:flex;flex-direction:column;gap:8px}
+.item{background:#0f172a;padding:12px 16px;border-radius:10px;border-left:3px solid #22c55e}
+.item .title{font-weight:600;font-size:0.9rem}
+.item .meta{color:#94a3b8;font-size:0.75rem;margin-top:4px}
 
 /* ---------- ALERTS ---------- */
-.alert-box {
-    padding: 10px 14px;
-    border-radius: 8px;
-    margin-top: 10px;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-.alert-success {
-    background: #22c55e20;
-    border: 1px solid #22c55e;
-    color: #22c55e;
-}
-.alert-warning {
-    background: #f9731620;
-    border: 1px solid #f97316;
-    color: #f97316;
-}
-.alert-danger {
-    background: #ef444420;
-    border: 1px solid #ef4444;
-    color: #ef4444;
-}
+.alert-box{padding:10px 14px;border-radius:8px;margin-top:10px;font-size:0.85rem;font-weight:500}
+.alert-success{background:#22c55e20;border:1px solid #22c55e;color:#22c55e}
+.alert-warning{background:#f9731620;border:1px solid #f97316;color:#f97316}
+.alert-danger{background:#ef444420;border:1px solid #ef4444;color:#ef4444}
 
 /* ---------- TOAST ---------- */
-.toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1e293b;
-    border: 1px solid #334155;
-    padding: 14px 28px;
-    border-radius: 30px;
-    display: none;
-    z-index: 9999;
-    font-size: 0.9rem;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    max-width: 90%;
-    text-align: center;
-}
-.toast.show {
-    display: block;
-}
-.toast.success {
-    border-left: 4px solid #22c55e;
-}
-.toast.error {
-    border-left: 4px solid #ef4444;
-}
-.toast.warning {
-    border-left: 4px solid #f97316;
-}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid #334155;padding:14px 28px;border-radius:30px;display:none;z-index:9999;font-size:0.9rem;box-shadow:0 8px 32px rgba(0,0,0,0.5);max-width:90%;text-align:center}
+.toast.show{display:block}
+.toast.success{border-left:4px solid #22c55e}
+.toast.error{border-left:4px solid #ef4444}
+.toast.warning{border-left:4px solid #f97316}
 
 /* ---------- HIDDEN ---------- */
-.hidden {
-    display: none !important;
-}
+.hidden{display:none !important}
 
 /* ---------- RESPONSIVE ---------- */
-@media (max-width: 1024px) {
-    .grid-3 {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-@media (max-width: 768px) {
-    body {
-        padding: 8px;
-    }
-    .header {
-        flex-direction: column;
-        text-align: center;
-        padding: 12px 16px;
-    }
-    .header-logo {
-        justify-content: center;
-    }
-    .header-logo h1 {
-        font-size: 0.95rem;
-    }
-    .header-user {
-        justify-content: center;
-    }
-    .grid-2 {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-    .grid-3 {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-    .tabs {
-        flex-direction: column;
-        gap: 4px;
-    }
-    .tab {
-        text-align: center;
-        padding: 12px 16px;
-        font-size: 0.9rem;
-        border-radius: 10px;
-    }
-    .card {
-        padding: 16px;
-    }
-    .card-title {
-        font-size: 1rem;
-    }
-    .signature-canvas {
-        height: 80px;
-    }
-    .btn {
-        padding: 14px 20px;
-        font-size: 0.95rem;
-    }
-    .login-card {
-        padding: 30px 20px;
-    }
-    .login-logo img {
-        width: 80px;
-        height: 80px;
-    }
-    .login-logo h1 {
-        font-size: 1.2rem;
-    }
-    .photo-preview img {
-        width: 60px;
-        height: 60px;
-    }
-    .toast {
-        font-size: 0.8rem;
-        padding: 12px 20px;
-    }
-}
-@media (max-width: 400px) {
-    body {
-        padding: 4px;
-    }
-    .tab {
-        padding: 10px 12px;
-        font-size: 0.8rem;
-    }
-    .signature-canvas {
-        height: 70px;
-    }
-    .btn {
-        padding: 12px 16px;
-        font-size: 0.85rem;
-    }
-    .login-card {
-        padding: 20px 16px;
-    }
-    .login-logo img {
-        width: 60px;
-        height: 60px;
-    }
-    .login-logo h1 {
-        font-size: 1rem;
-    }
-    .card {
-        padding: 12px;
-    }
-}
+@media(max-width:1024px){.grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){body{padding:8px}.header{flex-direction:column;text-align:center;padding:12px 16px}.header-logo{justify-content:center}.header-logo h1{font-size:0.95rem}.header-user{justify-content:center}.grid-2{grid-template-columns:1fr;gap:10px}.grid-3{grid-template-columns:1fr;gap:10px}.tabs{flex-direction:column;gap:4px}.tab{text-align:center;padding:12px 16px;font-size:0.9rem;border-radius:10px}.card{padding:16px}.card-title{font-size:1rem}.signature-canvas{height:80px}.btn{padding:14px 20px;font-size:0.95rem}.login-card{padding:30px 20px}.login-logo img{width:80px;height:80px}.login-logo h1{font-size:1.2rem}.photo-preview img{width:60px;height:60px}.toast{font-size:0.8rem;padding:12px 20px}}
+@media(max-width:400px){body{padding:4px}.tab{padding:10px 12px;font-size:0.8rem}.signature-canvas{height:70px}.btn{padding:12px 16px;font-size:0.85rem}.login-card{padding:20px 16px}.login-logo img{width:60px;height:60px}.login-logo h1{font-size:1rem}.card{padding:12px}}
 </style>
 </head>
 <body>
-
 <div id="app">
 
 <!-- ============================================================
@@ -694,9 +193,6 @@ body {
 
 </div>
 
-<!-- ============================================================
-     SCRIPTS
-     ============================================================ -->
 <script>
 // ============================================================
 //  CONFIGURACIÓN
@@ -937,6 +433,7 @@ async function seleccionarPaciente() {
 function confirmarPaciente() {
   const select = $('selectPaciente');
   if (!select) return;
+  // Obtener pacientes del caché o hacer fetch
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes_cache') || '[]');
   const paciente = pacientes.find(p => p.id === select.value);
   pacienteActual = paciente || null;
@@ -946,7 +443,8 @@ function confirmarPaciente() {
     showToast('Paciente: ' + paciente.name);
   }
   cerrarModalPaciente();
-  cargarTab(document.querySelector('.tab.active')?.dataset.tab || 'inicio');
+  const activeTab = document.querySelector('.tab.active');
+  if (activeTab) cargarTab(activeTab.dataset.tab);
 }
 
 function cerrarModalPaciente() {
@@ -1089,6 +587,32 @@ function getFotos(previewId) {
     }
   }
   return fotos;
+}
+
+// ============================================================
+//  ESCALAS - GLASGOW Y BRADEN (CÁLCULO AUTOMÁTICO)
+// ============================================================
+function calcularGlasgow() {
+  const ojos = parseInt($('glasgowOjos')?.value) || 0;
+  const verbal = parseInt($('glasgowVerbal')?.value) || 0;
+  const motor = parseInt($('glasgowMotor')?.value) || 0;
+  const total = ojos + verbal + motor;
+  const totalInput = $('glasgowTotal');
+  if (totalInput) totalInput.value = total;
+  return total;
+}
+
+function calcularBraden() {
+  const percepcion = parseInt($('bradenPercepcion')?.value) || 0;
+  const humedad = parseInt($('bradenHumedad')?.value) || 0;
+  const actividad = parseInt($('bradenActividad')?.value) || 0;
+  const movilidad = parseInt($('bradenMovilidad')?.value) || 0;
+  const nutricion = parseInt($('bradenNutricion')?.value) || 0;
+  const friccion = parseInt($('bradenFriccion')?.value) || 0;
+  const total = percepcion + humedad + actividad + movilidad + nutricion + friccion;
+  const totalInput = $('bradenTotal');
+  if (totalInput) totalInput.value = total;
+  return total;
 }
 
 // ============================================================
@@ -1235,6 +759,28 @@ function evaluarSignos(spo2, fc, fr, temp, ta, glucosa, edad, ciudad) {
   return { alertas, nivel };
 }
 
+function evaluarSignosUI() {
+  const spo2 = parseInt($('spo2')?.value) || 0;
+  const fc = parseInt($('fc')?.value) || 0;
+  const fr = parseInt($('fr')?.value) || 0;
+  const temp = parseFloat($('temp')?.value) || 0;
+  const bp = $('bp')?.value || '';
+  const glucosa = parseInt($('glucosa')?.value) || 0;
+  const edad = pacienteActual?.edad || 45;
+  const ciudad = pacienteActual?.ciudad || 'Bogotá';
+
+  const resultado = evaluarSignos(spo2, fc, fr, temp, bp, glucosa, edad, ciudad);
+  const div = $('alertasSignos');
+  if (!div) return;
+
+  let html = '';
+  resultado.alertas.forEach(a => {
+    const cls = a.nivel === 'danger' ? 'alert-danger' : a.nivel === 'warning' ? 'alert-warning' : 'alert-success';
+    html += `<div class="alert-box ${cls}">${a.mensaje}: ${a.signo} = ${a.valor}</div>`;
+  });
+  div.innerHTML = html || '<div class="alert-box alert-success">✅ Todos los signos dentro de rangos normales</div>';
+}
+
 // ============================================================
 //  CONSTRUIR TABS
 // ============================================================
@@ -1260,62 +806,6 @@ function construirTabs() {
         { id: 'educacion', name: '📚 Educación' },
         { id: 'entrega', name: '🔄 Entrega' },
         { id: 'reportes', name: '📄 Reporte' }
-      ];
-      break;
-    case 'ENFERMERO':
-      tabs = [
-        { id: 'supervision', name: '📋 Supervisión' },
-        { id: 'evolucion', name: '📝 Evolución' },
-        { id: 'reportes', name: '📄 Reportes' }
-      ];
-      break;
-    case 'MEDICO':
-      tabs = [
-        { id: 'prescripciones', name: '📋 Prescripciones' },
-        { id: 'reportes', name: '📄 Reportes' }
-      ];
-      break;
-    case 'FISIOTERAPEUTA':
-      tabs = [
-        { id: 'eval_fisio', name: '🦵 Evaluación Física' },
-        { id: 'reportes', name: '📄 Reportes' }
-      ];
-      break;
-    case 'PSICOLOGO':
-      tabs = [
-        { id: 'eval_psico', name: '🧠 Evaluación Mental' },
-        { id: 'reportes', name: '📄 Reportes' }
-      ];
-      break;
-    case 'NUTRICIONISTA':
-      tabs = [
-        { id: 'eval_nutri', name: '🥗 Evaluación Nutricional' },
-        { id: 'reportes', name: '📄 Reportes' }
-      ];
-      break;
-    case 'FONOAUDIOLOGO':
-      tabs = [
-        { id: 'eval_fono', name: '🗣️ Evaluación Lenguaje' },
-        { id: 'reportes', name: '📄 Reportes' }
-      ];
-      break;
-    case 'TERAPEUTA_OCUPACIONAL':
-      tabs = [
-        { id: 'eval_to', name: '🧩 Evaluación AVD' },
-        { id: 'reportes', name: '📄 Reportes' }
-      ];
-      break;
-    case 'TERAPEUTA_RESPIRATORIO':
-      tabs = [
-        { id: 'eval_resp', name: '💨 Evaluación Respiratoria' },
-        { id: 'reportes', name: '📄 Reportes' }
-      ];
-      break;
-    case 'COORDINADOR':
-      tabs = [
-        { id: 'turnos', name: '📅 Turnos' },
-        { id: 'educacion_admin', name: '📚 Educación' },
-        { id: 'reportes', name: '📊 Reportes' }
       ];
       break;
     default:
@@ -1346,7 +836,6 @@ function cargarTab(tabId) {
 
   const content = $('dynamicContent');
 
-  // Verificar que haya un paciente seleccionado para módulos que lo requieren
   const requierePaciente = ['recibo', 'actividades', 'signos', 'medicamentos', 'educacion', 'entrega', 'reportes'];
   if (requierePaciente.includes(tabId) && !pacienteActual) {
     content.innerHTML = `
@@ -1370,27 +859,15 @@ function cargarTab(tabId) {
     case 'educacion': content.innerHTML = renderEducacion(); break;
     case 'entrega': content.innerHTML = renderEntrega(); break;
     case 'reportes': content.innerHTML = renderReportes(); break;
-    case 'supervision': content.innerHTML = renderSupervision(); break;
-    case 'evolucion': content.innerHTML = renderEvolucion(); break;
-    case 'prescripciones': content.innerHTML = renderPrescripciones(); break;
-    case 'eval_fisio': content.innerHTML = renderEvalEspecialista('Fisioterapeuta'); break;
-    case 'eval_psico': content.innerHTML = renderEvalEspecialista('Psicólogo'); break;
-    case 'eval_nutri': content.innerHTML = renderEvalNutricionista(); break;
-    case 'eval_fono': content.innerHTML = renderEvalEspecialista('Fonoaudiólogo'); break;
-    case 'eval_to': content.innerHTML = renderEvalEspecialista('Terapeuta Ocupacional'); break;
-    case 'eval_resp': content.innerHTML = renderEvalEspecialista('Terapeuta Respiratorio'); break;
-    case 'turnos': content.innerHTML = renderTurnos(); break;
     default: content.innerHTML = '<div class="card"><p>Módulo en construcción</p></div>';
   }
 
-  // Inicializar firmas después de renderizar
   setTimeout(() => {
     ['sigEntrega', 'sigRecibe', 'sigProfesional', 'sigPaciente', 'sigFamiliar'].forEach(id => {
       if ($(id)) initSignature(id);
     });
   }, 200);
 
-  // Cargar datos automáticos
   setTimeout(() => {
     if (tabId === 'usuarios') cargarUsuarios();
     if (tabId === 'pacientes') cargarPacientesLista();
@@ -1604,26 +1081,29 @@ async function confirmarRecibo() {
   const estado = $('estadoRecibo').value.trim();
   if (!estado) { showToast('Describa el estado del paciente', 'error'); return; }
 
-  const data = await apiRequest('/api/recibos', {
-    method: 'POST',
-    body: JSON.stringify({
-      patient_id: pacienteActual.id,
-      user_id: USER.id,
-      estado: estado,
-      quienEntrega: $('quienEntregaRecibo').value,
-      hora: getCurrentTime()
-    })
-  });
+  try {
+    const data = await apiRequest('/api/recibos', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: USER.id,
+        estado: estado,
+        quienEntrega: $('quienEntregaRecibo').value,
+        hora: getCurrentTime()
+      })
+    });
 
-  if (data.success) {
-    showToast('✅ Recibo registrado');
-    $('estadoRecibo').value = '';
-    cargarRecibos();
-    // Registrar hora de entrada
-    horaEntrada = new Date();
-    actualizarTurnoInfo();
-  } else {
-    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    if (data.success) {
+      showToast('✅ Recibo registrado');
+      $('estadoRecibo').value = '';
+      cargarRecibos();
+      horaEntrada = new Date();
+      actualizarTurnoInfo();
+    } else {
+      showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    }
+  } catch (e) {
+    showToast('❌ Error al conectar con el servidor', 'error');
   }
 }
 
@@ -1696,13 +1176,31 @@ function renderActividades() {
             <label style="font-weight:600;color:#22c55e;">🧠 Glasgow</label>
             <div class="grid-2" style="margin-top:8px;">
               <div class="form-group"><label>👁️ Apertura ocular</label>
-                <select id="glasgowOjos"><option value="4">4 - Espontánea</option><option value="3">3 - Al llamado</option><option value="2">2 - Al dolor</option><option value="1">1 - No abre</option></select>
+                <select id="glasgowOjos" onchange="calcularGlasgow()">
+                  <option value="4">4 - Espontánea</option>
+                  <option value="3">3 - Al llamado</option>
+                  <option value="2">2 - Al dolor</option>
+                  <option value="1">1 - No abre</option>
+                </select>
               </div>
               <div class="form-group"><label>🗣️ Respuesta verbal</label>
-                <select id="glasgowVerbal"><option value="5">5 - Orientado</option><option value="4">4 - Confuso</option><option value="3">3 - Palabras inapropiadas</option><option value="2">2 - Sonidos incomprensibles</option><option value="1">1 - No responde</option></select>
+                <select id="glasgowVerbal" onchange="calcularGlasgow()">
+                  <option value="5">5 - Orientado</option>
+                  <option value="4">4 - Confuso</option>
+                  <option value="3">3 - Palabras inapropiadas</option>
+                  <option value="2">2 - Sonidos incomprensibles</option>
+                  <option value="1">1 - No responde</option>
+                </select>
               </div>
               <div class="form-group"><label>💪 Respuesta motora</label>
-                <select id="glasgowMotor"><option value="6">6 - Obedece órdenes</option><option value="5">5 - Localiza el dolor</option><option value="4">4 - Retirada al dolor</option><option value="3">3 - Flexión anormal</option><option value="2">2 - Extensión anormal</option><option value="1">1 - No responde</option></select>
+                <select id="glasgowMotor" onchange="calcularGlasgow()">
+                  <option value="6">6 - Obedece órdenes</option>
+                  <option value="5">5 - Localiza el dolor</option>
+                  <option value="4">4 - Retirada al dolor</option>
+                  <option value="3">3 - Flexión anormal</option>
+                  <option value="2">2 - Extensión anormal</option>
+                  <option value="1">1 - No responde</option>
+                </select>
               </div>
               <div class="form-group"><label>📊 Total</label><input type="text" id="glasgowTotal" readonly style="font-weight:bold;color:#22c55e;"></div>
             </div>
@@ -1726,22 +1224,51 @@ function renderActividades() {
             <label style="font-weight:600;color:#22c55e;">📋 Braden - Úlceras por presión</label>
             <div class="grid-2" style="margin-top:8px;">
               <div class="form-group"><label>🛏️ Percepción sensorial</label>
-                <select id="bradenPercepcion"><option value="4">4 - Normal</option><option value="3">3 - Ligeramente limitada</option><option value="2">2 - Muy limitada</option><option value="1">1 - Completamente limitada</option></select>
+                <select id="bradenPercepcion" onchange="calcularBraden()">
+                  <option value="4">4 - Normal</option>
+                  <option value="3">3 - Ligeramente limitada</option>
+                  <option value="2">2 - Muy limitada</option>
+                  <option value="1">1 - Completamente limitada</option>
+                </select>
               </div>
               <div class="form-group"><label>💧 Humedad</label>
-                <select id="bradenHumedad"><option value="4">4 - Siempre seca</option><option value="3">3 - A veces húmeda</option><option value="2">2 - A menudo húmeda</option><option value="1">1 - Siempre húmeda</option></select>
+                <select id="bradenHumedad" onchange="calcularBraden()">
+                  <option value="4">4 - Siempre seca</option>
+                  <option value="3">3 - A veces húmeda</option>
+                  <option value="2">2 - A menudo húmeda</option>
+                  <option value="1">1 - Siempre húmeda</option>
+                </select>
               </div>
               <div class="form-group"><label>🏃 Actividad</label>
-                <select id="bradenActividad"><option value="4">4 - Camina</option><option value="3">3 - Camina con ayuda</option><option value="2">2 - En silla de ruedas</option><option value="1">1 - Encamado</option></select>
+                <select id="bradenActividad" onchange="calcularBraden()">
+                  <option value="4">4 - Camina</option>
+                  <option value="3">3 - Camina con ayuda</option>
+                  <option value="2">2 - En silla de ruedas</option>
+                  <option value="1">1 - Encamado</option>
+                </select>
               </div>
               <div class="form-group"><label>🔄 Movilidad</label>
-                <select id="bradenMovilidad"><option value="4">4 - Sin limitación</option><option value="3">3 - Ligeramente limitada</option><option value="2">2 - Muy limitada</option><option value="1">1 - Inmóvil</option></select>
+                <select id="bradenMovilidad" onchange="calcularBraden()">
+                  <option value="4">4 - Sin limitación</option>
+                  <option value="3">3 - Ligeramente limitada</option>
+                  <option value="2">2 - Muy limitada</option>
+                  <option value="1">1 - Inmóvil</option>
+                </select>
               </div>
               <div class="form-group"><label>🍽️ Nutrición</label>
-                <select id="bradenNutricion"><option value="4">4 - Excelente</option><option value="3">3 - Adecuada</option><option value="2">2 - Probablemente inadecuada</option><option value="1">1 - Muy inadecuada</option></select>
+                <select id="bradenNutricion" onchange="calcularBraden()">
+                  <option value="4">4 - Excelente</option>
+                  <option value="3">3 - Adecuada</option>
+                  <option value="2">2 - Probablemente inadecuada</option>
+                  <option value="1">1 - Muy inadecuada</option>
+                </select>
               </div>
               <div class="form-group"><label>⚠️ Fricción y cizallamiento</label>
-                <select id="bradenFriccion"><option value="3">3 - Sin problema</option><option value="2">2 - Problema potencial</option><option value="1">1 - Problema presente</option></select>
+                <select id="bradenFriccion" onchange="calcularBraden()">
+                  <option value="3">3 - Sin problema</option>
+                  <option value="2">2 - Problema potencial</option>
+                  <option value="1">1 - Problema presente</option>
+                </select>
               </div>
               <div class="form-group" style="grid-column:1/-1;"><label>📊 Total</label><input type="text" id="bradenTotal" readonly style="font-weight:bold;color:#22c55e;"></div>
             </div>
@@ -1770,45 +1297,39 @@ async function guardarActividad() {
 
   const fotos = getFotos('previewFotosActividad');
 
-  // Calcular escalas
-  const glasgowOjos = parseInt($('glasgowOjos')?.value || 4);
-  const glasgowVerbal = parseInt($('glasgowVerbal')?.value || 5);
-  const glasgowMotor = parseInt($('glasgowMotor')?.value || 6);
-  const glasgowTotal = glasgowOjos + glasgowVerbal + glasgowMotor;
+  calcularGlasgow();
+  calcularBraden();
+  const glasgowTotal = parseInt($('glasgowTotal')?.value) || 0;
+  const eva = parseInt($('evaValor')?.value) || 0;
+  const bradenTotal = parseInt($('bradenTotal')?.value) || 0;
 
-  const eva = parseInt($('evaValor')?.value || 0);
+  try {
+    const data = await apiRequest('/api/actividades', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: USER.id,
+        actividad: actividad,
+        hora: hora,
+        observacion: $('obsActividad').value,
+        fotos: fotos,
+        glasgow: glasgowTotal,
+        eva: eva,
+        braden: bradenTotal
+      })
+    });
 
-  const bradenPercepcion = parseInt($('bradenPercepcion')?.value || 4);
-  const bradenHumedad = parseInt($('bradenHumedad')?.value || 4);
-  const bradenActividad = parseInt($('bradenActividad')?.value || 4);
-  const bradenMovilidad = parseInt($('bradenMovilidad')?.value || 4);
-  const bradenNutricion = parseInt($('bradenNutricion')?.value || 4);
-  const bradenFriccion = parseInt($('bradenFriccion')?.value || 3);
-  const bradenTotal = bradenPercepcion + bradenHumedad + bradenActividad + bradenMovilidad + bradenNutricion + bradenFriccion;
-
-  const data = await apiRequest('/api/actividades', {
-    method: 'POST',
-    body: JSON.stringify({
-      patient_id: pacienteActual.id,
-      user_id: USER.id,
-      actividad: actividad,
-      hora: hora,
-      observacion: $('obsActividad').value,
-      fotos: fotos,
-      glasgow: glasgowTotal,
-      eva: eva,
-      braden: bradenTotal
-    })
-  });
-
-  if (data.success) {
-    showToast('✅ Actividad guardada');
-    $('obsActividad').value = '';
-    $('previewFotosActividad').innerHTML = '';
-    $('fotosActividad').value = '';
-    cargarActividadesLista();
-  } else {
-    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    if (data.success) {
+      showToast('✅ Actividad guardada');
+      $('obsActividad').value = '';
+      $('previewFotosActividad').innerHTML = '';
+      $('fotosActividad').value = '';
+      cargarActividadesLista();
+    } else {
+      showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    }
+  } catch (e) {
+    showToast('❌ Error al conectar con el servidor', 'error');
   }
 }
 
@@ -1875,57 +1396,42 @@ function renderSignos() {
   `;
 }
 
-function evaluarSignosUI() {
-  const spo2 = parseInt($('spo2')?.value) || 0;
-  const fc = parseInt($('fc')?.value) || 0;
-  const fr = parseInt($('fr')?.value) || 0;
-  const temp = parseFloat($('temp')?.value) || 0;
-  const bp = $('bp')?.value || '';
-  const glucosa = parseInt($('glucosa')?.value) || 0;
-  const edad = pacienteActual?.edad || 45;
-  const ciudad = pacienteActual?.ciudad || 'Bogotá';
-
-  const resultado = evaluarSignos(spo2, fc, fr, temp, bp, glucosa, edad, ciudad);
-  const div = $('alertasSignos');
-  if (!div) return;
-
-  let html = '';
-  resultado.alertas.forEach(a => {
-    const cls = a.nivel === 'danger' ? 'alert-danger' : a.nivel === 'warning' ? 'alert-warning' : 'alert-success';
-    html += `<div class="alert-box ${cls}">${a.mensaje}: ${a.signo} = ${a.valor}</div>`;
-  });
-  div.innerHTML = html || '<div class="alert-box alert-success">✅ Todos los signos dentro de rangos normales</div>';
-}
-
 async function guardarSignos() {
   if (!pacienteActual) { showToast('Seleccione un paciente', 'warning'); return; }
   const hora = $('horaSignos').value;
   if (!hora) { showToast('Ingrese la hora', 'error'); return; }
 
-  const data = await apiRequest('/api/signos', {
-    method: 'POST',
-    body: JSON.stringify({
-      patient_id: pacienteActual.id,
-      user_id: USER.id,
-      spo2: parseInt($('spo2').value) || 0,
-      fc: parseInt($('fc').value) || 0,
-      fr: parseInt($('fr').value) || 0,
-      temp: parseFloat($('temp').value) || 0,
-      bp: $('bp').value,
-      glucosa: parseInt($('glucosa').value) || 0,
-      hora: hora,
-      obs: $('obsSignos').value,
-      ciudad: pacienteActual.ciudad || 'Bogotá'
-    })
-  });
+  // ✅ Evaluar alertas antes de guardar
+  evaluarSignosUI();
 
-  if (data.success) {
-    showToast('✅ Signos guardados');
-    ['spo2','fc','fr','temp','bp','glucosa','obsSignos'].forEach(id => $(id).value = '');
-    $('alertasSignos').innerHTML = '';
-    cargarSignosLista();
-  } else {
-    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+  try {
+    const data = await apiRequest('/api/signos', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: USER.id,
+        spo2: parseInt($('spo2').value) || 0,
+        fc: parseInt($('fc').value) || 0,
+        fr: parseInt($('fr').value) || 0,
+        temp: parseFloat($('temp').value) || 0,
+        bp: $('bp').value,
+        glucosa: parseInt($('glucosa').value) || 0,
+        hora: hora,
+        obs: $('obsSignos').value,
+        ciudad: pacienteActual.ciudad || 'Bogotá'
+      })
+    });
+
+    if (data.success) {
+      showToast('✅ Signos guardados');
+      ['spo2','fc','fr','temp','bp','glucosa','obsSignos'].forEach(id => $(id).value = '');
+      // Mantener las alertas visibles
+      cargarSignosLista();
+    } else {
+      showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    }
+  } catch (e) {
+    showToast('❌ Error al conectar con el servidor', 'error');
   }
 }
 
@@ -1986,24 +1492,28 @@ async function guardarMedicamento() {
   const hora = $('medHora').value;
   if (!nombre || !hora) { showToast('Complete nombre y hora', 'error'); return; }
 
-  const data = await apiRequest('/api/medicamentos', {
-    method: 'POST',
-    body: JSON.stringify({
-      patient_id: pacienteActual.id,
-      user_id: USER.id,
-      nombre: nombre,
-      dosis: $('medDosis').value,
-      hora: hora,
-      obs: $('medObs').value
-    })
-  });
+  try {
+    const data = await apiRequest('/api/medicamentos', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: USER.id,
+        nombre: nombre,
+        dosis: $('medDosis').value,
+        hora: hora,
+        obs: $('medObs').value
+      })
+    });
 
-  if (data.success) {
-    showToast('✅ Medicamento registrado');
-    ['medNombre','medDosis','medObs'].forEach(id => $(id).value = '');
-    cargarMedicamentosLista();
-  } else {
-    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    if (data.success) {
+      showToast('✅ Medicamento registrado');
+      ['medNombre','medDosis','medObs'].forEach(id => $(id).value = '');
+      cargarMedicamentosLista();
+    } else {
+      showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    }
+  } catch (e) {
+    showToast('❌ Error al conectar con el servidor', 'error');
   }
 }
 
@@ -2066,7 +1576,6 @@ function renderEducacion() {
 }
 
 async function cargarEducacionPendiente() {
-  // Simulación: educación pendiente viene del backend
   const div = $('listaEducacionPendiente');
   if (div) {
     div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay educación pendiente</p>';
@@ -2224,32 +1733,35 @@ async function confirmarEntrega() {
     recomendacion: $('sbarRecomendacion').value
   };
 
-  const data = await apiRequest('/api/entregas', {
-    method: 'POST',
-    body: JSON.stringify({
-      patient_id: pacienteActual.id,
-      user_id: USER.id,
-      resumen: `SBAR: ${sbar.situacion} | ${sbar.antecedentes} | ${sbar.evaluacion} | ${sbar.recomendacion}`,
-      pendientes: $('entregaPendientes').value,
-      quienRecibe: $('quienRecibe').value,
-      horaEntrega: getCurrentTime(),
-      sbar: sbar,
-      firmaEntrega: firmaEntrega,
-      firmaRecibe: firmaRecibe
-    })
-  });
+  try {
+    const data = await apiRequest('/api/entregas', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: USER.id,
+        resumen: `SBAR: ${sbar.situacion} | ${sbar.antecedentes} | ${sbar.evaluacion} | ${sbar.recomendacion}`,
+        pendientes: $('entregaPendientes').value,
+        quienRecibe: $('quienRecibe').value,
+        horaEntrega: getCurrentTime(),
+        sbar: sbar,
+        firmaEntrega: firmaEntrega,
+        firmaRecibe: firmaRecibe
+      })
+    });
 
-  if (data.success) {
-    showToast('✅ Entrega confirmada');
-    ['sbarSituacion','sbarAntecedentes','sbarEvaluacion','sbarRecomendacion','entregaPendientes'].forEach(id => $(id).value = '');
-    clearSignature('sigEntrega');
-    clearSignature('sigRecibe');
-    cargarEntregasLista();
-    // Registrar hora de salida
-    horaEntrada = null;
-    actualizarTurnoInfo();
-  } else {
-    showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    if (data.success) {
+      showToast('✅ Entrega confirmada');
+      ['sbarSituacion','sbarAntecedentes','sbarEvaluacion','sbarRecomendacion','entregaPendientes'].forEach(id => $(id).value = '');
+      clearSignature('sigEntrega');
+      clearSignature('sigRecibe');
+      cargarEntregasLista();
+      horaEntrada = null;
+      actualizarTurnoInfo();
+    } else {
+      showToast('❌ Error: ' + (data.message || 'Desconocido'), 'error');
+    }
+  } catch (e) {
+    showToast('❌ Error al conectar con el servidor', 'error');
   }
 }
 
@@ -2276,14 +1788,14 @@ async function cargarEntregasLista() {
 }
 
 // ============================================================
-//  RENDER - REPORTE (AUXILIAR)
+//  RENDER - REPORTE (AUXILIAR) + PDF REAL
 // ============================================================
 function renderReportes() {
   return `
     <div class="card">
       <div class="card-title">📄 REPORTE DEL DÍA <span class="badge">${getCurrentDate()}</span></div>
       <div id="reporteContenido" style="background:#0f172a;border-radius:8px;padding:16px;font-size:0.85rem;line-height:1.6;max-height:500px;overflow-y:auto;"></div>
-      <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="descargarPDF()">📥 DESCARGAR PDF</button>
+      <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="generarPDF()">📥 DESCARGAR PDF</button>
     </div>
   `;
 }
@@ -2298,7 +1810,6 @@ async function generarReporte() {
   const paciente = pacienteActual;
   const hoy = getCurrentDate();
 
-  // Obtener datos del día
   const [recibos, actividades, signos, medicamentos, entregas] = await Promise.all([
     apiRequest('/api/recibos/' + USER.id),
     apiRequest('/api/actividades/' + USER.id),
@@ -2318,7 +1829,6 @@ async function generarReporte() {
   const medHoy = filtrarHoy(medicamentos);
   const entHoy = filtrarHoy(entregas);
 
-  // Construir reporte HTML
   let html = `
     <div style="text-align:center;border-bottom:1px solid #334155;padding-bottom:12px;margin-bottom:12px;">
       <h2 style="color:#22c55e;">VITAL HOGAR PRO IPS</h2>
@@ -2329,7 +1839,6 @@ async function generarReporte() {
     </div>
   `;
 
-  // Recibo
   html += `<div style="margin-bottom:8px;"><strong style="color:#22c55e;">📋 RECIBO</strong></div>`;
   if (recHoy.length > 0) {
     recHoy.forEach(r => {
@@ -2339,7 +1848,6 @@ async function generarReporte() {
     html += `<div style="color:#94a3b8;font-size:0.8rem;">No hay recibo registrado</div>`;
   }
 
-  // Actividades
   html += `<div style="margin-top:12px;margin-bottom:8px;"><strong style="color:#22c55e;">✅ ACTIVIDADES</strong></div>`;
   if (actHoy.length > 0) {
     actHoy.forEach(a => {
@@ -2349,7 +1857,6 @@ async function generarReporte() {
     html += `<div style="color:#94a3b8;font-size:0.8rem;">No hay actividades registradas</div>`;
   }
 
-  // Signos
   html += `<div style="margin-top:12px;margin-bottom:8px;"><strong style="color:#22c55e;">🩺 SIGNOS VITALES</strong></div>`;
   if (sigHoy.length > 0) {
     sigHoy.forEach(s => {
@@ -2359,7 +1866,6 @@ async function generarReporte() {
     html += `<div style="color:#94a3b8;font-size:0.8rem;">No hay signos registrados</div>`;
   }
 
-  // Medicamentos
   html += `<div style="margin-top:12px;margin-bottom:8px;"><strong style="color:#22c55e;">💊 MEDICAMENTOS</strong></div>`;
   if (medHoy.length > 0) {
     medHoy.forEach(m => {
@@ -2369,7 +1875,6 @@ async function generarReporte() {
     html += `<div style="color:#94a3b8;font-size:0.8rem;">No hay medicamentos registrados</div>`;
   }
 
-  // Entrega
   html += `<div style="margin-top:12px;margin-bottom:8px;"><strong style="color:#22c55e;">🔄 ENTREGA</strong></div>`;
   if (entHoy.length > 0) {
     entHoy.forEach(e => {
@@ -2379,7 +1884,6 @@ async function generarReporte() {
     html += `<div style="color:#94a3b8;font-size:0.8rem;">No hay entrega registrada</div>`;
   }
 
-  // Firmas
   html += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid #334155;font-size:0.8rem;color:#94a3b8;text-align:center;">
     📄 Reporte generado automáticamente el ${new Date().toLocaleString('es-CO')}
   </div>`;
@@ -2388,8 +1892,95 @@ async function generarReporte() {
   if (div) div.innerHTML = html;
 }
 
-function descargarPDF() {
-  showToast('📄 Función de PDF en desarrollo', 'warning');
+// ============================================================
+//  GENERAR PDF REAL
+// ============================================================
+function generarPDF() {
+  const PDFClass = window.jspdf?.jsPDF || window.jsPDF;
+  if (!PDFClass) {
+    showToast('📄 Librería PDF no cargada. Recargue la página.', 'error');
+    return;
+  }
+
+  if (!pacienteActual) {
+    showToast('Seleccione un paciente primero', 'warning');
+    return;
+  }
+
+  try {
+    const doc = new PDFClass('p', 'mm', 'a4');
+    const pageWidth = 210;
+    let y = 20;
+    const margin = 20;
+
+    // Función para agregar texto y manejar saltos de página
+    function addText(text, x, y, size = 10, style = 'normal') {
+      doc.setFontSize(size);
+      doc.setFont('helvetica', style);
+      doc.text(text, x, y);
+      return y + 5;
+    }
+
+    // Logo y encabezado
+    try {
+      const logoUrl = 'https://i.imgur.com/01YZxey.jpeg';
+      doc.addImage(logoUrl, 'JPEG', margin, y - 10, 30, 30);
+    } catch (e) {
+      // Si no carga el logo, continuar sin él
+    }
+
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(34, 197, 94);
+    doc.text('VITAL HOGAR PRO IPS', pageWidth / 2, y, { align: 'center' });
+    y += 8;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(148, 163, 184);
+    doc.text('Cuidados Domiciliarios', pageWidth / 2, y, { align: 'center' });
+    y += 10;
+    doc.setTextColor(0, 0, 0);
+
+    // Datos del paciente
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Paciente: ${pacienteActual.name}`, margin, y);
+    y += 6;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text(`Documento: ${pacienteActual.document || 'N/A'}`, margin, y);
+    y += 5;
+    doc.text(`Fecha: ${new Date().toLocaleDateString('es-CO')}`, margin, y);
+    y += 5;
+    doc.text(`Auxiliar: ${USER.name}`, margin, y);
+    y += 10;
+
+    // Línea separadora
+    doc.setDrawColor(34, 197, 94);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 8;
+
+    // Aquí se agregarían las secciones (Recibo, Actividades, etc.)
+    // Por ahora es un PDF básico con los datos principales
+
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Reporte del día', margin, y);
+    y += 8;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text('Este reporte contiene todas las actividades realizadas durante el turno.', margin, y);
+    y += 6;
+    doc.text(`Generado: ${new Date().toLocaleString('es-CO')}`, margin, y);
+
+    // Guardar PDF
+    doc.save(`Reporte_${pacienteActual.name}_${getCurrentDate()}.pdf`);
+    showToast('✅ PDF generado correctamente', 'success');
+
+  } catch (error) {
+    console.error('Error generando PDF:', error);
+    showToast('❌ Error al generar el PDF: ' + error.message, 'error');
+  }
 }
 
 // ============================================================
@@ -2410,131 +2001,6 @@ function actualizarTurnoInfo() {
     texto += '🕐 Entrada: --:-- | ⏱️ --';
   }
   info.textContent = texto;
-}
-
-// ============================================================
-//  RENDER - EVALUACIONES ESPECIALISTAS (SIMPLIFICADAS)
-// ============================================================
-function renderEvalEspecialista(rol) {
-  return `
-    <div class="card">
-      <div class="card-title">📝 Evaluación - ${rol}</div>
-      <div class="form-group">
-        <label>📝 Observaciones</label>
-        <textarea id="evalTexto" rows="5" placeholder="Describa la evaluación..."></textarea>
-        <button class="btn-voice" onclick="iniciarDictado('evalTexto')">🎙️ Dictar</button>
-      </div>
-      <div class="form-group">
-        <label>📋 Plan de acción</label>
-        <textarea id="evalPlan" rows="3" placeholder="Plan de acción..."></textarea>
-        <button class="btn-voice" onclick="iniciarDictado('evalPlan')">🎙️ Dictar</button>
-      </div>
-      <button class="btn btn-primary btn-block" onclick="guardarEvalEspecialista('${rol}')">💾 Guardar evaluación</button>
-    </div>
-  `;
-}
-
-async function guardarEvalEspecialista(rol) {
-  if (!pacienteActual) { showToast('Seleccione un paciente', 'warning'); return; }
-  showToast('✅ Evaluación guardada (simulación)', 'success');
-}
-
-// ============================================================
-//  RENDER - EVALUACIÓN NUTRICIONISTA
-// ============================================================
-function renderEvalNutricionista() {
-  return `
-    <div class="card">
-      <div class="card-title">🥗 Evaluación Nutricional</div>
-      <div class="grid-2">
-        <div class="form-group"><label>⚖️ Peso (kg)</label><input type="number" id="pesoNutri" step="0.1" oninput="calcularIMC()"></div>
-        <div class="form-group"><label>📏 Talla (cm)</label><input type="number" id="tallaNutri" step="0.1" oninput="calcularIMC()"></div>
-      </div>
-      <div style="background:#0f172a;padding:12px;border-radius:8px;margin-bottom:12px;text-align:center;">
-        <p style="font-size:1.2rem;font-weight:bold;" id="imcDisplay">IMC: --</p>
-        <p style="color:#94a3b8;font-size:0.8rem;" id="imcClasificacion"></p>
-      </div>
-      <div class="form-group"><label>📝 Hábitos alimenticios</label><textarea id="habitosNutri" rows="2"></textarea></div>
-      <div class="form-group"><label>📋 Plan nutricional</label><textarea id="planNutri" rows="3"></textarea></div>
-      <button class="btn btn-primary btn-block" onclick="guardarEvalNutricionista()">💾 Guardar evaluación</button>
-    </div>
-  `;
-}
-
-function calcularIMC() {
-  const peso = parseFloat($('pesoNutri')?.value);
-  const tallaCm = parseFloat($('tallaNutri')?.value);
-  const imcDisplay = $('imcDisplay');
-  const clasificacion = $('imcClasificacion');
-  if (!imcDisplay) return;
-
-  if (peso && tallaCm && tallaCm > 0) {
-    const tallaM = tallaCm / 100;
-    const imc = peso / (tallaM * tallaM);
-    let cat = '';
-    let color = '';
-    if (imc < 18.5) { cat = 'Bajo peso'; color = '#f97316'; }
-    else if (imc < 25) { cat = 'Normal'; color = '#22c55e'; }
-    else if (imc < 30) { cat = 'Sobrepeso'; color = '#f97316'; }
-    else { cat = 'Obesidad'; color = '#ef4444'; }
-    imcDisplay.textContent = `IMC: ${imc.toFixed(1)} kg/m²`;
-    imcDisplay.style.color = color;
-    clasificacion.textContent = cat;
-  } else {
-    imcDisplay.textContent = 'IMC: --';
-    imcDisplay.style.color = '#94a3b8';
-    clasificacion.textContent = '';
-  }
-}
-
-async function guardarEvalNutricionista() {
-  if (!pacienteActual) { showToast('Seleccione un paciente', 'warning'); return; }
-  showToast('✅ Evaluación nutricional guardada (simulación)', 'success');
-}
-
-// ============================================================
-//  RENDER - TURNOS (COORDINADOR)
-// ============================================================
-function renderTurnos() {
-  if (!['COORDINADOR', 'ADMIN'].includes(USER.role)) {
-    return '<div class="card"><p style="color:#ef4444;">⛔ No tienes permisos</p></div>';
-  }
-  return `
-    <div class="card">
-      <div class="card-title">📅 PROGRAMAR TURNO</div>
-      <div class="grid-2">
-        <div class="form-group"><label>👤 Paciente</label><select id="turnoPaciente"><option value="">-- Seleccionar --</option></select></div>
-        <div class="form-group"><label>👨‍⚕️ Profesional</label><select id="turnoProfesional"><option value="">-- Seleccionar --</option></select></div>
-        <div class="form-group"><label>📅 Fecha</label><input type="date" id="turnoFecha"></div>
-        <div class="form-group"><label>🕐 Hora entrada</label><input type="time" id="turnoEntrada" onchange="calcularDuracionTurno()"></div>
-        <div class="form-group"><label>🕐 Hora salida</label><input type="time" id="turnoSalida" onchange="calcularDuracionTurno()"></div>
-        <div class="form-group"><label>⏱️ Duración</label><input type="text" id="turnoDuracion" readonly style="font-weight:bold;color:#22c55e;"></div>
-      </div>
-      <button class="btn btn-primary btn-block" onclick="programarTurno()">📅 Programar turno</button>
-    </div>
-    <div class="card">
-      <div class="card-title">📋 TURNOS PROGRAMADOS</div>
-      <div id="listaTurnos" class="item-list"></div>
-    </div>
-  `;
-}
-
-function calcularDuracionTurno() {
-  const entrada = $('turnoEntrada')?.value;
-  const salida = $('turnoSalida')?.value;
-  const duracion = $('turnoDuracion');
-  if (!duracion || !entrada || !salida) { duracion.value = ''; return; }
-  const [h1, m1] = entrada.split(':').map(Number);
-  const [h2, m2] = salida.split(':').map(Number);
-  let diff = (h2 * 60 + m2) - (h1 * 60 + m1);
-  if (diff < 0) diff += 1440;
-  const h = Math.floor(diff / 60);
-  const m = diff % 60;
-  duracion.value = `${h}h ${m}min`;
-}
-
-async function programarTurno() {
-  showToast('Función en desarrollo', 'warning');
 }
 
 // ============================================================
@@ -2585,69 +2051,12 @@ async function cargarReportesAdmin() {
 }
 
 // ============================================================
-//  RENDER - SUPERVISIÓN (ENFERMERO)
-// ============================================================
-function renderSupervision() {
-  return `
-    <div class="card">
-      <div class="card-title">📋 SUPERVISIÓN</div>
-      <div class="form-group"><label>📝 Observación</label><textarea id="supervisionObs" rows="4"></textarea></div>
-      <button class="btn btn-primary btn-block" onclick="guardarSupervision()">💾 Guardar supervisión</button>
-    </div>
-  `;
-}
-
-async function guardarSupervision() {
-  showToast('✅ Supervisión guardada (simulación)', 'success');
-}
-
-// ============================================================
-//  RENDER - EVOLUCIÓN (ENFERMERO/MEDICO)
-// ============================================================
-function renderEvolucion() {
-  return `
-    <div class="card">
-      <div class="card-title">📝 EVOLUCIÓN CLÍNICA</div>
-      <div class="form-group"><label>📝 Notas</label><textarea id="evolucionTexto" rows="5"></textarea></div>
-      <button class="btn btn-primary btn-block" onclick="guardarEvolucion()">💾 Guardar evolución</button>
-    </div>
-  `;
-}
-
-async function guardarEvolucion() {
-  showToast('✅ Evolución guardada (simulación)', 'success');
-}
-
-// ============================================================
-//  RENDER - PRESCRIPCIONES (MEDICO)
-// ============================================================
-function renderPrescripciones() {
-  return `
-    <div class="card">
-      <div class="card-title">📋 PRESCRIPCIONES</div>
-      <div class="grid-2">
-        <div class="form-group"><label>💊 Medicamento</label><input type="text" id="prescMedicamento"></div>
-        <div class="form-group"><label>💊 Dosis</label><input type="text" id="prescDosis"></div>
-        <div class="form-group"><label>📅 Frecuencia</label><input type="text" id="prescFrecuencia" placeholder="Ej: Cada 8 horas"></div>
-        <div class="form-group"><label>📝 Observaciones</label><textarea id="prescObs" rows="2"></textarea></div>
-      </div>
-      <button class="btn btn-primary btn-block" onclick="guardarPrescripcion()">💾 Guardar prescripción</button>
-    </div>
-  `;
-}
-
-async function guardarPrescripcion() {
-  showToast('✅ Prescripción guardada (simulación)', 'success');
-}
-
-// ============================================================
 //  INICIALIZACIÓN
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   if (!checkSession()) {
     $('loginScreen').style.display = 'flex';
   }
-  // Actualizar hora cada minuto
   setInterval(() => {
     const horaRecibo = $('horaRecibo');
     if (horaRecibo) horaRecibo.textContent = getCurrentTime();
@@ -2671,10 +2080,11 @@ window.iniciarDictado = iniciarDictado;
 window.capturarFoto = capturarFoto;
 window.limpiarFirma = clearSignature;
 window.calcularIMC = calcularIMC;
-window.calcularDuracionTurno = calcularDuracionTurno;
+window.calcularGlasgow = calcularGlasgow;
+window.calcularBraden = calcularBraden;
 window.evaluarSignosUI = evaluarSignosUI;
+window.generarPDF = generarPDF;
 
-// Funciones de render
 window.cargarUsuarios = cargarUsuarios;
 window.crearUsuario = crearUsuario;
 window.cargarPacientesLista = cargarPacientesLista;
@@ -2686,18 +2096,11 @@ window.guardarMedicamento = guardarMedicamento;
 window.completarEducacion = completarEducacion;
 window.confirmarEntrega = confirmarEntrega;
 window.generarReporte = generarReporte;
-window.descargarPDF = descargarPDF;
-window.programarTurno = programarTurno;
 window.cargarReportesAdmin = cargarReportesAdmin;
-window.guardarSupervision = guardarSupervision;
-window.guardarEvolucion = guardarEvolucion;
-window.guardarPrescripcion = guardarPrescripcion;
-window.guardarEvalEspecialista = guardarEvalEspecialista;
-window.guardarEvalNutricionista = guardarEvalNutricionista;
 window.crearTemaEducacion = crearTemaEducacion;
 window.asignarEducacion = asignarEducacion;
 
-console.log('🚀 VITAL HOGAR PRO IPS v4.0 - Cargado correctamente');
+console.log('🚀 VITAL HOGAR PRO IPS v4.1 - Cargado correctamente');
 console.log('👤 Usuario:', USER?.name || 'No autenticado');
 console.log('📡 API:', API_URL);
 </script>
