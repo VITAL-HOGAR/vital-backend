@@ -743,20 +743,20 @@ function evaluarSignos(spo2, fc, fr, temp, ta, glucosa, edad, ciudad) {
     }
   }
 
-  // Glucosa
-  if (glucosa > 0) {
-    if (glucosa < rangos.glucosa.min - 20 || glucosa > rangos.glucosa.max + 40) {
-      alertas.push({ signo: 'Glucosa', valor: glucosa + ' mg/dL', mensaje: '🚨 CRÍTICO', nivel: 'danger' });
-      nivel = 'danger';
-    } else if (glucosa < rangos.glucosa.min || glucosa > rangos.glucosa.max) {
-      alertas.push({ signo: 'Glucosa', valor: glucosa + ' mg/dL', mensaje: '⚠️ Anormal', nivel: 'warning' });
-      if (nivel !== 'danger') nivel = 'warning';
+ // Glucosa - RANGOS CORREGIDOS
+if (glucosa > 0) {
+    if (glucosa < 50 || glucosa > 180) {
+        alertas.push({ signo: 'Glucosa', valor: glucosa + ' mg/dL', mensaje: '🚨 CRÍTICO', nivel: 'danger' });
+        nivel = 'danger';
+    } else if (glucosa < 70 || glucosa > 140) {
+        alertas.push({ signo: 'Glucosa', valor: glucosa + ' mg/dL', mensaje: '⚠️ Anormal', nivel: 'warning' });
+        if (nivel !== 'danger') nivel = 'warning';
+    } else if (glucosa >= 70 && glucosa <= 100) {
+        alertas.push({ signo: 'Glucosa', valor: glucosa + ' mg/dL', mensaje: '✅ Normal', nivel: 'success' });
     } else {
-      alertas.push({ signo: 'Glucosa', valor: glucosa + ' mg/dL', mensaje: '✅ Normal', nivel: 'success' });
+        alertas.push({ signo: 'Glucosa', valor: glucosa + ' mg/dL', mensaje: '🟡 Leve', nivel: 'warning' });
+        if (nivel !== 'danger') nivel = 'warning';
     }
-  }
-
-  return { alertas, nivel };
 }
 
 function evaluarSignosUI() {
