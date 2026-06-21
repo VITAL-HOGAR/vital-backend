@@ -24,7 +24,7 @@ const supabase = createClient(
 
 // ==================== MIDDLEWARES ====================
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));  // ← AGREGADO
+app.use(express.json({ limit: '10mb' }));  // ← CRÍTICO PARA EL LOGIN
 app.use(express.static('public'));
 
 // ==================== CREAR ADMIN POR DEFECTO ====================
