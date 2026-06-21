@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>Vital Hogar Pro IPS v4.3</title>
+<title>Vital Hogar Pro IPS v4.4</title>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -538,7 +538,7 @@ function getFotos(previewId) {
 }
 
 // ============================================================
-//  ESCALAS
+//  ESCALAS - GLASGOW Y BRADEN CON ETIQUETAS
 // ============================================================
 function calcularGlasgow() {
   const ojos = parseInt($('glasgowOjos')?.value) || 0;
@@ -1087,7 +1087,7 @@ async function cargarRecibos() {
 }
 
 // ============================================================
-//  ACTIVIDADES
+//  ACTIVIDADES CON ETIQUETAS EN GLASGOW Y BRADEN
 // ============================================================
 function renderActividades() {
   return `
@@ -1119,9 +1119,15 @@ function renderActividades() {
           <div style="margin-bottom:12px;padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;">
             <label style="font-weight:600;color:#22c55e;">🧠 Glasgow</label>
             <div class="grid-2">
-              <div class="form-group"><label>👁️ Ojos</label><select id="glasgowOjos" onchange="calcularGlasgow()"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
-              <div class="form-group"><label>🗣️ Verbal</label><select id="glasgowVerbal" onchange="calcularGlasgow()"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
-              <div class="form-group"><label>💪 Motor</label><select id="glasgowMotor" onchange="calcularGlasgow()"><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+              <div class="form-group"><label>👁️ Ojos</label><select id="glasgowOjos" onchange="calcularGlasgow()">
+                <option value="4">4 - Espontánea</option><option value="3">3 - Al llamado</option><option value="2">2 - Al dolor</option><option value="1">1 - No abre</option>
+              </select></div>
+              <div class="form-group"><label>🗣️ Verbal</label><select id="glasgowVerbal" onchange="calcularGlasgow()">
+                <option value="5">5 - Orientado</option><option value="4">4 - Confuso</option><option value="3">3 - Palabras inapropiadas</option><option value="2">2 - Sonidos incomprensibles</option><option value="1">1 - No responde</option>
+              </select></div>
+              <div class="form-group"><label>💪 Motor</label><select id="glasgowMotor" onchange="calcularGlasgow()">
+                <option value="6">6 - Obedece órdenes</option><option value="5">5 - Localiza el dolor</option><option value="4">4 - Retirada al dolor</option><option value="3">3 - Flexión anormal</option><option value="2">2 - Extensión anormal</option><option value="1">1 - No responde</option>
+              </select></div>
               <div class="form-group"><label>📊 Total</label><input type="text" id="glasgowTotal" readonly></div>
             </div>
           </div>
@@ -1133,12 +1139,24 @@ function renderActividades() {
           <div style="padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;">
             <label style="font-weight:600;color:#22c55e;">📋 Braden</label>
             <div class="grid-2">
-              <div class="form-group"><label>Percepción</label><select id="bradenPercepcion" onchange="calcularBraden()"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
-              <div class="form-group"><label>Humedad</label><select id="bradenHumedad" onchange="calcularBraden()"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
-              <div class="form-group"><label>Actividad</label><select id="bradenActividad" onchange="calcularBraden()"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
-              <div class="form-group"><label>Movilidad</label><select id="bradenMovilidad" onchange="calcularBraden()"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
-              <div class="form-group"><label>Nutrición</label><select id="bradenNutricion" onchange="calcularBraden()"><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
-              <div class="form-group"><label>Fricción</label><select id="bradenFriccion" onchange="calcularBraden()"><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+              <div class="form-group"><label>Percepción</label><select id="bradenPercepcion" onchange="calcularBraden()">
+                <option value="4">4 - Normal</option><option value="3">3 - Ligeramente limitada</option><option value="2">2 - Muy limitada</option><option value="1">1 - Completamente limitada</option>
+              </select></div>
+              <div class="form-group"><label>Humedad</label><select id="bradenHumedad" onchange="calcularBraden()">
+                <option value="4">4 - Siempre seca</option><option value="3">3 - A veces húmeda</option><option value="2">2 - A menudo húmeda</option><option value="1">1 - Siempre húmeda</option>
+              </select></div>
+              <div class="form-group"><label>Actividad</label><select id="bradenActividad" onchange="calcularBraden()">
+                <option value="4">4 - Camina</option><option value="3">3 - Camina con ayuda</option><option value="2">2 - En silla de ruedas</option><option value="1">1 - Encamado</option>
+              </select></div>
+              <div class="form-group"><label>Movilidad</label><select id="bradenMovilidad" onchange="calcularBraden()">
+                <option value="4">4 - Sin limitación</option><option value="3">3 - Ligeramente limitada</option><option value="2">2 - Muy limitada</option><option value="1">1 - Inmóvil</option>
+              </select></div>
+              <div class="form-group"><label>Nutrición</label><select id="bradenNutricion" onchange="calcularBraden()">
+                <option value="4">4 - Excelente</option><option value="3">3 - Adecuada</option><option value="2">2 - Probablemente inadecuada</option><option value="1">1 - Muy inadecuada</option>
+              </select></div>
+              <div class="form-group"><label>Fricción</label><select id="bradenFriccion" onchange="calcularBraden()">
+                <option value="3">3 - Sin problema</option><option value="2">2 - Problema potencial</option><option value="1">1 - Problema presente</option>
+              </select></div>
               <div class="form-group" style="grid-column:1/-1;"><label>Total</label><input type="text" id="bradenTotal" readonly></div>
             </div>
           </div>
@@ -1220,7 +1238,7 @@ async function cargarActividadesLista() {
 }
 
 // ============================================================
-//  SIGNOS
+//  SIGNOS CON ALERTAS EN HISTORIAL
 // ============================================================
 function renderSignos() {
   const ciudad = pacienteActual?.ciudad || 'Bogotá';
@@ -1298,13 +1316,26 @@ async function cargarSignosLista() {
       div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay signos hoy</p>';
       return;
     }
-    div.innerHTML = items.slice(-5).reverse().map(s => `
-      <div class="item">
-        <div class="title">🕐 ${s.hora || formatTime(s.created_at)}</div>
-        <div class="meta">SpO2: ${s.spo2 || '-'}% | FC: ${s.fc || '-'} | FR: ${s.fr || '-'}</div>
-        <div class="meta">Temp: ${s.temp || '-'}°C | TA: ${s.bp || '-'} | Glucosa: ${s.glucosa || '-'}</div>
-      </div>
-    `).join('');
+    div.innerHTML = items.slice(-5).reverse().map(s => {
+      const edad = pacienteActual?.edad || 45;
+      const ciudad = pacienteActual?.ciudad || 'Bogotá';
+      const resultado = evaluarSignos(s.spo2 || 0, s.fc || 0, s.fr || 0, s.temp || 0, s.bp || '', s.glucosa || 0, edad, ciudad);
+      const getIcon = (signo) => {
+        const alerta = resultado.alertas.find(a => a.signo === signo);
+        if (!alerta) return '⚪';
+        if (alerta.nivel === 'danger') return '🔴';
+        if (alerta.nivel === 'warning') return '🟡';
+        return '🟢';
+      };
+      return `
+        <div class="item">
+          <div class="title">🕐 ${s.hora || formatTime(s.created_at)}</div>
+          <div class="meta">SpO2: ${s.spo2 || '-'}% ${getIcon('SpO2')} | FC: ${s.fc || '-'} ${getIcon('FC')} | FR: ${s.fr || '-'} ${getIcon('FR')}</div>
+          <div class="meta">Temp: ${s.temp || '-'}°C ${getIcon('Temp')} | TA: ${s.bp || '-'} ${getIcon('TA')} | Glucosa: ${s.glucosa || '-'} ${getIcon('Glucosa')}</div>
+          ${s.obs ? `<div class="meta">📝 ${s.obs}</div>` : ''}
+        </div>
+      `;
+    }).join('');
   } else {
     div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay signos registrados</p>';
   }
@@ -1587,6 +1618,9 @@ async function generarReporte() {
   if (div) div.innerHTML = html;
 }
 
+// ============================================================
+//  PDF CORREGIDO - SIN CARACTERES RAROS Y CON FIRMAS
+// ============================================================
 async function generarPDF() {
   const PDFClass = window.jspdf?.jsPDF || window.jsPDF;
   if (!PDFClass) { showToast('📄 PDF no disponible', 'error'); return; }
@@ -1626,25 +1660,42 @@ async function generarPDF() {
     y = addText(`Fecha: ${new Date().toLocaleDateString('es-CO')}`, margin, y);
     y = addText(`Auxiliar: ${USER.name}`, margin, y);
     y += 4;
-    y = addText('📋 RECIBO', margin, y, 11, 'bold');
+    y = addText('RECIBO', margin, y, 11, 'bold');
     if (recHoy.length > 0) recHoy.forEach(r => y = addText(`🕐 ${r.hora || formatTime(r.created_at)} | ${r.estado || 'Sin estado'}`, margin + 4, y, 9));
     else y = addText('No hay recibo', margin + 4, y, 9);
     y += 2;
-    y = addText('✅ ACTIVIDADES', margin, y, 11, 'bold');
+    y = addText('ACTIVIDADES', margin, y, 11, 'bold');
     if (actHoy.length > 0) actHoy.forEach(a => y = addText(`🕐 ${a.hora || formatTime(a.created_at)} | ${a.actividad}`, margin + 4, y, 9));
     else y = addText('No hay actividades', margin + 4, y, 9);
     y += 2;
-    y = addText('🩺 SIGNOS', margin, y, 11, 'bold');
+    y = addText('SIGNOS', margin, y, 11, 'bold');
     if (sigHoy.length > 0) sigHoy.forEach(s => y = addText(`🕐 ${s.hora || formatTime(s.created_at)} | SpO2: ${s.spo2 || '-'}% | FC: ${s.fc || '-'}`, margin + 4, y, 9));
     else y = addText('No hay signos', margin + 4, y, 9);
     y += 2;
-    y = addText('💊 MEDICAMENTOS', margin, y, 11, 'bold');
+    y = addText('MEDICAMENTOS', margin, y, 11, 'bold');
     if (medHoy.length > 0) medHoy.forEach(m => y = addText(`🕐 ${m.hora || formatTime(m.created_at)} | ${m.nombre}`, margin + 4, y, 9));
     else y = addText('No hay medicamentos', margin + 4, y, 9);
     y += 2;
-    y = addText('🔄 ENTREGA', margin, y, 11, 'bold');
-    if (entHoy.length > 0) entHoy.forEach(e => y = addText(`🕐 ${e.horaEntrega || formatTime(e.created_at)} | ${e.resumen ? e.resumen.substring(0,60) : 'Sin resumen'}`, margin + 4, y, 9));
-    else y = addText('No hay entrega', margin + 4, y, 9);
+    y = addText('ENTREGA', margin, y, 11, 'bold');
+    if (entHoy.length > 0) {
+      entHoy.forEach(e => {
+        y = addText(`🕐 ${e.horaEntrega || formatTime(e.created_at)}`, margin + 4, y, 9);
+        if (e.resumen) y = addText(`Resumen: ${e.resumen.substring(0,80)}`, margin + 8, y, 8);
+        // FIRMAS EN EL PDF
+        if (e.firma_entrega) {
+          try {
+            doc.addImage(e.firma_entrega, 'PNG', margin + 8, y + 2, 60, 20);
+            y = y + 22;
+          } catch (err) {
+            y = addText('Firma entregada (error al cargar)', margin + 8, y, 8);
+          }
+        } else {
+          y = addText('Firma no registrada', margin + 8, y, 8);
+        }
+      });
+    } else {
+      y = addText('No hay entrega', margin + 4, y, 9);
+    }
     y += 4;
     doc.save(`Reporte_${pacienteActual.name}_${getCurrentDate()}.pdf`);
     showToast('✅ PDF generado', 'success');
@@ -1751,7 +1802,7 @@ window.generarPDF = generarPDF;
 window.confirmarRecibo = confirmarRecibo;
 window.confirmarEntrega = confirmarEntrega;
 
-console.log('🚀 VITAL HOGAR PRO IPS v4.3 - COMPLETO');
+console.log('🚀 VITAL HOGAR PRO IPS v4.4 - COMPLETO CORREGIDO');
 console.log('👤 Usuario:', USER?.name || 'No autenticado');
 console.log('📡 API:', API_URL);
 </script>
