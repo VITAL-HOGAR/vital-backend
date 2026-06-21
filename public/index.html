@@ -1883,94 +1883,207 @@ async function generarReporte() {
 }
 
 // ============================================================
-//  GENERAR PDF REAL
+//  GENERAR PDF COMPLETO
 // ============================================================
-function generarPDF() {
-  const PDFClass = window.jspdf?.jsPDF || window.jsPDF;
-  if (!PDFClass) {
-    showToast('📄 Librería PDF no cargada. Recargue la página.', 'error');
-    return;
-  }
-
-  if (!pacienteActual) {
-    showToast('Seleccione un paciente primero', 'warning');
-    return;
-  }
-
-  try {
-    const doc = new PDFClass('p', 'mm', 'a4');
-    const pageWidth = 210;
-    let y = 20;
-    const margin = 20;
-
-    // Función para agregar texto y manejar saltos de página
-    function addText(text, x, y, size = 10, style = 'normal') {
-      doc.setFontSize(size);
-      doc.setFont('helvetica', style);
-      doc.text(text, x, y);
-      return y + 5;
+async function generarPDF() {
+    const PDFClass = window.jspdf?.jsPDF || window.jsPDF;
+    if (!PDFClass) {
+        showToast('📄 Librería PDF no cargada. Recargue la página.', 'error');
+        return;
     }
 
-    // Logo y encabezado
+    if (!pacienteActual) {
+        showToast('Seleccione un paciente primero', 'warning');
+        return;
+    }
+
     try {
-      const logoUrl = 'https://i.imgur.com/01YZxey.jpeg';
-      doc.addImage(logoUrl, 'JPEG', margin, y - 10, 30, 30);
-    } catch (e) {
-      // Si no carga el logo, continuar sin él
+        // Obtener datos del día
+        const hoy = getCurrentDate();
+        const [recibos, actividades, signos, medicamentos, entregas] = await Promise.all([
+            apiRequest('/api/recibos/' + USER.id),
+            apiRequest('/api/actividades/' + USER.id),
+            apiRequest('/api/signos/' + USER.id),
+            apiRequest('/api/medicamentos/' + USER.id),
+            apiRequest('/api/entregas/' + USER.id)
+        ]);
+
+        const filtrarHoy = (items) => {
+            if (!items || !items.data) return [];
+            return items.data.filter(i => i.created_at && new Date(i.created_at).toISOString().split('T')[0] === hoy);
+        };
+
+        const recHoy = filtrarHoy(recibos);
+        const actHoy = filtrarHoy(actividades);
+        const sigHoy = filtrarHoy(signos);
+        const medHoy = filtrarHoy(medicamentos);
+        const entHoy = filtrarHoy(entregas);
+
+        const doc = new PDFClass('p', 'mm', 'a4');
+        const pageWidth = 210;
+        const margin = 20;
+        let y = 20;
+
+        function addText(text, x, y, size = 10, style = 'normal', color = [0, 0, 0]) {
+            doc.setFontSize(size);
+            doc.setFont('helvetica', style);
+            doc.setTextColor(color[0], color[1], color[2]);
+            const lines = doc.splitTextToSize(text, pageWidth - margin * 2);
+            doc.text(lines, x, y);
+            return y + (lines.length * 5) + 2;
+        }
+
+        function addLine(y) {
+            doc.setDrawColor(34, 197, 94);
+            doc.line(margin, y, pageWidth - margin, y);
+            return y + 4;
+        }
+
+        // ============================================================
+        //  ENCABEZADO
+        // ============================================================
+
+        // Logo
+        try {
+            const logoUrl = 'https://i.imgur.com/01YZxey.jpeg';
+            doc.addImage(logoUrl, 'JPEG', margin, y - 10, 25, 25);
+        } catch (e) { /* Logo opcional */ }
+
+        // Título
+        y = addText('VITAL HOGAR PRO IPS', pageWidth / 2, y, 16, 'bold', [34, 197, 94], 'center');
+        y = addText('Cuidados Domiciliarios', pageWidth / 2, y, 10, 'normal', [148, 163, 184], 'center');
+        y += 4;
+
+        // Datos del paciente
+        y = addText(`Paciente: ${pacienteActual.name}`, margin, y, 12, 'bold');
+        y = addText(`Documento: ${pacienteActual.document || 'N/A'}`, margin, y, 10);
+        y = addText(`Fecha: ${new Date().toLocaleDateString('es-CO')}`, margin, y, 10);
+        y = addText(`Auxiliar: ${USER.name}`, margin, y, 10);
+        y = addLine(y);
+        y += 2;
+
+        // ============================================================
+        //  RECIBO
+        // ============================================================
+        y = addText('📋 RECIBO', margin, y, 11, 'bold', [34, 197, 94]);
+        if (recHoy.length > 0) {
+            recHoy.forEach(r => {
+                y = addText(`🕐 ${r.hora || formatTime(r.created_at)} | ${r.estado || 'Sin estado'}`, margin + 4, y, 9);
+            });
+        } else {
+            y = addText('No hay recibo registrado', margin + 4, y, 9, 'normal', [148, 163, 184]);
+        }
+        y += 2;
+
+        // ============================================================
+        //  ACTIVIDADES
+        // ============================================================
+        y = addText('✅ ACTIVIDADES', margin, y, 11, 'bold', [34, 197, 94]);
+        if (actHoy.length > 0) {
+            actHoy.forEach(a => {
+                let text = `🕐 ${a.hora || formatTime(a.created_at)} | ${a.actividad}`;
+                if (a.observacion) text += ` - ${a.observacion}`;
+                if (a.glasgow) text += ` | Glasgow: ${a.glasgow}`;
+                if (a.eva !== undefined) text += ` | EVA: ${a.eva}`;
+                if (a.braden) text += ` | Braden: ${a.braden}`;
+                y = addText(text, margin + 4, y, 9);
+                if (a.fotos && a.fotos.length > 0) {
+                    y = addText(`  📸 ${a.fotos.length} foto(s)`, margin + 8, y, 8, 'normal', [148, 163, 184]);
+                }
+            });
+        } else {
+            y = addText('No hay actividades registradas', margin + 4, y, 9, 'normal', [148, 163, 184]);
+        }
+        y += 2;
+
+        // ============================================================
+        //  SIGNOS VITALES
+        // ============================================================
+        y = addText('🩺 SIGNOS VITALES', margin, y, 11, 'bold', [34, 197, 94]);
+        if (sigHoy.length > 0) {
+            sigHoy.forEach(s => {
+                let text = `🕐 ${s.hora || formatTime(s.created_at)} | SpO2: ${s.spo2 || '-'}% | FC: ${s.fc || '-'} | FR: ${s.fr || '-'}`;
+                y = addText(text, margin + 4, y, 9);
+                text = `   Temp: ${s.temp || '-'}°C | TA: ${s.bp || '-'} | Glucosa: ${s.glucosa || '-'} mg/dL`;
+                y = addText(text, margin + 4, y, 9);
+                if (s.obs) {
+                    y = addText(`   Obs: ${s.obs}`, margin + 4, y, 8, 'normal', [148, 163, 184]);
+                }
+            });
+        } else {
+            y = addText('No hay signos registrados', margin + 4, y, 9, 'normal', [148, 163, 184]);
+        }
+        y += 2;
+
+        // ============================================================
+        //  MEDICAMENTOS
+        // ============================================================
+        y = addText('💊 MEDICAMENTOS', margin, y, 11, 'bold', [34, 197, 94]);
+        if (medHoy.length > 0) {
+            medHoy.forEach(m => {
+                let text = `🕐 ${m.hora || formatTime(m.created_at)} | ${m.nombre} ${m.dosis || ''}`;
+                if (m.obs) text += ` - ${m.obs}`;
+                y = addText(text, margin + 4, y, 9);
+            });
+        } else {
+            y = addText('No hay medicamentos registrados', margin + 4, y, 9, 'normal', [148, 163, 184]);
+        }
+        y += 2;
+
+        // ============================================================
+        //  EDUCACIÓN
+        // ============================================================
+        // (Sección opcional - se puede agregar cuando se implemente educación)
+        y = addText('📚 EDUCACIÓN', margin, y, 11, 'bold', [34, 197, 94]);
+        y = addText('No hay educación registrada', margin + 4, y, 9, 'normal', [148, 163, 184]);
+        y += 2;
+
+        // ============================================================
+        //  ENTREGA
+        // ============================================================
+        y = addText('🔄 ENTREGA', margin, y, 11, 'bold', [34, 197, 94]);
+        if (entHoy.length > 0) {
+            entHoy.forEach(e => {
+                y = addText(`🕐 ${e.horaEntrega || formatTime(e.created_at)}`, margin + 4, y, 9);
+                if (e.sbar) {
+                    const sbar = typeof e.sbar === 'string' ? JSON.parse(e.sbar) : e.sbar;
+                    if (sbar.situacion) y = addText(`   S: ${sbar.situacion}`, margin + 8, y, 8);
+                    if (sbar.antecedentes) y = addText(`   A: ${sbar.antecedentes}`, margin + 8, y, 8);
+                    if (sbar.evaluacion) y = addText(`   B: ${sbar.evaluacion}`, margin + 8, y, 8);
+                    if (sbar.recomendacion) y = addText(`   R: ${sbar.recomendacion}`, margin + 8, y, 8);
+                }
+                if (e.pendientes) {
+                    y = addText(`   ⚠️ Pendientes: ${e.pendientes}`, margin + 4, y, 8, 'normal', [249, 115, 22]);
+                }
+                if (e.firmaEntrega) {
+                    y = addText('   ✍️ Firma Auxiliar: [Firmada]', margin + 4, y, 8, 'normal', [34, 197, 94]);
+                }
+                if (e.firmaRecibe) {
+                    y = addText('   ✍️ Firma Familiar: [Firmada]', margin + 4, y, 8, 'normal', [34, 197, 94]);
+                }
+            });
+        } else {
+            y = addText('No hay entrega registrada', margin + 4, y, 9, 'normal', [148, 163, 184]);
+        }
+
+        // ============================================================
+        //  PIE DE PÁGINA
+        // ============================================================
+        y += 4;
+        y = addLine(y);
+        y = addText(`📄 Reporte generado el ${new Date().toLocaleString('es-CO')}`, margin, y, 8, 'normal', [148, 163, 184]);
+        y = addText(`© Vital Hogar Pro IPS - Cuidados Domiciliarios`, margin, y + 2, 8, 'normal', [148, 163, 184]);
+
+        // ============================================================
+        //  GUARDAR PDF
+        // ============================================================
+        doc.save(`Reporte_${pacienteActual.name}_${getCurrentDate()}.pdf`);
+        showToast('✅ PDF generado correctamente', 'success');
+
+    } catch (error) {
+        console.error('❌ Error generando PDF:', error);
+        showToast('❌ Error al generar el PDF: ' + error.message, 'error');
     }
-
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(34, 197, 94);
-    doc.text('VITAL HOGAR PRO IPS', pageWidth / 2, y, { align: 'center' });
-    y += 8;
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(148, 163, 184);
-    doc.text('Cuidados Domiciliarios', pageWidth / 2, y, { align: 'center' });
-    y += 10;
-    doc.setTextColor(0, 0, 0);
-
-    // Datos del paciente
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`Paciente: ${pacienteActual.name}`, margin, y);
-    y += 6;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text(`Documento: ${pacienteActual.document || 'N/A'}`, margin, y);
-    y += 5;
-    doc.text(`Fecha: ${new Date().toLocaleDateString('es-CO')}`, margin, y);
-    y += 5;
-    doc.text(`Auxiliar: ${USER.name}`, margin, y);
-    y += 10;
-
-    // Línea separadora
-    doc.setDrawColor(34, 197, 94);
-    doc.line(margin, y, pageWidth - margin, y);
-    y += 8;
-
-    // Aquí se agregarían las secciones (Recibo, Actividades, etc.)
-    // Por ahora es un PDF básico con los datos principales
-
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Reporte del día', margin, y);
-    y += 8;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text('Este reporte contiene todas las actividades realizadas durante el turno.', margin, y);
-    y += 6;
-    doc.text(`Generado: ${new Date().toLocaleString('es-CO')}`, margin, y);
-
-    // Guardar PDF
-    doc.save(`Reporte_${pacienteActual.name}_${getCurrentDate()}.pdf`);
-    showToast('✅ PDF generado correctamente', 'success');
-
-  } catch (error) {
-    console.error('Error generando PDF:', error);
-    showToast('❌ Error al generar el PDF: ' + error.message, 'error');
-  }
 }
 
 // ============================================================
