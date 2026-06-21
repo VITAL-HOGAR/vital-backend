@@ -174,7 +174,7 @@ app.get('/api/medicamentos/:userId', auth.protect, async (req, res) => {
 app.post('/api/recibos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
     try {
         const { patient_id, user_id, estado, quienEntrega, hora } = req.body;
-        console.log('📥 Recibo recibido:', { patient_id, user_id, estado, quienEntrega, hora }); // ← Depuración
+        console.log('📥 Recibo recibido:', { patient_id, user_id, estado, quienEntrega, hora });
 
         const { data, error } = await supabase
             .from('recibos')
@@ -182,7 +182,7 @@ app.post('/api/recibos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), 
                 patient_id, 
                 user_id, 
                 estado, 
-                quienEntrega,
+                quien_entrega: quienEntrega,  // ← CAMBIADO
                 hora: hora || new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
             }])
             .select();
