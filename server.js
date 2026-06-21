@@ -222,6 +222,8 @@ app.get('/api/recibos/:userId', auth.protect, async (req, res) => {
 app.post('/api/entregas', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
     try {
         const { patient_id, user_id, resumen, pendientes, quienRecibe, horaEntrega, sbar, firmaEntrega, firmaRecibe } = req.body;
+        console.log('📥 Entrega recibida:', { patient_id, user_id, resumen, horaEntrega });
+
         const { data, error } = await supabase
             .from('entregas')
             .insert([{ 
@@ -229,15 +231,20 @@ app.post('/api/entregas', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'),
                 user_id, 
                 resumen, 
                 pendientes, 
-                quienRecibe, 
-                horaEntrega: horaEntrega || new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
+                quien_recibe: quienRecibe,  // ← CAMBIADO
+                hora_entrega: horaEntrega || new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
                 sbar,
-                firmaEntrega,
-                firmaRecibe
+                firma_entrega: firmaEntrega,  // ← CAMBIADO
+                firma_recibe: firmaRecibe     // ← CAMBIADO
             }])
             .select();
-        if (error) throw error;
-        res.json({ success: true, data });
+
+        if (error) {
+            console.error('❌ Error Supabase:', error);
+            throw error;
+        }
+
+        res.json({ success: true, data: data[0] });
     } catch (error) {
         console.error('❌ Error en entregas POST:', error);
         res.status(500).json({ success: false, error: error.message });
