@@ -174,6 +174,8 @@ app.get('/api/medicamentos/:userId', auth.protect, async (req, res) => {
 app.post('/api/recibos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), async (req, res) => {
     try {
         const { patient_id, user_id, estado, quienEntrega, hora } = req.body;
+        console.log('📥 Recibo recibido:', { patient_id, user_id, estado, quienEntrega, hora }); // ← Depuración
+
         const { data, error } = await supabase
             .from('recibos')
             .insert([{ 
@@ -184,8 +186,13 @@ app.post('/api/recibos', auth.protect, auth.authorize('AUXILIAR', 'ENFERMERO'), 
                 hora: hora || new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
             }])
             .select();
-        if (error) throw error;
-        res.json({ success: true, data });
+
+        if (error) {
+            console.error('❌ Error Supabase:', error);
+            throw error;
+        }
+
+        res.json({ success: true, data: data[0] });
     } catch (error) {
         console.error('❌ Error en recibos POST:', error);
         res.status(500).json({ success: false, error: error.message });
