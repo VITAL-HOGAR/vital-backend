@@ -1425,26 +1425,64 @@ async function guardarSignos() {
   }
 }
 
+// ============================================================
+//  CARGAR SIGNOS CON ALERTAS
+// ============================================================
 async function cargarSignosLista() {
-  if (!pacienteActual) return;
-  const data = await apiRequest('/api/signos/' + USER.id);
-  const div = $('historialSignos');
-  if (data.success && data.data && data.data.length > 0) {
-    const hoy = getCurrentDate();
-    const items = data.data.filter(s => s.created_at && new Date(s.created_at).toISOString().split('T')[0] === hoy);
-    if (items.length === 0) {
-      div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay signos hoy</p>';
-      return;
+    if (!pacienteActual) return;
+    const data = await apiRequest('/api/signos/' + USER.id);
+    const div = document.getElementById('historialSignos');
+    if (data.success && data.data && data.data.length > 0) {
+        const hoy = getCurrentDate();
+        const items = data.data.filter(s => s.created_at && new Date(s.created_at).toISOString().split('T')[0] === hoy);
+        if (items.length === 0) {
+            div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay signos hoy</p>';
+            return;
+        }
+        div.innerHTML = items.slice(-5).reverse().map(s => {
+            // Evaluar alertas para cada signo
+            const edad = pacienteActual?.edad || 45;
+            const ciudad = pacienteActual?.ciudad || 'Bogotá';
+            const resultado = evaluarSignos(
+                s.spo2 || 0,
+                s.fc || 0,
+                s.fr || 0,
+                s.temp || 0,
+                s.bp || '',
+                s.glucosa || 0,
+                edad,
+                ciudad
+            );
+
+            // Generar iconos de alerta
+            const getIcon = (signo) => {
+                const alerta = resultado.alertas.find(a => a.signo === signo);
+                if (!alerta) return '⚪';
+                if (alerta.nivel === 'danger') return '🔴';
+                if (alerta.nivel === 'warning') return '🟡';
+                return '🟢';
+            };
+
+            return `
+                <div class="item">
+                    <div class="title">🕐 ${s.hora || formatTime(s.created_at)}</div>
+                    <div class="meta">
+                        SpO2: ${s.spo2 || '-'}% ${getIcon('SpO2')} | 
+                        FC: ${s.fc || '-'} ${getIcon('FC')} | 
+                        FR: ${s.fr || '-'} ${getIcon('FR')}
+                    </div>
+                    <div class="meta">
+                        Temp: ${s.temp || '-'}°C ${getIcon('Temp')} | 
+                        TA: ${s.bp || '-'} ${getIcon('TA')} | 
+                        Glucosa: ${s.glucosa || '-'} mg/dL ${getIcon('Glucosa')}
+                    </div>
+                    ${s.obs ? `<div class="meta" style="color:#94a3b8;">📝 ${s.obs}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+    } else {
+        div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay signos registrados</p>';
     }
-    div.innerHTML = items.slice(-5).reverse().map(s => `
-      <div class="item">
-        <div class="title">🕐 ${s.hora || formatTime(s.created_at)} | SpO2: ${s.spo2 || '-'}% | FC: ${s.fc || '-'} | FR: ${s.fr || '-'}</div>
-        <div class="meta">🌡️ ${s.temp || '-'}°C | TA: ${s.bp || '-'} | Glucosa: ${s.glucosa || '-'} mg/dL</div>
-      </div>
-    `).join('');
-  } else {
-    div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;">No hay signos registrados</p>';
-  }
 }
 
 // ============================================================
