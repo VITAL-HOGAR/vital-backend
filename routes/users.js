@@ -1,21 +1,19 @@
 const { createClient } = require('@supabase/supabase-js');
 const bcrypt = require('bcryptjs');
 
-// ==================== SUPABASE ====================
 const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY  // ← CORRECTO
+    process.env.SUPABASE_ANON_KEY
 );
 
 // ============================================================
-//  GET USERS - Listar todos los usuarios (sin contraseñas)
+//  GET USERS - Listar todos los usuarios (CON cedula y rethus)
 // ============================================================
 async function getUsers(req, res) {
     try {
-        // ✅ NO devolver password_hash
         const { data, error } = await supabase
             .from('users')
-            .select('id, name, email, role, created_at');
+            .select('id, name, email, role, cedula, rethus, created_at');
 
         if (error) throw error;
         res.json({ success: true, data });
@@ -26,13 +24,12 @@ async function getUsers(req, res) {
 }
 
 // ============================================================
-//  CREATE USER - Crear usuario (con contraseña encriptada)
+//  CREATE USER - Crear usuario (CON cedula y rethus)
 // ============================================================
 async function createUser(req, res) {
     try {
-        const { name, email, role, password } = req.body;
+        const { name, email, role, password, cedula, rethus } = req.body;
 
-        // ✅ Validar campos obligatorios
         if (!name || !email || !role || !password) {
             return res.status(400).json({
                 success: false,
@@ -40,8 +37,7 @@ async function createUser(req, res) {
             });
         }
 
-        // ✅ Validar que el email no exista
-        const { data: existing, error: checkError } = await supabase
+        const { data: existing } = await supabase
             .from('users')
             .select('email')
             .eq('email', email)
@@ -54,7 +50,6 @@ async function createUser(req, res) {
             });
         }
 
-        // ✅ Validar rol válido
         const validRoles = [
             'ADMIN', 'AUXILIAR', 'ENFERMERO', 'FISIOTERAPEUTA',
             'TERAPEUTA_OCUPACIONAL', 'FONOAUDIOLOGO', 'PSICOLOGO',
@@ -65,24 +60,24 @@ async function createUser(req, res) {
         if (!validRoles.includes(role)) {
             return res.status(400).json({
                 success: false,
-                message: `Rol inválido. Roles válidos: ${validRoles.join(', ')}`
+                message: `Rol inválido`
             });
         }
 
-        // ✅ Encriptar contraseña
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash(password, salt);
 
-        // ✅ Guardar usuario (sin password en texto plano)
         const { data, error } = await supabase
             .from('users')
             .insert([{
                 name,
                 email,
                 role,
-                password_hash  // ← Guarda el hash, no la contraseña
+                password_hash,
+                cedula: cedula || null,
+                rethus: rethus || null
             }])
-            .select('id, name, email, role, created_at');  // ✅ NO devolver password_hash
+            .select('id, name, email, role, cedula, rethus, created_at');
 
         if (error) throw error;
 
@@ -99,7 +94,7 @@ async function createUser(req, res) {
 }
 
 // ============================================================
-//  DELETE USER - Eliminar usuario
+//  DELETE USER - Eliminación PERMANENTE
 // ============================================================
 async function deleteUser(req, res) {
     try {
@@ -112,10 +107,9 @@ async function deleteUser(req, res) {
             });
         }
 
-        // ✅ Verificar que el usuario existe
-        const { data: existing, error: checkError } = await supabase
+        const { data: existing } = await supabase
             .from('users')
-            .select('id')
+            .select('id, email')
             .eq('id', id)
             .single();
 
@@ -126,7 +120,6 @@ async function deleteUser(req, res) {
             });
         }
 
-        // ✅ No permitir eliminar al ADMIN
         if (existing.email === 'admin@vitalhogar.com') {
             return res.status(403).json({
                 success: false,
@@ -143,7 +136,7 @@ async function deleteUser(req, res) {
 
         res.json({
             success: true,
-            message: '✅ Usuario eliminado exitosamente'
+            message: '✅ Usuario eliminado permanentemente'
         });
 
     } catch (error) {
@@ -153,7 +146,7 @@ async function deleteUser(req, res) {
 }
 
 // ============================================================
-//  GET USER BY ID - Obtener usuario específico
+//  GET USER BY ID
 // ============================================================
 async function getUserById(req, res) {
     try {
@@ -166,10 +159,9 @@ async function getUserById(req, res) {
             });
         }
 
-        // ✅ NO devolver password_hash
         const { data, error } = await supabase
             .from('users')
-            .select('id, name, email, role, created_at')
+            .select('id, name, email, role, cedula, rethus, created_at')
             .eq('id', id)
             .single();
 
@@ -189,12 +181,12 @@ async function getUserById(req, res) {
 }
 
 // ============================================================
-//  UPDATE USER - Actualizar usuario
+//  UPDATE USER (CON cedula y rethus)
 // ============================================================
 async function updateUser(req, res) {
     try {
         const { id } = req.params;
-        const { name, email, role, password } = req.body;
+        const { name, email, role, password, cedula, rethus } = req.body;
 
         if (!id) {
             return res.status(400).json({
@@ -203,8 +195,7 @@ async function updateUser(req, res) {
             });
         }
 
-        // ✅ Verificar que el usuario existe
-        const { data: existing, error: checkError } = await supabase
+        const { data: existing } = await supabase
             .from('users')
             .select('id')
             .eq('id', id)
@@ -217,10 +208,12 @@ async function updateUser(req, res) {
             });
         }
 
-        // ✅ Construir objeto de actualización
         const updates = {};
         if (name) updates.name = name;
         if (email) updates.email = email;
+        if (cedula !== undefined) updates.cedula = cedula;
+        if (rethus !== undefined) updates.rethus = rethus;
+        
         if (role) {
             const validRoles = [
                 'ADMIN', 'AUXILIAR', 'ENFERMERO', 'FISIOTERAPEUTA',
@@ -231,19 +224,17 @@ async function updateUser(req, res) {
             if (!validRoles.includes(role)) {
                 return res.status(400).json({
                     success: false,
-                    message: `Rol inválido. Roles válidos: ${validRoles.join(', ')}`
+                    message: `Rol inválido`
                 });
             }
             updates.role = role;
         }
 
-        // ✅ Si se actualiza contraseña, encriptarla
         if (password) {
             const salt = await bcrypt.genSalt(10);
             updates.password_hash = await bcrypt.hash(password, salt);
         }
 
-        // ✅ Si se actualiza email, verificar que no exista
         if (email) {
             const { data: existingEmail } = await supabase
                 .from('users')
@@ -264,7 +255,7 @@ async function updateUser(req, res) {
             .from('users')
             .update(updates)
             .eq('id', id)
-            .select('id, name, email, role, created_at');
+            .select('id, name, email, role, cedula, rethus, created_at');
 
         if (error) throw error;
 
@@ -280,9 +271,6 @@ async function updateUser(req, res) {
     }
 }
 
-// ============================================================
-//  EXPORTAR
-// ============================================================
 module.exports = {
     getUsers,
     getUserById,
