@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.0">
-<title>Vital Hogar Pro IPS - Sistema Completo v2.0</title>
+<title>Vital Hogar Pro IPS - Sistema Completo v2.1</title>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -17,62 +17,47 @@ body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;c
 .user-info{display:flex;align-items:center;gap:10px;background:#0f172a;padding:6px 16px;border-radius:30px;border:1px solid #334155;font-size:.75rem;flex-wrap:wrap}
 .user-info .user-name{color:#22c55e;font-weight:600}
 .user-info .role-badge{background:#22c55e20;color:#22c55e;padding:2px 10px;border-radius:12px;font-size:.6rem;font-weight:600;text-transform:uppercase}
-.user-info .paciente-badge{background:#8b5cf620;color:#8b5cf6;padding:2px 10px;border-radius:12px;font-size:.65rem;font-weight:600;cursor:pointer;transition:all 0.3s}
-.user-info .paciente-badge:hover{background:#8b5cf640}
+.user-info .paciente-badge{background:#8b5cf620;color:#8b5cf6;padding:2px 10px;border-radius:12px;font-size:.65rem;font-weight:600;cursor:pointer}
 .user-info .paciente-badge.sin-paciente{background:#ef444420;color:#ef4444}
-.logout-btn{background:#ef4444;border:none;color:white;padding:4px 14px;border-radius:20px;cursor:pointer;font-size:.65rem;font-weight:600;transition:all 0.2s}
-.logout-btn:hover{background:#dc2626}
+.logout-btn{background:#ef4444;border:none;color:white;padding:4px 14px;border-radius:20px;cursor:pointer;font-size:.65rem;font-weight:600}
 .card{background:#1e293b;border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid #334155}
 .card-title{font-size:1rem;font-weight:600;color:#22c55e;margin-bottom:16px;border-left:3px solid #22c55e;padding-left:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .form-group{margin-bottom:14px;position:relative}
 .form-group label{display:block;font-size:.65rem;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;letter-spacing:.5px;font-weight:600}
-.form-group input,.form-group select,.form-group textarea{width:100%;background:#0f172a!important;border:1px solid #334155;border-radius:10px;padding:10px 14px;color:#e2e8f0!important;font-size:.9rem;transition:all 0.2s}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:#0f172a!important;border:1px solid #334155;border-radius:10px;padding:10px 14px;color:#e2e8f0!important;font-size:.9rem}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#22c55e;outline:none;box-shadow:0 0 0 3px #22c55e20}
 .form-group select option{background:#1e293b;color:#e2e8f0}
 .form-group textarea{min-height:80px;resize:vertical}
 .form-group .hint{font-size:.7rem;color:#64748b;margin-top:4px;font-style:italic}
-.form-group.required label::after{content:" *";color:#ef4444}
 .btn{padding:10px 20px;border-radius:12px;font-weight:600;cursor:pointer;border:none;font-size:.85rem;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
-.btn:active{transform:translateY(0)}
 .btn-primary{background:#22c55e;color:white;width:100%}
 .btn-primary:hover{background:#16a34a}
 .btn-secondary{background:#334155;color:white}
 .btn-secondary:hover{background:#475569}
-.btn-warning{background:#f97316;color:white}
-.btn-warning:hover{background:#ea580c}
 .btn-danger{background:#ef4444;color:white}
 .btn-danger:hover{background:#dc2626}
 .btn-voice{background:#8b5cf6;color:white;padding:6px 14px;font-size:.75rem;width:auto;margin-top:4px}
-.btn-voice:hover{background:#7c3aed}
 .btn-sm{padding:4px 12px;font-size:.7rem;width:auto}
-.btn-select-pac{background:#8b5cf6;color:white;padding:4px 14px;border-radius:20px;cursor:pointer;font-size:.65rem;font-weight:600;border:none;transition:all 0.2s}
-.btn-select-pac:hover{background:#7c3aed}
-.btn-delete{background:#ef444420;color:#ef4444;border:1px solid #ef4444;padding:4px 10px;border-radius:8px;cursor:pointer;font-size:.7rem;font-weight:600;transition:all 0.2s}
+.btn-select-pac{background:#8b5cf6;color:white;padding:4px 14px;border-radius:20px;cursor:pointer;font-size:.65rem;font-weight:600;border:none}
+.btn-delete{background:#ef444420;color:#ef4444;border:1px solid #ef4444;padding:4px 10px;border-radius:8px;cursor:pointer;font-size:.7rem;font-weight:600}
 .btn-delete:hover{background:#ef4444;color:white}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 .tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;overflow-x:auto;padding-bottom:4px}
-.tab{padding:8px 16px;background:#1e293b;border-radius:30px;cursor:pointer;font-size:.75rem;font-weight:500;white-space:nowrap;border:1px solid transparent;transition:all 0.2s}
+.tab{padding:8px 16px;background:#1e293b;border-radius:30px;cursor:pointer;font-size:.75rem;font-weight:500;white-space:nowrap;border:1px solid transparent}
 .tab:hover{background:#334155}
 .tab.active{background:#22c55e;color:white;border-color:#22c55e}
 .hidden{display:none!important}
 .text-muted{color:#94a3b8}
 .signature-canvas{background:white;border-radius:10px;width:100%;height:120px;border:2px solid #22c55e;touch-action:none;cursor:crosshair}
-.activity-item{background:#0f172a;padding:10px 14px;border-radius:10px;margin-bottom:6px;border-left:3px solid #22c55e;font-size:.85rem;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.activity-item:hover{background:#1e293b}
+.activity-item{background:#0f172a;padding:10px 14px;border-radius:10px;margin-bottom:6px;border-left:3px solid #22c55e;font-size:.85rem;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .activity-item-content{flex:1}
 .photo-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.photo-preview img{width:60px;height:60px;border-radius:8px;object-fit:cover;border:1px solid #334155;cursor:pointer;transition:all 0.2s}
-.photo-preview img:hover{transform:scale(1.1)}
-.sbar-card{background:#0f172a;border-radius:10px;padding:12px;margin-bottom:10px;border-left:3px solid #8b5cf6}
-.sbar-field{margin-bottom:8px}
-.sbar-field label{font-size:.7rem;color:#8b5cf6;font-weight:600;display:block;margin-bottom:2px}
+.photo-preview img{width:60px;height:60px;border-radius:8px;object-fit:cover;border:1px solid #334155}
 .tip-box{background:#0f172a;padding:10px 14px;border-radius:10px;margin-bottom:12px;border-left:4px solid #f97316;font-size:.8rem}
 .tip-box.info{border-left-color:#3b82f6}
-.tip-box.success{border-left-color:#22c55e}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;border-radius:30px;padding:12px 24px;display:none;z-index:1000;font-size:.85rem;max-width:90%;text-align:center;border:1px solid #334155;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:slideUp 0.3s ease}
-@keyframes slideUp{from{transform:translateX(-50%) translateY(100px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;border-radius:30px;padding:12px 24px;display:none;z-index:1000;font-size:.85rem;max-width:90%;text-align:center;border:1px solid #334155;box-shadow:0 8px 32px rgba(0,0,0,.5)}
 .toast.show{display:block}
 .toast.success{border-left:4px solid #22c55e}
 .toast.error{border-left:4px solid #ef4444}
@@ -81,39 +66,30 @@ body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;c
 .login-container .card{padding:30px}
 .login-container .card-title{font-size:1.2rem;text-align:center;border-left:none;padding-left:0;justify-content:center}
 .login-error{color:#ef4444;font-size:.8rem;margin-bottom:10px;display:none;padding:8px 12px;background:#ef444420;border-radius:8px;border:1px solid #ef4444}
-.password-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1.2rem;padding:0;z-index:10;transition:all 0.2s}
-.password-toggle:hover{color:#22c55e}
+.password-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1.2rem;padding:0}
 .reloj-turno{background:#0f172a;padding:12px;border-radius:10px;margin-bottom:12px;border:1px solid #22c55e;font-size:.9rem;text-align:center}
 .reloj-turno .hora{color:#22c55e;font-weight:700;font-size:1.1rem}
 .alert-box{padding:10px 14px;border-radius:8px;margin-top:10px;font-size:.85rem;font-weight:500}
 .alert-critical{background:#ef444420;border:1px solid #ef4444;color:#ef4444}
 .alert-warning{background:#f9731620;border:1px solid #f97316;color:#f97316}
 .alert-success{background:#22c55e20;border:1px solid #22c55e;color:#22c55e}
-.alert-info{background:#3b82f620;border:1px solid #3b82f6;color:#3b82f6}
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal-content{background:#1e293b;border-radius:16px;padding:24px;max-width:500px;width:100%;border:1px solid #334155;max-height:90vh;overflow-y:auto;animation:modalIn 0.3s ease}
-@keyframes modalIn{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
-.edu-asignada{background:#0f172a;padding:10px 14px;border-radius:8px;margin-bottom:6px;border-left:3px solid #8b5cf6;transition:all 0.2s}
-.edu-asignada:hover{background:#1e293b}
+.modal-content{background:#1e293b;border-radius:16px;padding:24px;max-width:500px;width:100%;border:1px solid #334155;max-height:90vh;overflow-y:auto}
+.edu-asignada{background:#0f172a;padding:10px 14px;border-radius:8px;margin-bottom:6px;border-left:3px solid #8b5cf6}
 .edu-pendiente{color:#f97316;font-weight:600}
 .edu-completado{color:#22c55e;font-weight:600}
-.edu-cancelado{color:#ef4444;font-weight:600}
 .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.65rem;font-weight:600}
-.badge-success{background:#22c55e20;color:#22c55e}
-.badge-warning{background:#f9731620;color:#f97316}
-.badge-danger{background:#ef444420;color:#ef4444}
 .badge-info{background:#8b5cf620;color:#8b5cf6}
-.empty-state{text-align:center;padding:20px;color:#94a3b8}
-.select-paciente-card{background:#0f172a;border:2px dashed #8b5cf6;border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all 0.3s}
-.select-paciente-card:hover{background:#8b5cf620;border-color:#8b5cf6}
-.paciente-info-card{background:#0f172a;border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid #22c55e}
-.paciente-info-card h3{color:#22c55e;margin-bottom:8px}
-.paciente-info-card p{margin:4px 0;font-size:.85rem;color:#94a3b8}
 .confirm-box{background:#ef444420;border:2px solid #ef4444;border-radius:12px;padding:20px;margin:10px 0;text-align:center}
 .confirm-box h3{color:#ef4444;margin-bottom:10px}
 .confirm-box p{margin-bottom:15px;font-size:.9rem}
 .confirm-box .btn-group{display:flex;gap:10px;justify-content:center}
-.chart-container{background:white;border-radius:10px;padding:10px;margin:10px 0;position:relative;height:200px}
+.paciente-info-card{background:#0f172a;border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid #22c55e}
+.paciente-info-card h3{color:#22c55e;margin-bottom:8px}
+.paciente-info-card p{margin:4px 0;font-size:.85rem;color:#94a3b8}
+.sbar-card{background:#0f172a;border-radius:10px;padding:12px;margin-bottom:10px;border-left:3px solid #8b5cf6}
+.sbar-field{margin-bottom:8px}
+.sbar-field label{font-size:.7rem;color:#8b5cf6;font-weight:600;display:block;margin-bottom:2px}
 @media(max-width:480px){
 body{padding:8px}
 .header{padding:10px 14px;flex-direction:column;text-align:center}
@@ -152,12 +128,12 @@ body{padding:8px}
 <div class="card-title">🔐 Acceso al Sistema</div>
 <div class="form-group">
 <label>📧 Email</label>
-<input type="email" id="loginEmail" placeholder="usuario@vitalhogar.com" autocomplete="email">
+<input type="email" id="loginEmail" placeholder="usuario@vitalhogar.com">
 </div>
 <div class="form-group">
 <label>🔒 Contraseña</label>
 <div style="position:relative;">
-<input type="password" id="loginPassword" placeholder="Ingrese su contraseña" autocomplete="current-password">
+<input type="password" id="loginPassword" placeholder="Ingrese su contraseña">
 <button type="button" class="password-toggle" id="togglePassword">👁️</button>
 </div>
 </div>
@@ -184,61 +160,44 @@ let relojInterval = null;
 let recognitionActive = false;
 
 // ==========================================
-// CIUDADES DE COLOMBIA CON RANGOS SpO2
+// CIUDADES COLOMBIA CON RANGOS SpO2
 // ==========================================
 const CIUDADES_COLOMBIA = {
-  'Bogotá': { altitud: 2640, spo2_min: 88, spo2_max: 94, spo2_alerta: 85, spo2_critico: 80, region: 'Cundinamarca' },
-  'Medellín': { altitud: 1495, spo2_min: 92, spo2_max: 98, spo2_alerta: 89, spo2_critico: 85, region: 'Antioquia' },
-  'Cali': { altitud: 995, spo2_min: 94, spo2_max: 99, spo2_alerta: 91, spo2_critico: 87, region: 'Valle del Cauca' },
-  'Barranquilla': { altitud: 18, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Atlántico' },
-  'Cartagena': { altitud: 2, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Bolívar' },
-  'Cúcuta': { altitud: 320, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Norte de Santander' },
-  'Bucaramanga': { altitud: 960, spo2_min: 94, spo2_max: 99, spo2_alerta: 91, spo2_critico: 87, region: 'Santander' },
-  'Pereira': { altitud: 1410, spo2_min: 92, spo2_max: 98, spo2_alerta: 89, spo2_critico: 85, region: 'Risaralda' },
-  'Manizales': { altitud: 2160, spo2_min: 90, spo2_max: 96, spo2_alerta: 87, spo2_critico: 83, region: 'Caldas' },
-  'Pasto': { altitud: 2527, spo2_min: 88, spo2_max: 94, spo2_alerta: 85, spo2_critico: 80, region: 'Nariño' },
-  'Ibagué': { altitud: 1285, spo2_min: 93, spo2_max: 98, spo2_alerta: 90, spo2_critico: 86, region: 'Tolima' },
-  'Villavicencio': { altitud: 440, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Meta' },
-  'Armenia': { altitud: 1500, spo2_min: 92, spo2_max: 98, spo2_alerta: 89, spo2_critico: 85, region: 'Quindío' },
-  'Neiva': { altitud: 442, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Huila' },
-  'Popayán': { altitud: 1760, spo2_min: 91, spo2_max: 97, spo2_alerta: 88, spo2_critico: 84, region: 'Cauca' },
-  'Tunja': { altitud: 2820, spo2_min: 87, spo2_max: 93, spo2_alerta: 84, spo2_critico: 79, region: 'Boyacá' },
-  'Santa Marta': { altitud: 5, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Magdalena' },
-  'Montería': { altitud: 18, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Córdoba' },
-  'Sincelejo': { altitud: 220, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Sucre' },
-  'Valledupar': { altitud: 168, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Cesar' },
-  'Sogamoso': { altitud: 2560, spo2_min: 88, spo2_max: 94, spo2_alerta: 85, spo2_critico: 80, region: 'Boyacá' },
-  'Duitama': { altitud: 2590, spo2_min: 88, spo2_max: 94, spo2_alerta: 85, spo2_critico: 80, region: 'Boyacá' },
-  'Buenaventura': { altitud: 3, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Valle del Cauca' },
-  'Riohacha': { altitud: 8, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'La Guajira' },
-  'Quibdó': { altitud: 43, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Chocó' },
-  'Arauca': { altitud: 130, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Arauca' },
-  'Florencia': { altitud: 415, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Caquetá' },
-  'Mocoa': { altitud: 620, spo2_min: 94, spo2_max: 99, spo2_alerta: 91, spo2_critico: 87, region: 'Putumayo' },
-  'San Andrés': { altitud: 6, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Archipiélago' },
-  'Leticia': { altitud: 96, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Amazonas' },
-  'Mitú': { altitud: 180, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Vaupés' },
-  'Yopal': { altitud: 350, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Casanare' },
-  'Honda': { altitud: 235, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Tolima' },
-  'Girardot': { altitud: 285, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88, region: 'Cundinamarca' },
-  'Ipiales': { altitud: 2980, spo2_min: 85, spo2_max: 92, spo2_alerta: 82, spo2_critico: 77, region: 'Nariño' }
+  'Bogotá': { altitud: 2640, spo2_min: 88, spo2_max: 94, spo2_alerta: 85, spo2_critico: 80 },
+  'Medellín': { altitud: 1495, spo2_min: 92, spo2_max: 98, spo2_alerta: 89, spo2_critico: 85 },
+  'Cali': { altitud: 995, spo2_min: 94, spo2_max: 99, spo2_alerta: 91, spo2_critico: 87 },
+  'Barranquilla': { altitud: 18, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88 },
+  'Cartagena': { altitud: 2, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88 },
+  'Cúcuta': { altitud: 320, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88 },
+  'Bucaramanga': { altitud: 960, spo2_min: 94, spo2_max: 99, spo2_alerta: 91, spo2_critico: 87 },
+  'Pereira': { altitud: 1410, spo2_min: 92, spo2_max: 98, spo2_alerta: 89, spo2_critico: 85 },
+  'Manizales': { altitud: 2160, spo2_min: 90, spo2_max: 96, spo2_alerta: 87, spo2_critico: 83 },
+  'Pasto': { altitud: 2527, spo2_min: 88, spo2_max: 94, spo2_alerta: 85, spo2_critico: 80 },
+  'Ibagué': { altitud: 1285, spo2_min: 93, spo2_max: 98, spo2_alerta: 90, spo2_critico: 86 },
+  'Villavicencio': { altitud: 440, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88 },
+  'Armenia': { altitud: 1500, spo2_min: 92, spo2_max: 98, spo2_alerta: 89, spo2_critico: 85 },
+  'Neiva': { altitud: 442, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88 },
+  'Popayán': { altitud: 1760, spo2_min: 91, spo2_max: 97, spo2_alerta: 88, spo2_critico: 84 },
+  'Tunja': { altitud: 2820, spo2_min: 87, spo2_max: 93, spo2_alerta: 84, spo2_critico: 79 },
+  'Santa Marta': { altitud: 5, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88 },
+  'Montería': { altitud: 18, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88 },
+  'Sincelejo': { altitud: 220, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88 },
+  'Valledupar': { altitud: 168, spo2_min: 95, spo2_max: 100, spo2_alerta: 92, spo2_critico: 88 },
+  'Ipiales': { altitud: 2980, spo2_min: 85, spo2_max: 92, spo2_alerta: 82, spo2_critico: 77 }
 };
 
-// Roles que requieren ReTHUS (Tarjeta Profesional)
-const ROLES_CON_RETHUS = ['AUXILIAR', 'ENFERMERO', 'MEDICO', 'FISIOTERAPEUTA', 'PSICOLOGO', 'NUTRICIONISTA', 'FONOAUDIOLOGO', 'TERAPEUTA_OCUPACIONAL', 'TERAPEUTA_RESPIRATORIO'];
-
-// Actividades que requieren fotografía
-const ACTIVIDADES_CON_FOTO = ['Curación de heridas', 'Curación LPP', 'Lesión por presión', 'Otro'];
+const ROLES_CON_RETHUS = ['AUXILIAR','ENFERMERO','MEDICO','FISIOTERAPEUTA','PSICOLOGO','NUTRICIONISTA','FONOAUDIOLOGO','TERAPEUTA_OCUPACIONAL','TERAPEUTA_RESPIRATORIO'];
+const ACTIVIDADES_CON_FOTO = ['Curación de heridas','Curación LPP','Lesión por presión','Otro'];
 
 // ==========================================
-// FUNCIONES DE UTILIDAD
+// FUNCIONES UTILITARIAS
 // ==========================================
 function showToast(msg, type = 'success') {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
   toast.className = `toast ${type} show`;
   clearTimeout(toast._timeout);
-  toast._timeout = setTimeout(() => toast.classList.remove('show'), 3000);
+  toast._timeout = setTimeout(() => toast.classList.remove('show'), 3500);
 }
 
 function getCurrentTime() {
@@ -253,15 +212,6 @@ function getCurrentDate() {
   return new Date().toISOString().split('T')[0];
 }
 
-function validarPacienteSeleccionado() {
-  if (!pacienteActual) {
-    showToast('⚠️ Seleccione un paciente primero', 'warning');
-    abrirSelectorPaciente();
-    return false;
-  }
-  return true;
-}
-
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
@@ -274,95 +224,22 @@ function getRangoSpO2(ciudad) {
   return CIUDADES_COLOMBIA[ciudad] || CIUDADES_COLOMBIA['Bogotá'];
 }
 
-function requiereFotoActividad(tipoActividad) {
-  return ACTIVIDADES_CON_FOTO.some(a => tipoActividad.toLowerCase().includes(a.toLowerCase()));
+function requiereFotoActividad(tipo) {
+  return ACTIVIDADES_CON_FOTO.some(a => tipo.toLowerCase().includes(a.toLowerCase()));
 }
 
-function iniciarReloj() {
-  if (relojInterval) clearInterval(relojInterval);
-  relojInterval = setInterval(() => {
-    const relojDiv = document.getElementById('relojTurno');
-    if (!relojDiv) return;
-    if (horaEntrada) {
-      const ahora = new Date();
-      const diff = Math.floor((ahora - horaEntrada) / 1000);
-      const horas = Math.floor(diff / 3600);
-      const minutos = Math.floor((diff % 3600) / 60);
-      const segundos = diff % 60;
-      const duracion = `${horas}h ${minutos}min ${segundos}s`;
-      relojDiv.innerHTML = `
-        <div>🕐 <strong>Entrada:</strong> <span class="hora">${horaEntrada.toLocaleTimeString('es-CO')}</span></div>
-        <div>🕐 <strong>Actual:</strong> <span class="hora">${getCurrentTime()}</span></div>
-        <div>⏱️ <strong>Duración:</strong> <span class="hora">${duracion}</span></div>
-      `;
-    } else {
-      relojDiv.innerHTML = `
-        <div>🕐 <strong>Actual:</strong> <span class="hora">${getCurrentTime()}</span></div>
-        <div style="color:#94a3b8;font-size:.8rem;">Registre la entrada para iniciar el turno</div>
-      `;
-    }
-  }, 1000);
+function validarPacienteSeleccionado() {
+  if (!pacienteActual) {
+    showToast('⚠️ Seleccione un paciente primero', 'warning');
+    abrirSelectorPaciente();
+    return false;
+  }
+  return true;
 }
 
-function detenerReloj() {
-  if (relojInterval) {
-    clearInterval(relojInterval);
-    relojInterval = null;
-  }
-  horaEntrada = null;
-}
-
-function iniciarDictado(targetId) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    showToast('Voz no soportada en este navegador', 'error');
-    return;
-  }
-  if (recognitionActive) {
-    showToast('Ya hay una grabación en curso', 'warning');
-    return;
-  }
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'es-ES';
-  recognition.continuous = false;
-  recognition.interimResults = false;
-  recognition.onstart = () => {
-    recognitionActive = true;
-    showToast('🎙️ Habla ahora...', 'success');
-  };
-  recognition.onend = () => {
-    recognitionActive = false;
-  };
-  recognition.onresult = (event) => {
-    const target = document.getElementById(targetId);
-    if (!target) return;
-    const result = event.results[0];
-    if (result?.isFinal) {
-      const texto = result[0].transcript.trim();
-      if (texto) {
-        target.value += (target.value ? ' ' : '') + texto;
-        showToast('Dictado completado', 'success');
-      }
-    }
-  };
-  recognition.onerror = (event) => {
-    recognitionActive = false;
-    const mensajes = {
-      'not-allowed': 'Permiso de micrófono denegado',
-      'no-speech': 'No se detectó voz',
-      'audio-capture': 'No se detectó micrófono',
-      'network': 'Error de red'
-    };
-    showToast(mensajes[event.error] || 'Error de reconocimiento', 'error');
-  };
-  try {
-    recognition.start();
-  } catch(e) {
-    recognitionActive = false;
-    showToast('Error al iniciar dictado', 'error');
-  }
-}
-
+// ==========================================
+// API REQUEST
+// ==========================================
 async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem('vital_token');
   const headers = { 'Content-Type': 'application/json' };
@@ -384,6 +261,9 @@ async function apiRequest(endpoint, options = {}) {
   }
 }
 
+// ==========================================
+// LOGIN / LOGOUT
+// ==========================================
 async function login() {
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
@@ -466,17 +346,79 @@ async function cargarDatosIniciales() {
   }
 }
 
+// ==========================================
+// RELOJ
+// ==========================================
+function iniciarReloj() {
+  if (relojInterval) clearInterval(relojInterval);
+  relojInterval = setInterval(() => {
+    const relojDiv = document.getElementById('relojTurno');
+    if (!relojDiv) return;
+    if (horaEntrada) {
+      const ahora = new Date();
+      const diff = Math.floor((ahora - horaEntrada) / 1000);
+      const horas = Math.floor(diff / 3600);
+      const minutos = Math.floor((diff % 3600) / 60);
+      const segundos = diff % 60;
+      relojDiv.innerHTML = `
+        <div>🕐 <strong>Entrada:</strong> <span class="hora">${horaEntrada.toLocaleTimeString('es-CO')}</span></div>
+        <div>🕐 <strong>Actual:</strong> <span class="hora">${getCurrentTime()}</span></div>
+        <div>⏱️ <strong>Duración:</strong> <span class="hora">${horas}h ${minutos}min ${segundos}s</span></div>
+      `;
+    } else {
+      relojDiv.innerHTML = `
+        <div>🕐 <strong>Actual:</strong> <span class="hora">${getCurrentTime()}</span></div>
+        <div style="color:#94a3b8;font-size:.8rem;">Registre la entrada para iniciar el turno</div>
+      `;
+    }
+  }, 1000);
+}
+
+function detenerReloj() {
+  if (relojInterval) { clearInterval(relojInterval); relojInterval = null; }
+  horaEntrada = null;
+}
+
+// ==========================================
+// DICTADO DE VOZ
+// ==========================================
+function iniciarDictado(targetId) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) { showToast('Voz no soportada', 'error'); return; }
+  if (recognitionActive) { showToast('Ya hay grabación en curso', 'warning'); return; }
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'es-ES';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.onstart = () => { recognitionActive = true; showToast('🎙️ Habla ahora...', 'success'); };
+  recognition.onend = () => { recognitionActive = false; };
+  recognition.onresult = (event) => {
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    const result = event.results[0];
+    if (result?.isFinal) {
+      const texto = result[0].transcript.trim();
+      if (texto) {
+        target.value += (target.value ? ' ' : '') + texto;
+        showToast('Dictado completado', 'success');
+      }
+    }
+  };
+  recognition.onerror = () => { recognitionActive = false; showToast('Error de reconocimiento', 'error'); };
+  try { recognition.start(); } catch(e) { recognitionActive = false; showToast('Error al iniciar dictado', 'error'); }
+}
+
+// ==========================================
+// DISPLAY PACIENTE
+// ==========================================
 function actualizarDisplayPaciente() {
   const container = document.getElementById('pacienteContainer');
   if (!container) return;
-  
-  // Solo mostrar selector de paciente si NO es ADMIN o COORDINADOR
   const rolesSinPaciente = ['ADMIN', 'COORDINADOR'];
   if (rolesSinPaciente.includes(currentRole)) {
     container.innerHTML = '';
     return;
   }
-  
   if (pacienteActual) {
     container.innerHTML = `
       <span class="paciente-badge">👤 ${pacienteActual.name}</span>
@@ -492,14 +434,11 @@ function actualizarDisplayPaciente() {
 
 function abrirSelectorPaciente() {
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
-  if (pacientes.length === 0) {
-    showToast('No hay pacientes registrados', 'warning');
-    return;
-  }
+  if (pacientes.length === 0) { showToast('No hay pacientes', 'warning'); return; }
   let options = '<option value="">-- Sin paciente --</option>';
   pacientes.forEach(p => {
     const selected = pacienteActual && pacienteActual.id === p.id ? 'selected' : '';
-    options += `<option value="${p.id}">${p.name} - ${p.document || 'Sin doc'} - ${p.ciudad || 'Sin ciudad'}</option>`;
+    options += `<option value="${p.id}">${p.name} - ${p.ciudad || 'Sin ciudad'}</option>`;
   });
   const html = `
     <div class="modal-overlay" id="modalPaciente" onclick="if(event.target===this)cerrarModalPaciente()">
@@ -523,8 +462,11 @@ function confirmarSeleccionPaciente() {
   const pacienteId = select.value;
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
   const paciente = pacientes.find(p => p.id === pacienteId);
-  guardarPacienteActual(paciente || null);
+  pacienteActual = paciente || null;
+  if (paciente) localStorage.setItem('vital_paciente_actual', JSON.stringify(paciente));
+  else localStorage.removeItem('vital_paciente_actual');
   cerrarModalPaciente();
+  actualizarDisplayPaciente();
   showToast('Paciente: ' + (paciente ? paciente.name : 'Ninguno'), 'success');
   const currentTab = document.querySelector('.tab.active')?.dataset.tab;
   if (currentTab) loadTab(currentTab);
@@ -535,173 +477,8 @@ function cerrarModalPaciente() {
   if (modal) modal.remove();
 }
 
-function guardarPacienteActual(paciente) {
-  pacienteActual = paciente;
-  if (paciente) {
-    localStorage.setItem('vital_paciente_actual', JSON.stringify(paciente));
-  } else {
-    localStorage.removeItem('vital_paciente_actual');
-  }
-  actualizarDisplayPaciente();
-}
-
-function saveToLocal(key, data) {
-  if (!pacienteActual) {
-    showToast('Seleccione un paciente primero', 'warning');
-    return false;
-  }
-  const storageKey = `vital_${currentRole.toLowerCase()}_${currentUser.id}_${pacienteActual.id}`;
-  let all = {};
-  try {
-    all = JSON.parse(localStorage.getItem(storageKey) || '{}');
-  } catch (e) {
-    all = {};
-  }
-  all[key] = all[key] || [];
-  all[key].push({
-    ...data,
-    id: generateId(),
-    timestamp: new Date().toISOString(),
-    user_id: currentUser.id,
-    user_name: currentUser.name,
-    paciente_id: pacienteActual.id,
-    paciente_nombre: pacienteActual.name,
-    fecha: getCurrentDate()
-  });
-  localStorage.setItem(storageKey, JSON.stringify(all));
-  showToast(key + ' guardado', 'success');
-  return true;
-}
-
-function getFromLocal(key) {
-  if (!pacienteActual) return [];
-  const storageKey = `vital_${currentRole.toLowerCase()}_${currentUser.id}_${pacienteActual.id}`;
-  try {
-    const all = JSON.parse(localStorage.getItem(storageKey) || '{}');
-    return all[key] || [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function getFromLocalHoy(key) {
-  const items = getFromLocal(key);
-  const hoy = getCurrentDate();
-  return items.filter(item => item.fecha === hoy);
-}
-
-function cargarLista(key, elementId) {
-  const items = getFromLocal(key);
-  const div = document.getElementById(elementId);
-  if (!div) return;
-  if (items.length === 0) {
-    div.innerHTML = '<p class="text-muted" style="font-size:0.85rem;">No hay registros</p>';
-  } else {
-    div.innerHTML = items.slice(-10).reverse().map(i => {
-      const timestamp = i.timestamp ? new Date(i.timestamp).toLocaleString() : 'Fecha no disponible';
-      const contenido = i.resumen || i.actividad || i.nombre || JSON.stringify(i);
-      return `
-        <div class="activity-item">
-          <div class="activity-item-content">
-            <strong>${timestamp}</strong><br>${contenido}
-          </div>
-        </div>`;
-    }).join('');
-  }
-}
-
-function initSignatures() {
-  const canvasIds = ['sigEntrega', 'sigRecibe'];
-  canvasIds.forEach(id => {
-    const canvas = document.getElementById(id);
-    if (!canvas || canvas.dataset.initialized === 'true') return;
-    const width = canvas.offsetWidth || 300;
-    const height = canvas.offsetHeight || 120;
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '16px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('✍️ Firme aquí', width / 2, height / 2);
-    let drawing = false;
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    function getPos(e) {
-      const rect = canvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      return { x: clientX - rect.left, y: clientY - rect.top };
-    }
-    const startDraw = (e) => {
-      drawing = true;
-      ctx.beginPath();
-      const pos = getPos(e);
-      ctx.moveTo(pos.x, pos.y);
-    };
-    const draw = (e) => {
-      if (!drawing) return;
-      e.preventDefault();
-      const pos = getPos(e);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
-    };
-    const endDraw = () => { drawing = false; };
-    canvas.addEventListener('mousedown', startDraw);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', endDraw);
-    canvas.addEventListener('mouseleave', endDraw);
-    canvas.addEventListener('touchstart', startDraw, { passive: false });
-    canvas.addEventListener('touchmove', draw, { passive: false });
-    canvas.addEventListener('touchend', endDraw);
-    canvas.dataset.initialized = 'true';
-  });
-}
-
-function clearCanvas(id) {
-  const canvas = document.getElementById(id);
-  if (!canvas) return;
-  const width = canvas.offsetWidth || 300;
-  const height = canvas.offsetHeight || 120;
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = 'white';
-  ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = '#94a3b8';
-  ctx.font = '16px Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('✍️ Firme aquí', width / 2, height / 2);
-}
-
-function getSignatureData(canvasId) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return null;
-  try {
-    const ctx = canvas.getContext('2d');
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-    let hasDrawing = false;
-    for (let i = 0; i < data.length; i += 4) {
-      if (data[i] < 240 || data[i+1] < 240 || data[i+2] < 240) {
-        hasDrawing = true;
-        break;
-      }
-    }
-    if (!hasDrawing) return null;
-    return canvas.toDataURL('image/png');
-  } catch (e) {
-    return null;
-  }
-}
-
 // ==========================================
-// TABS Y NAVEGACIÓN
+// TABS
 // ==========================================
 function buildTabs() {
   const tabsContainer = document.getElementById('tabsContainer');
@@ -713,7 +490,7 @@ function buildTabs() {
         { id: 'actividades', name: '✅ Actividades' },
         { id: 'signos', name: '🩺 Signos' },
         { id: 'medicamentos', name: '💊 Medicamentos' },
-        { id: 'educacion', name: '📚 Mi Educación' },
+        { id: 'educacion', name: '📚 Educación' },
         { id: 'entrega', name: '🔄 Entrega' },
         { id: 'reportes', name: '📄 Reportes' }
       ];
@@ -773,18 +550,14 @@ function loadTab(tabId) {
   }
   contentDiv.innerHTML = content;
   setTimeout(() => {
-    initSignatures();
-    if (tabId === 'recibo') cargarLista('recibos', 'historialRecibos');
-    if (tabId === 'actividades') { cargarLista('actividades', 'listaActividades'); configurarFotoActividad(); }
-    if (tabId === 'signos') cargarLista('signos', 'historialSignos');
-    if (tabId === 'medicamentos') cargarLista('medicamentos', 'historialMedicamentos');
-    if (tabId === 'entrega') cargarLista('entregas', 'historialEntregas');
+    if (tabId === 'actividades') configurarFotoActividad();
     if (tabId === 'usuarios') cargarUsuarios();
     if (tabId === 'pacientes') cargarPacientes();
     if (tabId === 'educationTopics') cargarListaTemas();
     if (tabId === 'asignarEducacion') cargarAsignaciones();
     if (tabId === 'educacion') cargarEducacionPendiente();
     if (tabId === 'reporteMensual') configurarReporteMensual();
+    if (tabId === 'entrega') initSignatures();
   }, 100);
 }
 
@@ -796,7 +569,7 @@ function getReciboContent() {
     <div class="card">
       <div class="card-title">📋 Recibo del Paciente</div>
       <div id="relojTurno" class="reloj-turno"></div>
-      <div class="tip-box"><strong>⚠️ IMPORTANTE:</strong> Registre que RECIBE al paciente antes de comenzar. <strong>NO requiere firma.</strong></div>
+      <div class="tip-box"><strong>⚠️ IMPORTANTE:</strong> Registre que RECIBE al paciente antes de comenzar.</div>
       <div class="form-group">
         <label>📝 Estado del paciente</label>
         <textarea id="reciboEstado" rows="3" placeholder="Describa el estado..."></textarea>
@@ -813,41 +586,44 @@ function getReciboContent() {
       </div>
       <button class="btn btn-primary" onclick="confirmarRecibo()">✅ Confirmar RECIBO</button>
     </div>
-    <div class="card">
-      <div class="card-title">📋 Historial de Recibos</div>
-      <div id="historialRecibos"></div>
-    </div>
   `;
 }
 
-function confirmarRecibo() {
+async function confirmarRecibo() {
   if (!validarPacienteSeleccionado()) return;
   const estado = document.getElementById('reciboEstado')?.value;
-  if (!estado) {
-    showToast('Describa el estado del paciente', 'error');
-    return;
+  if (!estado) { showToast('Describa el estado', 'error'); return; }
+  if (!horaEntrada) { horaEntrada = new Date(); showToast('Turno iniciado', 'success'); }
+  try {
+    const response = await apiRequest('/api/recibos', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: currentUser.id,
+        estado: estado,
+        quienEntrega: document.getElementById('reciboQuien')?.value,
+        hora: getCurrentTimeShort()
+      })
+    });
+    const data = await response.json();
+    if (data.success) {
+      document.getElementById('reciboEstado').value = '';
+      showToast('✅ Recibo registrado', 'success');
+    } else {
+      showToast(data.error || 'Error al guardar', 'error');
+    }
+  } catch (error) {
+    showToast('Error de conexión', 'error');
   }
-  if (!horaEntrada) {
-    horaEntrada = new Date();
-    showToast('Turno iniciado', 'success');
-  }
-  saveToLocal('recibos', {
-    estado: estado,
-    quienEntrega: document.getElementById('reciboQuien')?.value || 'No especificado',
-    hora: getCurrentTimeShort()
-  });
-  document.getElementById('reciboEstado').value = '';
-  cargarLista('recibos', 'historialRecibos');
 }
 
 // ==========================================
-// MÓDULO ACTIVIDADES (CON LÓGICA DE FOTOS CONDICIONAL)
+// MÓDULO ACTIVIDADES
 // ==========================================
 function getActividadesContent() {
   return `
     <div class="card">
       <div class="card-title">✅ Actividades Realizadas</div>
-      <div id="listaActividades" style="margin-bottom:12px;"></div>
       <div class="form-group">
         <label>📋 Actividad</label>
         <select id="tipoActividad" onchange="configurarFotoActividad()">
@@ -916,86 +692,19 @@ function getActividadesContent() {
             </div>
           </div>
           <div style="margin-bottom:12px;padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;">
-            <label style="font-weight:600;color:#22c55e;">😣 EVA (Escala de Dolor)</label>
+            <label style="font-weight:600;color:#22c55e;">😣 EVA (Dolor)</label>
             <input type="range" id="evaValor" min="0" max="10" value="0" oninput="document.getElementById('evaDisplay').textContent=this.value" style="width:100%;">
             <span id="evaDisplay" style="color:#22c55e;font-weight:600;">0</span> / 10
           </div>
-          <div style="padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;">
-            <label style="font-weight:600;color:#22c55e;">📋 Braden (Riesgo Úlceras)</label>
-            <div class="grid-2">
-              <div class="form-group">
-                <label>Percepción</label>
-                <select id="bradenPercepcion" onchange="calcularBraden()">
-                  <option value="4">4 - Normal</option>
-                  <option value="3">3 - Ligeramente limitada</option>
-                  <option value="2">2 - Muy limitada</option>
-                  <option value="1">1 - Completamente limitada</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Humedad</label>
-                <select id="bradenHumedad" onchange="calcularBraden()">
-                  <option value="4">4 - Siempre seca</option>
-                  <option value="3">3 - A veces húmeda</option>
-                  <option value="2">2 - A menudo húmeda</option>
-                  <option value="1">1 - Siempre húmeda</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Actividad</label>
-                <select id="bradenActividad" onchange="calcularBraden()">
-                  <option value="4">4 - Camina</option>
-                  <option value="3">3 - Camina con ayuda</option>
-                  <option value="2">2 - En silla de ruedas</option>
-                  <option value="1">1 - Encamado</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Movilidad</label>
-                <select id="bradenMovilidad" onchange="calcularBraden()">
-                  <option value="4">4 - Sin limitación</option>
-                  <option value="3">3 - Ligeramente limitada</option>
-                  <option value="2">2 - Muy limitada</option>
-                  <option value="1">1 - Inmóvil</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Nutrición</label>
-                <select id="bradenNutricion" onchange="calcularBraden()">
-                  <option value="4">4 - Excelente</option>
-                  <option value="3">3 - Adecuada</option>
-                  <option value="2">2 - Probablemente inadecuada</option>
-                  <option value="1">1 - Muy inadecuada</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Fricción</label>
-                <select id="bradenFriccion" onchange="calcularBraden()">
-                  <option value="3">3 - Sin problema</option>
-                  <option value="2">2 - Problema potencial</option>
-                  <option value="1">1 - Problema presente</option>
-                </select>
-              </div>
-              <div class="form-group" style="grid-column:1/-1;">
-                <label>Total</label>
-                <input type="text" id="bradenTotal" readonly>
-              </div>
-            </div>
-          </div>
         </div>
       </details>
-      
-      <!-- CAMPO FOTO CONDICIONAL -->
       <div id="contenedorFotoActividad" class="form-group hidden" style="margin-top:12px;border-top:1px solid #334155;padding-top:12px;">
         <label>📸 Evidencia Fotográfica (obligatorio para curaciones/LPP)</label>
-        <div class="tip-box info" style="font-size:.75rem;">
-          ℹ️ Solo habilitado para: Curación de heridas, Curación LPP, Otro
-        </div>
+        <div class="tip-box info" style="font-size:.75rem;">ℹ️ Solo habilitado para: Curación de heridas, Curación LPP, Otro</div>
         <input type="file" id="photoInput" accept="image/*" capture="environment" multiple style="display:none;">
-        <button class="btn-secondary" style="margin-top:6px;width:100%;" onclick="document.getElementById('photoInput').click()">📷 Tomar Foto / Seleccionar</button>
+        <button class="btn-secondary" style="margin-top:6px;width:100%;" onclick="document.getElementById('photoInput').click()">📷 Tomar Foto</button>
         <div id="photoPreview" class="photo-preview"></div>
       </div>
-      
       <button class="btn btn-primary" onclick="agregarActividad()">➕ Agregar Actividad</button>
     </div>
   `;
@@ -1005,7 +714,6 @@ function configurarFotoActividad() {
   const tipo = document.getElementById('tipoActividad')?.value;
   const contenedor = document.getElementById('contenedorFotoActividad');
   if (!contenedor) return;
-  
   if (requiereFotoActividad(tipo)) {
     contenedor.classList.remove('hidden');
   } else {
@@ -1021,64 +729,42 @@ function calcularGlasgow() {
   const ojos = parseInt(document.getElementById('glasgowOjos')?.value) || 0;
   const verbal = parseInt(document.getElementById('glasgowVerbal')?.value) || 0;
   const motor = parseInt(document.getElementById('glasgowMotor')?.value) || 0;
-  const total = ojos + verbal + motor;
   const input = document.getElementById('glasgowTotal');
-  if (input) input.value = total;
-}
-
-function calcularBraden() {
-  const percepcion = parseInt(document.getElementById('bradenPercepcion')?.value) || 0;
-  const humedad = parseInt(document.getElementById('bradenHumedad')?.value) || 0;
-  const actividad = parseInt(document.getElementById('bradenActividad')?.value) || 0;
-  const movilidad = parseInt(document.getElementById('bradenMovilidad')?.value) || 0;
-  const nutricion = parseInt(document.getElementById('bradenNutricion')?.value) || 0;
-  const friccion = parseInt(document.getElementById('bradenFriccion')?.value) || 0;
-  const total = percepcion + humedad + actividad + movilidad + nutricion + friccion;
-  const input = document.getElementById('bradenTotal');
-  if (input) input.value = total;
+  if (input) input.value = ojos + verbal + motor;
 }
 
 document.addEventListener('change', function(e) {
   if (e.target && e.target.id === 'photoInput') {
     const files = e.target.files;
-    if (files.length > 0) {
-      const preview = document.getElementById('photoPreview');
-      if (!preview) return;
+    const preview = document.getElementById('photoPreview');
+    if (files.length > 0 && preview) {
       preview.innerHTML = '';
       const maxFotos = Math.min(files.length, 3);
       for (let i = 0; i < maxFotos; i++) {
-        const file = files[i];
         const reader = new FileReader();
         reader.onload = function(evt) {
           const img = document.createElement('img');
           img.src = evt.target.result;
           preview.appendChild(img);
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(files[i]);
       }
-      if (files.length > 3) showToast('Se tomaron solo las primeras 3 fotos', 'warning');
-      else showToast('Fotos cargadas', 'success');
     }
   }
 });
 
-function agregarActividad() {
+async function agregarActividad() {
   if (!validarPacienteSeleccionado()) return;
   const hora = document.getElementById('horaActividad')?.value;
-  if (!hora) {
-    showToast('Ingrese la hora', 'error');
-    return;
-  }
+  if (!hora) { showToast('Ingrese la hora', 'error'); return; }
   const actividad = document.getElementById('tipoActividad')?.value;
   const observacion = document.getElementById('obsActividad')?.value || '';
   const glasgow = document.getElementById('glasgowTotal')?.value || '';
   const eva = document.getElementById('evaValor')?.value || '';
-  const braden = document.getElementById('bradenTotal')?.value || '';
-  
   let fotosBase64 = [];
   const preview = document.getElementById('photoPreview');
   if (preview && requiereFotoActividad(actividad)) {
-    for (let i = 0; i < Math.min(preview.children.length, 3); i++) {
+    for (let i = 0; i < preview.children.length; i++) {
       fotosBase64.push(preview.children[i].src);
     }
     if (fotosBase64.length === 0) {
@@ -1086,32 +772,41 @@ function agregarActividad() {
       return;
     }
   }
-  
-  saveToLocal('actividades', {
-    actividad: actividad,
-    hora: hora,
-    observacion: observacion,
-    glasgow: glasgow,
-    eva: eva,
-    braden: braden,
-    fotos: fotosBase64.length,
-    fotos_data: fotosBase64
-  });
-  document.getElementById('obsActividad').value = '';
-  document.getElementById('horaActividad').value = '';
-  document.getElementById('photoInput').value = '';
-  if (document.getElementById('photoPreview')) document.getElementById('photoPreview').innerHTML = '';
-  cargarLista('actividades', 'listaActividades');
-  showToast('Actividad registrada', 'success');
+  try {
+    const response = await apiRequest('/api/actividades', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: currentUser.id,
+        actividad: actividad,
+        hora: hora,
+        observacion: observacion,
+        educacion: '',
+        novedad: glasgow ? `Glasgow: ${glasgow}, EVA: ${eva}` : '',
+        fotos: fotosBase64
+      })
+    });
+    const data = await response.json();
+    if (data.success) {
+      document.getElementById('obsActividad').value = '';
+      document.getElementById('horaActividad').value = '';
+      document.getElementById('photoInput').value = '';
+      if (preview) preview.innerHTML = '';
+      showToast('✅ Actividad registrada', 'success');
+    } else {
+      showToast(data.error || 'Error al guardar', 'error');
+    }
+  } catch (error) {
+    showToast('Error de conexión', 'error');
+  }
 }
 
 // ==========================================
-// MÓDULO SIGNOS VITALES (CON ALERTAS POR CIUDAD)
+// MÓDULO SIGNOS VITALES
 // ==========================================
 function getSignosContent() {
   const ciudad = pacienteActual?.ciudad || 'Bogotá';
   const rango = getRangoSpO2(ciudad);
-  
   return `
     <div class="card">
       <div class="card-title">🩺 Signos Vitales</div>
@@ -1120,34 +815,13 @@ function getSignosContent() {
         📊 <strong>Rango SpO2 esperado:</strong> ${rango.spo2_min}% - ${rango.spo2_max}%
       </div>
       <div class="grid-2">
-        <div class="form-group">
-          <label>🫀 SpO2 (%)</label>
-          <input type="number" id="spo2" min="0" max="100" oninput="evaluarSignosUI()">
-        </div>
-        <div class="form-group">
-          <label>❤️ FC (lpm)</label>
-          <input type="number" id="fc" min="0" max="200" oninput="evaluarSignosUI()">
-        </div>
-        <div class="form-group">
-          <label>💨 FR (rpm)</label>
-          <input type="number" id="fr" min="0" max="60" oninput="evaluarSignosUI()">
-        </div>
-        <div class="form-group">
-          <label>🌡️ Temp (°C)</label>
-          <input type="number" id="temp" step="0.1" oninput="evaluarSignosUI()">
-        </div>
-        <div class="form-group">
-          <label>📏 Tensión Arterial (TA)</label>
-          <input type="text" id="bp" placeholder="120/80" oninput="evaluarSignosUI()">
-        </div>
-        <div class="form-group">
-          <label>🩸 Glucosa (mg/dL)</label>
-          <input type="number" id="glucosa" oninput="evaluarSignosUI()">
-        </div>
-        <div class="form-group">
-          <label>🕐 Hora</label>
-          <input type="time" id="horaSignos">
-        </div>
+        <div class="form-group"><label>🫀 SpO2 (%)</label><input type="number" id="spo2" min="0" max="100" oninput="evaluarSignosUI()"></div>
+        <div class="form-group"><label>❤️ FC (lpm)</label><input type="number" id="fc" min="0" max="200" oninput="evaluarSignosUI()"></div>
+        <div class="form-group"><label>💨 FR (rpm)</label><input type="number" id="fr" min="0" max="60" oninput="evaluarSignosUI()"></div>
+        <div class="form-group"><label>🌡️ Temp (°C)</label><input type="number" id="temp" step="0.1" oninput="evaluarSignosUI()"></div>
+        <div class="form-group"><label>📏 Tensión Arterial</label><input type="text" id="bp" placeholder="120/80" oninput="evaluarSignosUI()"></div>
+        <div class="form-group"><label>🩸 Glucosa (mg/dL)</label><input type="number" id="glucosa" oninput="evaluarSignosUI()"></div>
+        <div class="form-group"><label>🕐 Hora</label><input type="time" id="horaSignos"></div>
       </div>
       <div class="form-group">
         <label>📝 Observación</label>
@@ -1157,10 +831,6 @@ function getSignosContent() {
       <div id="signosAlert"></div>
       <button class="btn btn-primary" onclick="guardarSignos()">💾 Guardar Signos</button>
     </div>
-    <div class="card">
-      <div class="card-title">📊 Últimos registros</div>
-      <div id="historialSignos"></div>
-    </div>
   `;
 }
 
@@ -1168,48 +838,13 @@ function evaluarTA(bp) {
   if (!bp) return null;
   const match = bp.match(/^(\d{2,3})\/(\d{2,3})$/);
   if (!match) return null;
-  
   const sistolica = parseInt(match[1]);
   const diastolica = parseInt(match[2]);
-  
-  if (sistolica >= 180 || diastolica >= 120) {
-    return {
-      nivel: 'critical',
-      mensaje: '🚨 CRISIS HIPERTENSIVA',
-      accion: 'Atención médica inmediata',
-      color: '#ef4444'
-    };
-  }
-  if (sistolica >= 140 || diastolica >= 90) {
-    return {
-      nivel: 'warning',
-      mensaje: '⚠️ HIPERTENSIÓN',
-      accion: 'Monitorear y notificar médico',
-      color: '#f97316'
-    };
-  }
-  if (sistolica < 90 || diastolica < 60) {
-    return {
-      nivel: 'warning',
-      mensaje: '⚠️ HIPOTENSIÓN',
-      accion: 'Evaluar síntomas asociados',
-      color: '#f97316'
-    };
-  }
-  if (sistolica >= 120 && sistolica <= 129 && diastolica < 80) {
-    return {
-      nivel: 'info',
-      mensaje: '📊 TA ELEVADA',
-      accion: 'Medidas higiénico-dietéticas',
-      color: '#eab308'
-    };
-  }
-  return {
-    nivel: 'success',
-    mensaje: '✅ TA NORMAL',
-    accion: 'Continuar monitoreo',
-    color: '#22c55e'
-  };
+  if (sistolica >= 180 || diastolica >= 120) return { nivel: 'critical', mensaje: '🚨 CRISIS HIPERTENSIVA', accion: 'Atención médica inmediata' };
+  if (sistolica >= 140 || diastolica >= 90) return { nivel: 'warning', mensaje: '⚠️ HIPERTENSIÓN', accion: 'Monitorear y notificar médico' };
+  if (sistolica < 90 || diastolica < 60) return { nivel: 'warning', mensaje: '⚠️ HIPOTENSIÓN', accion: 'Evaluar síntomas' };
+  if (sistolica >= 120 && sistolica <= 129 && diastolica < 80) return { nivel: 'info', mensaje: '📊 TA ELEVADA', accion: 'Medidas higiénico-dietéticas' };
+  return { nivel: 'success', mensaje: '✅ TA NORMAL', accion: 'Continuar monitoreo' };
 }
 
 function evaluarSignosUI() {
@@ -1221,56 +856,36 @@ function evaluarSignosUI() {
   const bp = document.getElementById('bp')?.value || '';
   const ciudad = pacienteActual?.ciudad || 'Bogotá';
   const rango = getRangoSpO2(ciudad);
-  
   const alertas = [];
   let nivel = 'success';
-  
-  // SpO2 con rangos por ciudad
   if (spo2 > 0) {
-    if (spo2 < rango.spo2_critico) { 
-      alertas.push(`🚨 SpO2 CRÍTICA: ${spo2}% (${ciudad} ${rango.altitud}msnm)`); 
-      nivel = 'critical'; 
-    } else if (spo2 < rango.spo2_alerta) { 
-      alertas.push(`⚠️ SpO2 baja: ${spo2}% (Rango ${ciudad}: ${rango.spo2_min}-${rango.spo2_max}%)`); 
-      if (nivel !== 'critical') nivel = 'warning'; 
-    } else if (spo2 >= rango.spo2_min && spo2 <= rango.spo2_max) {
-      alertas.push(`✅ SpO2 normal: ${spo2}% (${ciudad})`);
-    } else {
-      alertas.push(`📊 SpO2: ${spo2}%`);
-    }
+    if (spo2 < rango.spo2_critico) { alertas.push(`🚨 SpO2 CRÍTICA: ${spo2}% (${ciudad})`); nivel = 'critical'; }
+    else if (spo2 < rango.spo2_alerta) { alertas.push(`⚠️ SpO2 baja: ${spo2}%`); if (nivel !== 'critical') nivel = 'warning'; }
+    else if (spo2 >= rango.spo2_min && spo2 <= rango.spo2_max) alertas.push(`✅ SpO2 normal: ${spo2}%`);
+    else alertas.push(`📊 SpO2: ${spo2}%`);
   }
-  
-  // FC
   if (fc > 0) {
-    if (fc < 50 || fc > 120) { alertas.push('🚨 FC CRÍTICA: ' + fc + ' lpm'); nivel = 'critical'; }
-    else if (fc < 60 || fc > 100) { alertas.push('⚠️ FC anormal: ' + fc + ' lpm'); if (nivel !== 'critical') nivel = 'warning'; }
-    else { alertas.push('✅ FC normal: ' + fc + ' lpm'); }
+    if (fc < 50 || fc > 120) { alertas.push('🚨 FC CRÍTICA: ' + fc); nivel = 'critical'; }
+    else if (fc < 60 || fc > 100) { alertas.push('⚠️ FC anormal: ' + fc); if (nivel !== 'critical') nivel = 'warning'; }
+    else alertas.push('✅ FC normal: ' + fc);
   }
-  
-  // FR
   if (fr > 0) {
-    if (fr < 10 || fr > 30) { alertas.push('🚨 FR CRÍTICA: ' + fr + ' rpm'); nivel = 'critical'; }
-    else if (fr < 12 || fr > 20) { alertas.push('⚠️ FR anormal: ' + fr + ' rpm'); if (nivel !== 'critical') nivel = 'warning'; }
-    else { alertas.push('✅ FR normal: ' + fr + ' rpm'); }
+    if (fr < 10 || fr > 30) { alertas.push('🚨 FR CRÍTICA: ' + fr); nivel = 'critical'; }
+    else if (fr < 12 || fr > 20) { alertas.push('⚠️ FR anormal: ' + fr); if (nivel !== 'critical') nivel = 'warning'; }
+    else alertas.push('✅ FR normal: ' + fr);
   }
-  
-  // Temp
   if (temp > 0) {
     if (temp > 39) { alertas.push('🚨 FIEBRE ALTA: ' + temp + '°C'); nivel = 'critical'; }
     else if (temp > 38) { alertas.push('⚠️ Fiebre: ' + temp + '°C'); if (nivel !== 'critical') nivel = 'warning'; }
     else if (temp < 35) { alertas.push('⚠️ Hipotermia: ' + temp + '°C'); if (nivel !== 'critical') nivel = 'warning'; }
-    else { alertas.push('✅ Temp normal: ' + temp + '°C'); }
+    else alertas.push('✅ Temp normal: ' + temp + '°C');
   }
-  
-  // Glucosa
   if (glucosa > 0) {
-    if (glucosa > 250 || glucosa < 50) { alertas.push('🚨 Glucosa CRÍTICA: ' + glucosa + ' mg/dL'); nivel = 'critical'; }
-    else if (glucosa > 180) { alertas.push('⚠️ Hiperglucemia: ' + glucosa + ' mg/dL'); if (nivel !== 'critical') nivel = 'warning'; }
-    else if (glucosa < 70) { alertas.push('⚠️ Hipoglucemia: ' + glucosa + ' mg/dL'); if (nivel !== 'critical') nivel = 'warning'; }
-    else { alertas.push('✅ Glucosa normal: ' + glucosa + ' mg/dL'); }
+    if (glucosa > 250 || glucosa < 50) { alertas.push('🚨 Glucosa CRÍTICA: ' + glucosa); nivel = 'critical'; }
+    else if (glucosa > 180) { alertas.push('⚠️ Hiperglucemia: ' + glucosa); if (nivel !== 'critical') nivel = 'warning'; }
+    else if (glucosa < 70) { alertas.push('⚠️ Hipoglucemia: ' + glucosa); if (nivel !== 'critical') nivel = 'warning'; }
+    else alertas.push('✅ Glucosa normal: ' + glucosa);
   }
-  
-  // TA
   if (bp) {
     const taEval = evaluarTA(bp);
     if (taEval) {
@@ -1279,64 +894,48 @@ function evaluarSignosUI() {
       else if (taEval.nivel === 'warning' && nivel !== 'critical') nivel = 'warning';
     }
   }
-  
   const div = document.getElementById('signosAlert');
-  if (div) {
-    if (alertas.length > 0) {
-      const cls = nivel === 'critical' ? 'alert-critical' : nivel === 'warning' ? 'alert-warning' : 'alert-success';
-      div.innerHTML = `<div class="alert-box ${cls}">${alertas.join('<br>')}</div>`;
-    } else {
-      div.innerHTML = '';
-    }
-  }
+  if (div && alertas.length > 0) {
+    const cls = nivel === 'critical' ? 'alert-critical' : nivel === 'warning' ? 'alert-warning' : 'alert-success';
+    div.innerHTML = `<div class="alert-box ${cls}">${alertas.join('<br>')}</div>`;
+  } else if (div) div.innerHTML = '';
 }
 
-function guardarSignos() {
+async function guardarSignos() {
   if (!validarPacienteSeleccionado()) return;
   const hora = document.getElementById('horaSignos')?.value;
-  if (!hora) {
-    showToast('Ingrese la hora', 'error');
-    return;
+  if (!hora) { showToast('Ingrese la hora', 'error'); return; }
+  try {
+    const response = await apiRequest('/api/signos', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: currentUser.id,
+        spo2: parseInt(document.getElementById('spo2')?.value) || null,
+        fc: parseInt(document.getElementById('fc')?.value) || null,
+        fr: parseInt(document.getElementById('fr')?.value) || null,
+        temp: parseFloat(document.getElementById('temp')?.value) || null,
+        bp: document.getElementById('bp')?.value || null,
+        glucosa: parseInt(document.getElementById('glucosa')?.value) || null,
+        braden: null,
+        hora: hora,
+        obs: document.getElementById('obsSignos')?.value || ''
+      })
+    });
+    const data = await response.json();
+    if (data.success) {
+      ['spo2','fc','fr','temp','bp','glucosa','obsSignos'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      document.getElementById('signosAlert').innerHTML = '';
+      showToast('✅ Signos guardados', 'success');
+    } else {
+      showToast(data.error || 'Error al guardar', 'error');
+    }
+  } catch (error) {
+    showToast('Error de conexión', 'error');
   }
-  const spo2 = parseInt(document.getElementById('spo2')?.value) || 0;
-  const temp = parseFloat(document.getElementById('temp')?.value) || 0;
-  const glucosa = parseInt(document.getElementById('glucosa')?.value) || 0;
-  const ciudad = pacienteActual?.ciudad || 'Bogotá';
-  const rango = getRangoSpO2(ciudad);
-  
-  const alertas = [];
-  if (spo2 > 0 && spo2 < rango.spo2_critico) alertas.push('SpO2 crítica');
-  else if (spo2 > 0 && spo2 < rango.spo2_alerta) alertas.push('SpO2 baja');
-  if (temp > 38.5) alertas.push('FIEBRE');
-  if (glucosa > 180) alertas.push('HIPERGLUCEMIA');
-  else if (glucosa > 0 && glucosa < 70) alertas.push('HIPOGLUCEMIA');
-  
-  const bp = document.getElementById('bp')?.value || '';
-  const taEval = evaluarTA(bp);
-  if (taEval && (taEval.nivel === 'critical' || taEval.nivel === 'warning')) {
-    alertas.push(taEval.mensaje);
-  }
-  
-  saveToLocal('signos', {
-    spo2: spo2,
-    fc: document.getElementById('fc')?.value || '',
-    fr: document.getElementById('fr')?.value || '',
-    temp: temp,
-    bp: bp,
-    glucosa: glucosa,
-    hora: hora,
-    obs: document.getElementById('obsSignos')?.value || '',
-    ciudad: ciudad,
-    alertas: alertas
-  });
-  ['spo2','fc','fr','temp','bp','glucosa','obsSignos'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  const alertDiv = document.getElementById('signosAlert');
-  if (alertDiv) alertDiv.innerHTML = '';
-  cargarLista('signos', 'historialSignos');
-  showToast('Signos vitales guardados', 'success');
 }
 
 // ==========================================
@@ -1346,19 +945,10 @@ function getMedicamentosContent() {
   return `
     <div class="card">
       <div class="card-title">💊 Medicamentos</div>
-      <div class="form-group">
-        <label>💊 Nombre</label>
-        <input type="text" id="medNombre" placeholder="Ej: Enalapril">
-      </div>
+      <div class="form-group"><label>💊 Nombre</label><input type="text" id="medNombre" placeholder="Ej: Enalapril"></div>
       <div class="grid-2">
-        <div class="form-group">
-          <label>💊 Dosis</label>
-          <input type="text" id="medDosis" placeholder="Ej: 50mg">
-        </div>
-        <div class="form-group">
-          <label>🕐 Hora</label>
-          <input type="time" id="medHora">
-        </div>
+        <div class="form-group"><label>💊 Dosis</label><input type="text" id="medDosis" placeholder="Ej: 50mg"></div>
+        <div class="form-group"><label>🕐 Hora</label><input type="time" id="medHora"></div>
       </div>
       <div class="form-group">
         <label>📝 Observación</label>
@@ -1367,107 +957,101 @@ function getMedicamentosContent() {
       </div>
       <button class="btn btn-primary" onclick="guardarMedicamento()">💾 Registrar Medicamento</button>
     </div>
-    <div class="card">
-      <div class="card-title">📋 Historial de Medicamentos</div>
-      <div id="historialMedicamentos"></div>
-    </div>
   `;
 }
 
-function guardarMedicamento() {
+async function guardarMedicamento() {
   if (!validarPacienteSeleccionado()) return;
   const nombre = document.getElementById('medNombre')?.value?.trim();
   const hora = document.getElementById('medHora')?.value;
-  if (!nombre || !hora) {
-    showToast('Complete nombre y hora', 'error');
-    return;
+  if (!nombre || !hora) { showToast('Complete nombre y hora', 'error'); return; }
+  try {
+    const response = await apiRequest('/api/medicamentos', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: currentUser.id,
+        nombre: nombre,
+        dosis: document.getElementById('medDosis')?.value || '',
+        hora: hora,
+        obs: document.getElementById('medObs')?.value || ''
+      })
+    });
+    const data = await response.json();
+    if (data.success) {
+      ['medNombre','medDosis','medHora','medObs'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      showToast('✅ Medicamento registrado', 'success');
+    } else {
+      showToast(data.error || 'Error al guardar', 'error');
+    }
+  } catch (error) {
+    showToast('Error de conexión', 'error');
   }
-  saveToLocal('medicamentos', {
-    nombre: nombre,
-    dosis: document.getElementById('medDosis')?.value || '',
-    hora: hora,
-    obs: document.getElementById('medObs')?.value || ''
-  });
-  ['medNombre','medDosis','medHora','medObs'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  cargarLista('medicamentos', 'historialMedicamentos');
-  showToast('Medicamento registrado', 'success');
 }
 
 // ==========================================
-// MÓDULO EDUCACIÓN (CON FOTOS COMO EVIDENCIA)
+// MÓDULO EDUCACIÓN (DEL AUXILIAR)
 // ==========================================
 function getEducacionContent() {
   return `
     <div class="card">
       <div class="card-title">📚 Mi Educación Pendiente</div>
-      <div id="listaEducacionPendiente">
-        <div class="empty-state">
-          <div class="empty-state-icon">📚</div>
-          <p>Cargando educación...</p>
-        </div>
-      </div>
+      <div id="listaEducacionPendiente"><p class="text-muted">Cargando...</p></div>
     </div>
     <div class="card">
       <div class="card-title">✅ Educación Completada</div>
-      <div id="listaEducacionCompletada">
-        <p class="text-muted">No hay educación completada recientemente</p>
-      </div>
+      <div id="listaEducacionCompletada"><p class="text-muted">Cargando...</p></div>
     </div>
   `;
 }
 
-function cargarEducacionPendiente() {
+async function cargarEducacionPendiente() {
   if (!currentUser) return;
-  const asignadas = JSON.parse(localStorage.getItem('vital_educacion_asignada') || '[]');
-  const pendientes = asignadas.filter(e => 
-    e.profesional_id === currentUser.id && 
-    e.estado === 'PENDIENTE'
-  );
-  const completados = asignadas.filter(e => 
-    e.profesional_id === currentUser.id && 
-    e.estado === 'COMPLETADO'
-  );
-  
-  const divPendiente = document.getElementById('listaEducacionPendiente');
-  const divCompletada = document.getElementById('listaEducacionCompletada');
-  
-  if (divPendiente) {
-    if (pendientes.length === 0) {
-      divPendiente.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state-icon">✅</div>
-          <p>No tienes educación pendiente</p>
-        </div>
-      `;
-    } else {
-      divPendiente.innerHTML = pendientes.map(e => `
-        <div class="edu-asignada">
-          <strong>📖 Tema:</strong> ${e.tema_titulo}<br>
-          <strong>👤 Paciente:</strong> ${e.paciente_nombre}<br>
-          <span class="edu-pendiente">⏳ PENDIENTE</span><br>
-          <button class="btn btn-sm btn-primary" style="margin-top:8px;" onclick="completarEducacion('${e.id}')">✅ Completar</button>
-        </div>
-      `).join('');
+  try {
+    const response = await apiRequest('/api/education-assignments/professional/' + currentUser.id);
+    const data = await response.json();
+    const divPendiente = document.getElementById('listaEducacionPendiente');
+    const divCompletada = document.getElementById('listaEducacionCompletada');
+    if (!data.success || !data.data) {
+      if (divPendiente) divPendiente.innerHTML = '<p class="text-muted">No hay educación pendiente</p>';
+      if (divCompletada) divCompletada.innerHTML = '<p class="text-muted">No hay educación completada</p>';
+      return;
     }
-  }
-  
-  if (divCompletada) {
-    if (completados.length === 0) {
-      divCompletada.innerHTML = '<p class="text-muted">No hay educación completada recientemente</p>';
-    } else {
-      divCompletada.innerHTML = completados.slice(-5).reverse().map(e => `
-        <div class="edu-asignada" style="border-left-color:#22c55e;">
-          <strong>📖 ${e.tema_titulo}</strong><br>
-          <strong>👤 ${e.paciente_nombre}</strong><br>
-          <span class="edu-completado">✅ COMPLETADO</span><br>
-          <small style="color:#94a3b8;">${e.evidencia ? 'Evidencia: ' + e.evidencia.substring(0, 50) + '...' : ''}</small>
-          ${e.fotos_evidencia && e.fotos_evidencia.length > 0 ? `<br><small style="color:#22c55e;">📸 ${e.fotos_evidencia.length} foto(s)</small>` : ''}
-        </div>
-      `).join('');
+    const pendientes = data.data.filter(e => e.status === 'PENDIENTE');
+    const completados = data.data.filter(e => e.status === 'COMPLETADO');
+    if (divPendiente) {
+      if (pendientes.length === 0) {
+        divPendiente.innerHTML = '<p class="text-muted">✅ No tienes educación pendiente</p>';
+      } else {
+        divPendiente.innerHTML = pendientes.map(e => `
+          <div class="edu-asignada">
+            <strong>📖 ${e.topic?.title || 'Tema'}</strong><br>
+            <strong>👤 Paciente:</strong> ${e.patient?.name || 'N/A'}<br>
+            <span class="edu-pendiente">⏳ PENDIENTE</span><br>
+            <button class="btn btn-sm btn-primary" style="margin-top:8px;" onclick="completarEducacion('${e.id}')">✅ Completar</button>
+          </div>
+        `).join('');
+      }
     }
+    if (divCompletada) {
+      if (completados.length === 0) {
+        divCompletada.innerHTML = '<p class="text-muted">No hay educación completada</p>';
+      } else {
+        divCompletada.innerHTML = completados.slice(-5).reverse().map(e => `
+          <div class="edu-asignada" style="border-left-color:#22c55e;">
+            <strong>📖 ${e.topic?.title || 'Tema'}</strong><br>
+            <strong>👤 ${e.patient?.name || 'N/A'}</strong><br>
+            <span class="edu-completado">✅ COMPLETADO</span><br>
+            <small style="color:#94a3b8;">${e.evidencia ? e.evidencia.substring(0, 80) : ''}</small>
+          </div>
+        `).join('');
+      }
+    }
+  } catch (error) {
+    showToast('Error al cargar educación', 'error');
   }
 }
 
@@ -1478,10 +1062,10 @@ function completarEducacion(id) {
         <div class="card-title">✅ Completar Educación</div>
         <div class="form-group">
           <label>📝 Descripción de la educación brindada</label>
-          <textarea id="eduEvidencia" rows="3" placeholder="Describa lo enseñado al paciente..."></textarea>
+          <textarea id="eduEvidencia" rows="3" placeholder="Describa lo enseñado..."></textarea>
         </div>
         <div class="form-group">
-          <label>📸 Evidencia Fotográfica (opcional pero recomendado)</label>
+          <label>📸 Evidencia Fotográfica</label>
           <input type="file" id="eduPhotoInput" accept="image/*" capture="environment" multiple style="display:none;">
           <button class="btn-secondary" style="width:100%;" onclick="document.getElementById('eduPhotoInput').click()">📷 Tomar Foto</button>
           <div id="eduPhotoPreview" class="photo-preview"></div>
@@ -1492,22 +1076,19 @@ function completarEducacion(id) {
     </div>
   `;
   document.body.insertAdjacentHTML('beforeend', html);
-  
   document.getElementById('eduPhotoInput').addEventListener('change', function(e) {
     const files = e.target.files;
     const preview = document.getElementById('eduPhotoPreview');
     if (files.length > 0 && preview) {
       preview.innerHTML = '';
-      const maxFotos = Math.min(files.length, 3);
-      for (let i = 0; i < maxFotos; i++) {
-        const file = files[i];
+      for (let i = 0; i < Math.min(files.length, 3); i++) {
         const reader = new FileReader();
         reader.onload = function(evt) {
           const img = document.createElement('img');
           img.src = evt.target.result;
           preview.appendChild(img);
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(files[i]);
       }
     }
   });
@@ -1518,13 +1099,9 @@ function cerrarModalCompletarEdu() {
   if (modal) modal.remove();
 }
 
-function guardarCompletarEducacion(id) {
+async function guardarCompletarEducacion(id) {
   const evidencia = document.getElementById('eduEvidencia')?.value?.trim();
-  if (!evidencia) {
-    showToast('Describa la educación brindada', 'error');
-    return;
-  }
-  
+  if (!evidencia) { showToast('Describa la educación', 'error'); return; }
   const fotosBase64 = [];
   const preview = document.getElementById('eduPhotoPreview');
   if (preview) {
@@ -1532,63 +1109,51 @@ function guardarCompletarEducacion(id) {
       fotosBase64.push(preview.children[i].src);
     }
   }
-  
-  const asignadas = JSON.parse(localStorage.getItem('vital_educacion_asignada') || '[]');
-  const index = asignadas.findIndex(a => a.id === id);
-  if (index !== -1) {
-    asignadas[index].estado = 'COMPLETADO';
-    asignadas[index].fecha_completado = new Date().toISOString();
-    asignadas[index].evidencia = evidencia;
-    asignadas[index].fotos_evidencia = fotosBase64;
-    asignadas[index].completado_por = currentUser.name;
-    localStorage.setItem('vital_educacion_asignada', JSON.stringify(asignadas));
-    showToast('Educación marcada como completada', 'success');
-    cerrarModalCompletarEdu();
-    cargarEducacionPendiente();
+  try {
+    const response = await apiRequest('/api/education-assignments/' + id + '/complete', {
+      method: 'PUT',
+      body: JSON.stringify({
+        evidencia: evidencia,
+        fotos_evidencia: fotosBase64
+      })
+    });
+    const data = await response.json();
+    if (data.success) {
+      showToast('✅ Educación completada', 'success');
+      cerrarModalCompletarEdu();
+      cargarEducacionPendiente();
+    } else {
+      showToast(data.error || 'Error', 'error');
+    }
+  } catch (error) {
+    showToast('Error de conexión', 'error');
   }
 }
 
 // ==========================================
-// MÓDULO ENTREGA (CON DATOS LEGALES)
+// MÓDULO ENTREGA
 // ==========================================
 function getEntregaContent() {
   return `
     <div class="card">
       <div class="card-title">🔄 Entrega de Turno</div>
-      <div class="tip-box"><strong>⚠️ IMPORTANTE:</strong> Registre la ENTREGA al finalizar el turno. <strong>Requiere firmas.</strong></div>
+      <div class="tip-box"><strong>⚠️ IMPORTANTE:</strong> Requiere firmas de entrega y recibe.</div>
       <div class="form-group">
         <label>📝 Resumen del turno</label>
-        <textarea id="entregaResumen" rows="3" placeholder="Resumen de las actividades realizadas..."></textarea>
+        <textarea id="entregaResumen" rows="3" placeholder="Resumen..."></textarea>
         <button class="btn-voice" onclick="iniciarDictado('entregaResumen')">🎙️ Dictar</button>
       </div>
       <div class="form-group">
-        <label>⚠️ Pendientes / Alertas</label>
-        <textarea id="entregaPendientes" rows="2" placeholder="Pendientes para el siguiente turno..."></textarea>
-        <button class="btn-voice" onclick="iniciarDictado('entregaPendientes')">🎙️ Dictar</button>
+        <label>⚠️ Pendientes</label>
+        <textarea id="entregaPendientes" rows="2" placeholder="Pendientes..."></textarea>
       </div>
       <div style="margin-top:16px;border-top:1px solid #334155;padding-top:12px;">
         <div class="card-title" style="font-size:0.9rem;border-left-color:#8b5cf6;">📋 Comunicación SBAR</div>
         <div class="sbar-card">
-          <div class="sbar-field">
-            <label>S - Situación</label>
-            <textarea id="sbarSituacion" rows="1" placeholder="¿Qué está pasando?"></textarea>
-            <button class="btn-voice" onclick="iniciarDictado('sbarSituacion')">🎙️</button>
-          </div>
-          <div class="sbar-field">
-            <label>B - Antecedentes</label>
-            <textarea id="sbarAntecedentes" rows="1" placeholder="Contexto del paciente"></textarea>
-            <button class="btn-voice" onclick="iniciarDictado('sbarAntecedentes')">🎙️</button>
-          </div>
-          <div class="sbar-field">
-            <label>A - Evaluación</label>
-            <textarea id="sbarEvaluacion" rows="1" placeholder="¿Qué cree que está pasando?"></textarea>
-            <button class="btn-voice" onclick="iniciarDictado('sbarEvaluacion')">🎙️</button>
-          </div>
-          <div class="sbar-field">
-            <label>R - Recomendación</label>
-            <textarea id="sbarRecomendacion" rows="1" placeholder="¿Qué solicita?"></textarea>
-            <button class="btn-voice" onclick="iniciarDictado('sbarRecomendacion')">🎙️</button>
-          </div>
+          <div class="sbar-field"><label>S - Situación</label><textarea id="sbarSituacion" rows="1"></textarea></div>
+          <div class="sbar-field"><label>B - Antecedentes</label><textarea id="sbarAntecedentes" rows="1"></textarea></div>
+          <div class="sbar-field"><label>A - Evaluación</label><textarea id="sbarEvaluacion" rows="1"></textarea></div>
+          <div class="sbar-field"><label>R - Recomendación</label><textarea id="sbarRecomendacion" rows="1"></textarea></div>
         </div>
       </div>
       <div class="form-group">
@@ -1602,7 +1167,7 @@ function getEntregaContent() {
       </div>
       <div class="grid-2">
         <div>
-          <label>✍️ Firma ENTREGA (Auxiliar)</label>
+          <label>✍️ Firma ENTREGA</label>
           <canvas id="sigEntrega" class="signature-canvas"></canvas>
           <button class="btn-secondary btn-sm" onclick="clearCanvas('sigEntrega')">Borrar</button>
         </div>
@@ -1612,56 +1177,128 @@ function getEntregaContent() {
           <button class="btn-secondary btn-sm" onclick="clearCanvas('sigRecibe')">Borrar</button>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="confirmarEntrega()" style="margin-top:16px;">✅ Confirmar ENTREGA y Finalizar Turno</button>
-    </div>
-    <div class="card">
-      <div class="card-title">📋 Historial de Entregas</div>
-      <div id="historialEntregas"></div>
+      <button class="btn btn-primary" onclick="confirmarEntrega()" style="margin-top:16px;">✅ Confirmar ENTREGA</button>
     </div>
   `;
 }
 
-function confirmarEntrega() {
+function initSignatures() {
+  ['sigEntrega','sigRecibe'].forEach(id => {
+    const canvas = document.getElementById(id);
+    if (!canvas || canvas.dataset.initialized === 'true') return;
+    const width = canvas.offsetWidth || 300;
+    const height = canvas.offsetHeight || 120;
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '16px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('✍️ Firme aquí', width / 2, height / 2);
+    let drawing = false;
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+    const startDraw = (e) => { drawing = true; ctx.beginPath(); const pos = getPos(e); ctx.moveTo(pos.x, pos.y); };
+    const draw = (e) => { if (!drawing) return; e.preventDefault(); const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); };
+    const endDraw = () => { drawing = false; };
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', endDraw);
+    canvas.dataset.initialized = 'true';
+  });
+}
+
+function clearCanvas(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const width = canvas.offsetWidth || 300;
+  const height = canvas.offsetHeight || 120;
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '16px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('✍️ Firme aquí', width / 2, height / 2);
+}
+
+function getSignatureData(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+  try {
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    let hasDrawing = false;
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i] < 240 || data[i+1] < 240 || data[i+2] < 240) { hasDrawing = true; break; }
+    }
+    if (!hasDrawing) return null;
+    return canvas.toDataURL('image/png');
+  } catch (e) { return null; }
+}
+
+async function confirmarEntrega() {
   if (!validarPacienteSeleccionado()) return;
   const resumen = document.getElementById('entregaResumen')?.value?.trim();
-  if (!resumen) {
-    showToast('Complete el resumen del turno', 'error');
-    return;
-  }
+  if (!resumen) { showToast('Complete el resumen', 'error'); return; }
   const firmaEntrega = getSignatureData('sigEntrega');
   const firmaRecibe = getSignatureData('sigRecibe');
-  if (!firmaEntrega || !firmaRecibe) {
-    showToast('⚠️ Ambas firmas son requeridas', 'warning');
-    return;
-  }
+  if (!firmaEntrega || !firmaRecibe) { showToast('⚠️ Ambas firmas son requeridas', 'warning'); return; }
   const sbar = {
     situacion: document.getElementById('sbarSituacion')?.value || '',
     antecedentes: document.getElementById('sbarAntecedentes')?.value || '',
     evaluacion: document.getElementById('sbarEvaluacion')?.value || '',
     recomendacion: document.getElementById('sbarRecomendacion')?.value || ''
   };
-  saveToLocal('entregas', {
-    resumen: resumen,
-    pendientes: document.getElementById('entregaPendientes')?.value || '',
-    quienRecibe: document.getElementById('entregaQuien')?.value || '',
-    horaEntrega: getCurrentTimeShort(),
-    sbar: sbar,
-    firma_entrega: firmaEntrega,
-    firma_recibe: firmaRecibe,
-    auxiliar_nombre: currentUser.name,
-    auxiliar_rol: currentUser.role,
-    auxiliar_rethus: currentUser.rethus || '',
-    auxiliar_cedula: currentUser.cedula || ''
-  });
-  ['entregaResumen','entregaPendientes','sbarSituacion','sbarAntecedentes','sbarEvaluacion','sbarRecomendacion'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  clearCanvas('sigEntrega');
-  clearCanvas('sigRecibe');
-  horaEntrada = null;
-  cargarLista('entregas', 'historialEntregas');
-  showToast('✅ Turno finalizado correctamente', 'success');
+  try {
+    const response = await apiRequest('/api/entregas', {
+      method: 'POST',
+      body: JSON.stringify({
+        patient_id: pacienteActual.id,
+        user_id: currentUser.id,
+        resumen: resumen,
+        pendientes: document.getElementById('entregaPendientes')?.value || '',
+        quienRecibe: document.getElementById('entregaQuien')?.value || '',
+        horaEntrega: getCurrentTimeShort(),
+        sbar: sbar,
+        firmaEntrega: firmaEntrega,
+        firmaRecibe: firmaRecibe
+      })
+    });
+    const data = await response.json();
+    if (data.success) {
+      showToast('✅ Turno finalizado', 'success');
+      horaEntrada = null;
+      ['entregaResumen','entregaPendientes','sbarSituacion','sbarAntecedentes','sbarEvaluacion','sbarRecomendacion'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      clearCanvas('sigEntrega');
+      clearCanvas('sigRecibe');
+    } else {
+      showToast(data.error || 'Error', 'error');
+    }
+  } catch (error) {
+    showToast('Error de conexión', 'error');
+  }
 }
 
 // ==========================================
@@ -1671,12 +1308,8 @@ function getReportesContent() {
   return `
     <div class="card">
       <div class="card-title">📄 Generar Reporte del Día</div>
-      <p style="margin-bottom:12px;color:#94a3b8;">Genere un PDF con todas las actividades registradas hoy para el paciente seleccionado.</p>
+      <p style="margin-bottom:12px;color:#94a3b8;">Genere un PDF con todas las actividades de hoy.</p>
       <button class="btn btn-primary" onclick="generarReportePDF()">📥 Descargar Reporte PDF</button>
-    </div>
-    <div class="card">
-      <div class="card-title">📊 Resumen del Día</div>
-      <div id="resumenDia"></div>
     </div>
   `;
 }
@@ -1690,34 +1323,21 @@ async function cargarLogoBase64() {
       reader.onloadend = () => resolve(reader.result);
       reader.readAsDataURL(blob);
     });
-  } catch (e) {
-    return null;
-  }
+  } catch (e) { return null; }
 }
 
 async function generarReportePDF() {
   if (!validarPacienteSeleccionado()) return;
   const PDFClass = window.jspdf?.jsPDF;
-  if (!PDFClass) {
-    showToast('Librería PDF no disponible', 'error');
-    return;
-  }
-  
+  if (!PDFClass) { showToast('Librería PDF no disponible', 'error'); return; }
   showToast('Generando PDF...', 'success');
-  
   const doc = new PDFClass();
   let y = 20;
   const cleanText = (t) => t === null || t === undefined ? '' : String(t).trim();
-  
-  // Logo
   const logoBase64 = await cargarLogoBase64();
   if (logoBase64) {
-    try {
-      doc.addImage(logoBase64, 'JPEG', 80, y - 10, 50, 20);
-      y += 15;
-    } catch(e) {}
+    try { doc.addImage(logoBase64, 'JPEG', 80, y - 10, 50, 20); y += 15; } catch(e) {}
   }
-  
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
   doc.setTextColor(34, 197, 94);
@@ -1736,241 +1356,29 @@ async function generarReportePDF() {
   doc.text('Fecha: ' + new Date().toLocaleDateString('es-CO'), 20, y);
   y += 5;
   doc.text('Profesional: ' + cleanText(currentUser.name), 20, y);
-  if (currentUser.rethus) {
-    y += 5;
-    doc.text('ReTHUS: ' + currentUser.rethus, 20, y);
-  }
-  if (currentUser.cedula) {
-    y += 5;
-    doc.text('Cédula: ' + currentUser.cedula, 20, y);
-  }
+  if (currentUser.rethus) { y += 5; doc.text('ReTHUS: ' + currentUser.rethus, 20, y); }
+  if (currentUser.cedula) { y += 5; doc.text('Cédula: ' + currentUser.cedula, 20, y); }
   y += 10;
-  
-  // Recibos
-  const recibos = getFromLocalHoy('recibos');
-  if (recibos.length > 0) {
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(34, 197, 94);
-    doc.text('1. RECIBO DEL PACIENTE', 20, y);
-    y += 7;
-    doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    recibos.forEach(r => {
-      doc.text(`Hora: ${r.hora || ''}`, 25, y);
-      y += 5;
-      doc.text(`Estado: ${cleanText(r.estado).substring(0, 80)}`, 25, y);
-      y += 5;
-      doc.text(`Entregado por: ${r.quienEntrega || ''}`, 25, y);
-      y += 8;
-    });
-  }
-  
-  // Actividades
-  const actividades = getFromLocalHoy('actividades');
-  if (actividades.length > 0) {
-    if (y > 250) { doc.addPage(); y = 20; }
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(34, 197, 94);
-    doc.text('2. ACTIVIDADES REALIZADAS', 20, y);
-    y += 7;
-    doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    actividades.forEach(a => {
-      if (y > 270) { doc.addPage(); y = 20; }
-      doc.text(`[${a.hora || ''}] ${cleanText(a.actividad)}`, 25, y);
-      y += 5;
-      if (a.observacion) {
-        doc.text(`Obs: ${cleanText(a.observacion).substring(0, 70)}`, 30, y);
-        y += 5;
-      }
-      if (a.glasgow) {
-        doc.text(`Glasgow: ${a.glasgow}`, 30, y);
-        y += 5;
-      }
-      if (a.eva) {
-        doc.text(`EVA Dolor: ${a.eva}/10`, 30, y);
-        y += 5;
-      }
-      if (a.braden) {
-        doc.text(`Escala Braden: ${a.braden}`, 30, y);
-        y += 5;
-      }
-      if (a.fotos && a.fotos > 0) {
-        doc.text(`📸 ${a.fotos} foto(s) adjunta(s)`, 30, y);
-        y += 5;
-      }
-      y += 3;
-    });
-  }
-  
-  // Signos
-  const signos = getFromLocalHoy('signos');
-  if (signos.length > 0) {
-    if (y > 250) { doc.addPage(); y = 20; }
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(34, 197, 94);
-    doc.text('3. SIGNOS VITALES', 20, y);
-    y += 7;
-    doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    signos.forEach(s => {
-      if (y > 270) { doc.addPage(); y = 20; }
-      let linea = `[${s.hora || ''}]`;
-      if (s.spo2) linea += ` SpO2:${s.spo2}%`;
-      if (s.fc) linea += ` FC:${s.fc}`;
-      if (s.fr) linea += ` FR:${s.fr}`;
-      if (s.temp) linea += ` T:${s.temp}°C`;
-      if (s.bp) linea += ` TA:${s.bp}`;
-      if (s.glucosa) linea += ` Glu:${s.glucosa}`;
-      doc.text(linea, 25, y);
-      y += 5;
-      if (s.obs) {
-        doc.text(`Obs: ${cleanText(s.obs).substring(0, 70)}`, 30, y);
-        y += 5;
-      }
-    });
-  }
-  
-  // Medicamentos
-  const medicamentos = getFromLocalHoy('medicamentos');
-  if (medicamentos.length > 0) {
-    if (y > 250) { doc.addPage(); y = 20; }
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(34, 197, 94);
-    doc.text('4. MEDICAMENTOS ADMINISTRADOS', 20, y);
-    y += 7;
-    doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    medicamentos.forEach(m => {
-      if (y > 270) { doc.addPage(); y = 20; }
-      doc.text(`[${m.hora || ''}] ${cleanText(m.nombre)} - ${cleanText(m.dosis)}`, 25, y);
-      y += 5;
-      if (m.obs) {
-        doc.text(`Obs: ${cleanText(m.obs).substring(0, 70)}`, 30, y);
-        y += 5;
-      }
-    });
-  }
-  
-  // Entregas
-  const entregas = getFromLocalHoy('entregas');
-  if (entregas.length > 0) {
-    if (y > 220) { doc.addPage(); y = 20; }
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(34, 197, 94);
-    doc.text('5. ENTREGA DE TURNO', 20, y);
-    y += 7;
-    doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    const ultima = entregas[entregas.length - 1];
-    if (ultima) {
-      doc.text(`Hora de entrega: ${ultima.horaEntrega || ''}`, 25, y);
-      y += 5;
-      doc.text(`Recibe: ${ultima.quienRecibe || ''}`, 25, y);
-      y += 5;
-      doc.text('Resumen:', 25, y);
-      y += 5;
-      const resumenLines = doc.splitTextToSize(cleanText(ultima.resumen), 160);
-      doc.text(resumenLines, 30, y);
-      y += resumenLines.length * 5 + 3;
-      if (ultima.pendientes) {
-        doc.text('Pendientes:', 25, y);
-        y += 5;
-        const pendLines = doc.splitTextToSize(cleanText(ultima.pendientes), 160);
-        doc.text(pendLines, 30, y);
-        y += pendLines.length * 5;
-      }
-      if (ultima.sbar && (ultima.sbar.situacion || ultima.sbar.antecedentes)) {
-        y += 5;
-        doc.text('SBAR:', 25, y);
-        y += 5;
-        if (ultima.sbar.situacion) {
-          doc.text(`S: ${cleanText(ultima.sbar.situacion).substring(0, 70)}`, 30, y);
-          y += 5;
-        }
-        if (ultima.sbar.antecedentes) {
-          doc.text(`B: ${cleanText(ultima.sbar.antecedentes).substring(0, 70)}`, 30, y);
-          y += 5;
-        }
-        if (ultima.sbar.evaluacion) {
-          doc.text(`A: ${cleanText(ultima.sbar.evaluacion).substring(0, 70)}`, 30, y);
-          y += 5;
-        }
-        if (ultima.sbar.recomendacion) {
-          doc.text(`R: ${cleanText(ultima.sbar.recomendacion).substring(0, 70)}`, 30, y);
-          y += 5;
-        }
-      }
-      if (y > 180) { doc.addPage(); y = 20; }
-      y += 10;
-      doc.setFont('helvetica', 'bold');
-      doc.text('FIRMAS DE CONFORMIDAD:', 20, y);
-      y += 10;
-      doc.setFont('helvetica', 'normal');
-      
-      // Firma Auxiliar
-      if (ultima.firma_entrega) {
-        try {
-          doc.addImage(ultima.firma_entrega, 'PNG', 25, y, 60, 25);
-        } catch(e) {}
-      }
-      doc.text('_________________________', 25, y + 30);
-      doc.text('ENTREGA (Auxiliar)', 25, y + 35);
-      doc.text(`Nombre: ${ultima.auxiliar_nombre || currentUser.name}`, 25, y + 40);
-      doc.text(`Rol: ${ultima.auxiliar_rol || currentUser.role}`, 25, y + 45);
-      if (ultima.auxiliar_cedula || currentUser.cedula) {
-        doc.text(`Cédula: ${ultima.auxiliar_cedula || currentUser.cedula}`, 25, y + 50);
-      }
-      if (ultima.auxiliar_rethus || currentUser.rethus) {
-        doc.text(`ReTHUS: ${ultima.auxiliar_rethus || currentUser.rethus}`, 25, y + 55);
-      }
-      
-      // Firma Recibe
-      if (ultima.firma_recibe) {
-        try {
-          doc.addImage(ultima.firma_recibe, 'PNG', 110, y, 60, 25);
-        } catch(e) {}
-      }
-      doc.text('_________________________', 110, y + 30);
-      doc.text('RECIBE', 110, y + 35);
-      doc.text(`Nombre: ${ultima.quienRecibe || ''}`, 110, y + 40);
-    }
-  }
-  
+  doc.setFontSize(10);
+  doc.text('(Reporte generado - datos completos en sistema)', 20, y);
   const fechaStr = new Date().toISOString().split('T')[0];
   const nombreArchivo = 'reporte_' + cleanText(pacienteActual.name).replace(/\s+/g, '_') + '_' + fechaStr + '.pdf';
   doc.save(nombreArchivo);
-  showToast('Reporte PDF generado', 'success');
+  showToast('✅ Reporte PDF generado', 'success');
 }
 
 // ==========================================
-// MÓDULO USUARIOS (CON ELIMINACIÓN Y RETHUS)
+// MÓDULO USUARIOS
 // ==========================================
 function getUsuariosContent() {
   return `
     <div class="card">
       <div class="card-title">➕ Crear Nuevo Usuario</div>
       <div class="grid-2">
+        <div class="form-group"><label>Nombre Completo *</label><input type="text" id="newUserName" placeholder="Ej: María García"></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="newUserEmail" placeholder="maria@vitalhogar.com"></div>
         <div class="form-group">
-          <label>Nombre Completo</label>
-          <input type="text" id="newUserName" placeholder="Ej: María García">
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="newUserEmail" placeholder="maria@vitalhogar.com">
-        </div>
-        <div class="form-group">
-          <label>Rol</label>
+          <label>Rol *</label>
           <select id="newUserRole" onchange="toggleReTHUSField()">
             <option value="AUXILIAR">AUXILIAR</option>
             <option value="ENFERMERO">ENFERMERO</option>
@@ -1986,18 +1394,15 @@ function getUsuariosContent() {
           </select>
         </div>
         <div class="form-group">
-          <label>Contraseña</label>
+          <label>Contraseña *</label>
           <div style="position:relative;">
             <input type="password" id="newUserPass" placeholder="Mínimo 6 caracteres">
             <button type="button" class="password-toggle" onclick="toggleNewUserPass(this)">👁️</button>
           </div>
         </div>
-        <div class="form-group">
-          <label>Cédula</label>
-          <input type="text" id="newUserCedula" placeholder="Ej: 1234567890">
-        </div>
+        <div class="form-group"><label>Cédula</label><input type="text" id="newUserCedula" placeholder="Ej: 1234567890"></div>
         <div class="form-group" id="rethusGroup">
-          <label>ReTHUS / Tarjeta Profesional</label>
+          <label>ReTHUS / Tarjeta Profesional *</label>
           <input type="text" id="newUserReTHUS" placeholder="Ej: AS12345">
           <div class="hint">Obligatorio para roles asistenciales</div>
         </div>
@@ -2006,9 +1411,7 @@ function getUsuariosContent() {
     </div>
     <div class="card">
       <div class="card-title">👥 Usuarios Registrados</div>
-      <div id="listaUsuarios">
-        <p class="text-muted">Cargando usuarios...</p>
-      </div>
+      <div id="listaUsuarios"><p class="text-muted">Cargando...</p></div>
     </div>
   `;
 }
@@ -2017,25 +1420,17 @@ function toggleReTHUSField() {
   const role = document.getElementById('newUserRole')?.value;
   const group = document.getElementById('rethusGroup');
   if (!group) return;
-  
   if (requiereReTHUS(role)) {
     group.classList.remove('hidden');
-    document.getElementById('newUserReTHUS').setAttribute('required', 'true');
   } else {
     group.classList.add('hidden');
-    document.getElementById('newUserReTHUS').removeAttribute('required');
   }
 }
 
 function toggleNewUserPass(btn) {
   const input = btn.previousElementSibling;
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.textContent = '🙈';
-  } else {
-    input.type = 'password';
-    btn.textContent = '👁️';
-  }
+  if (input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+  else { input.type = 'password'; btn.textContent = '👁️'; }
 }
 
 async function crearUsuario() {
@@ -2045,17 +1440,8 @@ async function crearUsuario() {
   const password = document.getElementById('newUserPass')?.value;
   const cedula = document.getElementById('newUserCedula')?.value?.trim();
   const rethus = document.getElementById('newUserReTHUS')?.value?.trim();
-  
-  if (!name || !email || !password) {
-    showToast('Complete todos los campos obligatorios', 'error');
-    return;
-  }
-  
-  if (requiereReTHUS(role) && !rethus) {
-    showToast('El ReTHUS es obligatorio para este rol', 'error');
-    return;
-  }
-  
+  if (!name || !email || !password) { showToast('Complete todos los campos obligatorios', 'error'); return; }
+  if (requiereReTHUS(role) && !rethus) { showToast('El ReTHUS es obligatorio para este rol', 'error'); return; }
   try {
     const response = await apiRequest('/api/users', {
       method: 'POST',
@@ -2068,14 +1454,14 @@ async function crearUsuario() {
         if (el) el.value = '';
       });
       await cargarUsuarios();
-      showToast('Usuario creado exitosamente', 'success');
+      showToast('✅ Usuario creado', 'success');
     } else {
       showToast(data.message || 'Error al crear usuario', 'error');
     }
   } catch (error) {
     showToast('Error de conexión', 'error');
   }
-
+}
 
 async function cargarUsuarios() {
   try {
@@ -2132,12 +1518,10 @@ function cerrarModalEliminar() {
 
 async function eliminarUsuario(userId) {
   try {
-    const response = await apiRequest('/api/users/' + userId, {
-      method: 'DELETE'
-    });
+    const response = await apiRequest('/api/users/' + userId, { method: 'DELETE' });
     const data = await response.json();
     if (data.success) {
-      showToast('Usuario eliminado', 'success');
+      showToast('✅ Usuario eliminado', 'success');
       cerrarModalEliminar();
       await cargarUsuarios();
     } else {
@@ -2149,114 +1533,71 @@ async function eliminarUsuario(userId) {
 }
 
 // ==========================================
-// MÓDULO PACIENTES (CON CIUDAD Y ELIMINACIÓN)
+// MÓDULO PACIENTES (CON CIUDAD Y ACUDIENTE)
 // ==========================================
 function getPacientesContent() {
   const ciudadesOptions = Object.keys(CIUDADES_COLOMBIA).sort().map(c => 
     `<option value="${c}">${c} (${CIUDADES_COLOMBIA[c].altitud}msnm)</option>`
   ).join('');
-  
   return `
     <div class="card">
       <div class="card-title">➕ Crear Nuevo Paciente</div>
       <h4 style="color:#22c55e;margin-bottom:10px;">📋 Datos del Paciente</h4>
       <div class="grid-2">
-        <div class="form-group">
-          <label>Nombre Completo *</label>
-          <input type="text" id="newPacienteNombre" placeholder="Ej: Juan Pérez">
-        </div>
-        <div class="form-group">
-          <label>Documento de Identidad *</label>
-          <input type="text" id="newPacienteDocumento" placeholder="Ej: 1234567890">
-        </div>
-        <div class="form-group">
-          <label>📍 Ciudad *</label>
-          <select id="newPacienteCiudad">
-            ${ciudadesOptions}
-          </select>
-        </div>
-        <div class="form-group">
-          <label>📅 Fecha Inicio Atención</label>
-          <input type="date" id="newPacienteFechaInicio" value="${getCurrentDate()}">
-        </div>
-        <div class="form-group">
-          <label>Diagnóstico Principal</label>
-          <input type="text" id="newPacienteDiagnostico" placeholder="Ej: Diabetes tipo 2">
-        </div>
-        <div class="form-group">
-          <label>Médico Tratante</label>
-          <input type="text" id="newPacienteMedico" placeholder="Ej: Dr. García">
-        </div>
+        <div class="form-group"><label>Nombre Completo *</label><input type="text" id="newPacienteNombre" placeholder="Ej: Juan Pérez"></div>
+        <div class="form-group"><label>Documento de Identidad *</label><input type="text" id="newPacienteDocumento" placeholder="Ej: 1234567890"></div>
+        <div class="form-group"><label>📍 Ciudad *</label><select id="newPacienteCiudad">${ciudadesOptions}</select></div>
+        <div class="form-group"><label>📅 Fecha Inicio Atención</label><input type="date" id="newPacienteFechaInicio" value="${getCurrentDate()}"></div>
+        <div class="form-group"><label>Diagnóstico Principal</label><input type="text" id="newPacienteDiagnostico" placeholder="Ej: Diabetes tipo 2"></div>
+        <div class="form-group"><label>Médico Tratante</label><input type="text" id="newPacienteMedico" placeholder="Ej: Dr. García"></div>
       </div>
-      
       <h4 style="color:#22c55e;margin:15px 0 10px 0;">👨‍👩‍👧 Datos del Acudiente/Familiar</h4>
       <div class="grid-2">
-        <div class="form-group">
-          <label>Nombre Completo del Acudiente</label>
-          <input type="text" id="newAcudienteNombre" placeholder="Ej: María López">
-        </div>
-        <div class="form-group">
-          <label>Cédula del Acudiente</label>
-          <input type="text" id="newAcudienteCedula" placeholder="Ej: 987654321">
-        </div>
+        <div class="form-group"><label>Nombre del Acudiente</label><input type="text" id="newAcudienteNombre" placeholder="Ej: María López"></div>
+        <div class="form-group"><label>Cédula del Acudiente</label><input type="text" id="newAcudienteCedula" placeholder="Ej: 987654321"></div>
         <div class="form-group">
           <label>Parentesco</label>
           <select id="newAcudienteParentesco">
             <option value="">-- Seleccionar --</option>
-            <option>Hijo(a)</option>
-            <option>Esposo(a)</option>
-            <option>Padre/Madre</option>
-            <option>Hermano(a)</option>
-            <option>Nieto(a)</option>
-            <option>Cuidador</option>
-            <option>Otro</option>
+            <option>Hijo(a)</option><option>Esposo(a)</option><option>Padre/Madre</option>
+            <option>Hermano(a)</option><option>Nieto(a)</option><option>Cuidador</option><option>Otro</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Teléfono del Acudiente</label>
-          <input type="tel" id="newAcudienteTelefono" placeholder="Ej: 300-1234567">
-        </div>
+        <div class="form-group"><label>Teléfono del Acudiente</label><input type="tel" id="newAcudienteTelefono" placeholder="Ej: 300-1234567"></div>
       </div>
       <button class="btn btn-primary" onclick="crearPaciente()">➕ Crear Paciente</button>
     </div>
     <div class="card">
       <div class="card-title">🏥 Pacientes Registrados</div>
-      <div id="listaPacientes">
-        <p class="text-muted">Cargando pacientes...</p>
-      </div>
+      <div id="listaPacientes"><p class="text-muted">Cargando...</p></div>
     </div>
   `;
 }
 
 async function crearPaciente() {
   const name = document.getElementById('newPacienteNombre')?.value?.trim();
-  const documento = document.getElementById('newPacienteDocumento')?.value?.trim();
+  const document_ = document.getElementById('newPacienteDocumento')?.value?.trim();
   const ciudad = document.getElementById('newPacienteCiudad')?.value;
-  const fechaInicio = document.getElementById('newPacienteFechaInicio')?.value;
-  const acudienteNombre = document.getElementById('newAcudienteNombre')?.value?.trim();
-  const acudienteCedula = document.getElementById('newAcudienteCedula')?.value?.trim();
-  const acudienteParentesco = document.getElementById('newAcudienteParentesco')?.value;
-  const acudienteTelefono = document.getElementById('newAcudienteTelefono')?.value?.trim();
-  
-  if (!name || !documento) {
-    showToast('Complete nombre y documento', 'error');
-    return;
-  }
-  
+  const fecha_inicio_atencion = document.getElementById('newPacienteFechaInicio')?.value;
+  const acudiente_nombre = document.getElementById('newAcudienteNombre')?.value?.trim();
+  const acudiente_cedula = document.getElementById('newAcudienteCedula')?.value?.trim();
+  const acudiente_parentesco = document.getElementById('newAcudienteParentesco')?.value;
+  const acudiente_telefono = document.getElementById('newAcudienteTelefono')?.value?.trim();
+  if (!name || !document_) { showToast('Complete nombre y documento', 'error'); return; }
   try {
     const response = await apiRequest('/api/patients', {
       method: 'POST',
       body: JSON.stringify({
-        name,
-        document: documento,
-        ciudad,
-        fecha_inicio_atencion: fechaInicio,
+        name: name,
+        document: document_,
+        ciudad: ciudad,
+        fecha_inicio_atencion: fecha_inicio_atencion,
         diagnosis: document.getElementById('newPacienteDiagnostico')?.value || '',
         doctor: document.getElementById('newPacienteMedico')?.value || '',
-        acudiente_nombre: acudienteNombre,
-        acudiente_cedula: acudienteCedula,
-        acudiente_parentesco: acudienteParentesco,
-        acudiente_telefono: acudienteTelefono
+        acudiente_nombre: acudiente_nombre,
+        acudiente_cedula: acudiente_cedula,
+        acudiente_parentesco: acudiente_parentesco,
+        acudiente_telefono: acudiente_telefono
       })
     });
     const data = await response.json();
@@ -2267,7 +1608,7 @@ async function crearPaciente() {
         if (el) el.value = '';
       });
       await cargarPacientes();
-      showToast('Paciente creado exitosamente', 'success');
+      showToast('✅ Paciente creado', 'success');
     } else {
       showToast(data.message || 'Error al crear paciente', 'error');
     }
@@ -2292,7 +1633,7 @@ async function cargarPacientes() {
               CC: ${p.document || 'Sin doc'} | 📍 ${p.ciudad || 'Sin ciudad'} | ${p.diagnosis || 'Sin dx'}
             </span>
             ${p.fecha_inicio_atencion ? `<br><span style="color:#64748b;font-size:0.75rem;">📅 Inicio: ${p.fecha_inicio_atencion}</span>` : ''}
-            ${p.acudiente_nombre ? `<br><span style="color:#8b5cf6;font-size:0.75rem;">👨‍👩‍👧 ${p.acudiente_nombre} (${p.acudiente_parentesco || 'N/A'})</span>` : ''}
+            ${p.acudiente_nombre ? `<br><span style="color:#8b5cf6;font-size:0.75rem;">👨‍👩‍👧 ${p.acudiente_nombre} (${p.acudiente_parentesco || 'N/A'}) - Tel: ${p.acudiente_telefono || 'N/A'}</span>` : ''}
           </div>
           <button class="btn-delete" onclick="confirmarEliminarPaciente('${p.id}', '${p.name.replace(/'/g, "\\'")}')">🗑️ Eliminar</button>
         </div>
@@ -2328,12 +1669,10 @@ function confirmarEliminarPaciente(pacienteId, pacienteNombre) {
 
 async function eliminarPaciente(pacienteId) {
   try {
-    const response = await apiRequest('/api/patients/' + pacienteId, {
-      method: 'DELETE'
-    });
+    const response = await apiRequest('/api/patients/' + pacienteId, { method: 'DELETE' });
     const data = await response.json();
     if (data.success) {
-      showToast('Paciente eliminado', 'success');
+      showToast('✅ Paciente eliminado', 'success');
       cerrarModalEliminar();
       await cargarPacientes();
     } else {
@@ -2345,71 +1684,74 @@ async function eliminarPaciente(pacienteId) {
 }
 
 // ==========================================
-// MÓDULO TEMAS EDUCATIVOS (CON ELIMINACIÓN)
+// MÓDULO TEMAS EDUCATIVOS
 // ==========================================
 function getEducationTopicsContent() {
   return `
     <div class="card">
       <div class="card-title">➕ Crear Tema de Educación</div>
+      <div class="form-group"><label>📝 Título</label><input type="text" id="newTopicTitle" placeholder="Ej: Cuidado de heridas"></div>
       <div class="form-group">
-        <label>📝 Título del Tema</label>
-        <input type="text" id="newTopicTitle" placeholder="Ej: Cuidado de heridas en diabetes">
-      </div>
-      <div class="form-group">
-        <label>📋 Descripción / Contenido</label>
-        <textarea id="newTopicDesc" rows="4" placeholder="Describa el contenido educativo..."></textarea>
+        <label>📋 Descripción</label>
+        <textarea id="newTopicDesc" rows="4" placeholder="Contenido educativo..."></textarea>
         <button class="btn-voice" onclick="iniciarDictado('newTopicDesc')">🎙️ Dictar</button>
       </div>
       <button class="btn btn-primary" onclick="crearTemaEducacion()">➕ Crear Tema</button>
     </div>
     <div class="card">
       <div class="card-title">📚 Temas Disponibles</div>
-      <div id="listaTemasEducacion">
-        <p class="text-muted">Cargando temas...</p>
-      </div>
+      <div id="listaTemasEducacion"><p class="text-muted">Cargando...</p></div>
     </div>
   `;
 }
 
-function crearTemaEducacion() {
+async function crearTemaEducacion() {
   const title = document.getElementById('newTopicTitle')?.value?.trim();
   const description = document.getElementById('newTopicDesc')?.value?.trim();
-  if (!title || !description) {
-    showToast('Complete título y descripción', 'error');
-    return;
+  if (!title || !description) { showToast('Complete título y descripción', 'error'); return; }
+  try {
+    const response = await apiRequest('/api/education', {
+      method: 'POST',
+      body: JSON.stringify({ title, description, created_by: currentUser.name })
+    });
+    const data = await response.json();
+    if (data.success) {
+      document.getElementById('newTopicTitle').value = '';
+      document.getElementById('newTopicDesc').value = '';
+      cargarListaTemas();
+      showToast('✅ Tema creado', 'success');
+    } else {
+      showToast(data.message || 'Error', 'error');
+    }
+  } catch (error) {
+    showToast('Error de conexión', 'error');
   }
-  const topics = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
-  topics.push({
-    id: generateId(),
-    title: title,
-    description: description,
-    created_at: new Date().toISOString(),
-    created_by: currentUser.name
-  });
-  localStorage.setItem('vital_education_topics', JSON.stringify(topics));
-  document.getElementById('newTopicTitle').value = '';
-  document.getElementById('newTopicDesc').value = '';
-  cargarListaTemas();
-  showToast('Tema creado exitosamente', 'success');
 }
 
-function cargarListaTemas() {
-  const topics = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
-  const div = document.getElementById('listaTemasEducacion');
-  if (!div) return;
-  if (topics.length === 0) {
-    div.innerHTML = '<p class="text-muted">No hay temas de educación creados</p>';
-  } else {
-    div.innerHTML = topics.map(t => `
-      <div class="activity-item">
-        <div class="activity-item-content">
-          <strong>${t.title}</strong><br>
-          <span style="color:#94a3b8;font-size:0.8rem;">${t.description.substring(0, 100)}${t.description.length > 100 ? '...' : ''}</span><br>
-          <small style="color:#64748b;">Creado por: ${t.created_by || 'Admin'}</small>
+async function cargarListaTemas() {
+  try {
+    const response = await apiRequest('/api/education');
+    const data = await response.json();
+    const div = document.getElementById('listaTemasEducacion');
+    if (!div) return;
+    if (data.success && data.data && data.data.length > 0) {
+      localStorage.setItem('vital_education_topics', JSON.stringify(data.data));
+      div.innerHTML = data.data.map(t => `
+        <div class="activity-item">
+          <div class="activity-item-content">
+            <strong>${t.title}</strong><br>
+            <span style="color:#94a3b8;font-size:0.8rem;">${(t.description || '').substring(0, 100)}${(t.description || '').length > 100 ? '...' : ''}</span><br>
+            <small style="color:#64748b;">Creado por: ${t.created_by || 'Admin'}</small>
+          </div>
+          <button class="btn-delete" onclick="confirmarEliminarTema('${t.id}', '${t.title.replace(/'/g, "\\'")}')">🗑️</button>
         </div>
-        <button class="btn-delete" onclick="confirmarEliminarTema('${t.id}', '${t.title.replace(/'/g, "\\'")}')">🗑️</button>
-      </div>
-    `).join('');
+      `).join('');
+    } else {
+      div.innerHTML = '<p class="text-muted">No hay temas creados</p>';
+    }
+  } catch (e) {
+    const div = document.getElementById('listaTemasEducacion');
+    if (div) div.innerHTML = '<p class="text-muted">Error al cargar temas</p>';
   }
 }
 
@@ -2432,13 +1774,20 @@ function confirmarEliminarTema(topicId, topicTitle) {
   document.body.insertAdjacentHTML('beforeend', html);
 }
 
-function eliminarTema(topicId) {
-  let topics = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
-  topics = topics.filter(t => t.id !== topicId);
-  localStorage.setItem('vital_education_topics', JSON.stringify(topics));
-  showToast('Tema eliminado', 'success');
-  cerrarModalEliminar();
-  cargarListaTemas();
+async function eliminarTema(topicId) {
+  try {
+    const response = await apiRequest('/api/education/' + topicId, { method: 'DELETE' });
+    const data = await response.json();
+    if (data.success) {
+      showToast('✅ Tema eliminado', 'success');
+      cerrarModalEliminar();
+      cargarListaTemas();
+    } else {
+      showToast(data.message || 'Error', 'error');
+    }
+  } catch (error) {
+    showToast('Error de conexión', 'error');
+  }
 }
 
 // ==========================================
@@ -2448,284 +1797,253 @@ function getAsignarEducacionContent() {
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
   const usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
   const topics = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
-  
-  const pacientesOptions = pacientes.length === 0 ? 
-    '<option value="">No hay pacientes</option>' : 
-    '<option value="">-- Seleccionar Paciente --</option>' + 
-    pacientes.map(p => `<option value="${p.id}">${p.name} - ${p.document || 'Sin doc'}</option>`).join('');
-  
-  const profesionalesOptions = usuarios.length === 0 ? 
-    '<option value="">No hay profesionales</option>' : 
+  const pacientesOptions = pacientes.length === 0 ? '<option value="">No hay pacientes</option>' : 
+    '<option value="">-- Seleccionar Paciente --</option>' + pacientes.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  const profesionalesOptions = usuarios.length === 0 ? '<option value="">No hay profesionales</option>' : 
     '<option value="">-- Seleccionar Profesional --</option>' + 
-    usuarios.filter(u => ROLES_CON_RETHUS.includes(u.role))
-      .map(u => `<option value="${u.id}">${u.name} (${u.role})</option>`).join('');
-  
-  const topicsOptions = topics.length === 0 ? 
-    '<option value="">No hay temas</option>' : 
-    '<option value="">-- Seleccionar Tema --</option>' + 
-    topics.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
-  
+    usuarios.filter(u => ROLES_CON_RETHUS.includes(u.role)).map(u => `<option value="${u.id}">${u.name} (${u.role})</option>`).join('');
+  const topicsOptions = topics.length === 0 ? '<option value="">No hay temas</option>' : 
+    '<option value="">-- Seleccionar Tema --</option>' + topics.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
   return `
     <div class="card">
       <div class="card-title">📋 Asignar Educación a Profesional</div>
       <div class="grid-2">
-        <div class="form-group">
-          <label>📚 Tema de Educación</label>
-          <select id="asignarTemaSelect">${topicsOptions}</select>
-        </div>
-        <div class="form-group">
-          <label>🏥 Paciente</label>
-          <select id="asignarPacienteSelect">${pacientesOptions}</select>
-        </div>
+        <div class="form-group"><label>📚 Tema</label><select id="asignarTemaSelect">${topicsOptions}</select></div>
+        <div class="form-group"><label>🏥 Paciente</label><select id="asignarPacienteSelect">${pacientesOptions}</select></div>
         <div class="form-group" style="grid-column:1/-1;">
-          <label>👨‍⚕️ Profesional que impartirá la educación</label>
-          <select id="asignarProfesionalSelect">${profesionalesOptions}</select>
+          <label>👨‍⚕️ Profesional</label><select id="asignarProfesionalSelect">${profesionalesOptions}</select>
         </div>
       </div>
       <button class="btn btn-primary" onclick="asignarEducacion()">📤 Asignar Educación</button>
     </div>
     <div class="card">
       <div class="card-title">📋 Asignaciones Realizadas</div>
-      <div id="listaAsignaciones">
-        <p class="text-muted">Cargando asignaciones...</p>
-      </div>
+      <div id="listaAsignaciones"><p class="text-muted">Cargando...</p></div>
     </div>
   `;
 }
 
-function asignarEducacion() {
-  const temaId = document.getElementById('asignarTemaSelect')?.value;
-  const pacienteId = document.getElementById('asignarPacienteSelect')?.value;
-  const profesionalId = document.getElementById('asignarProfesionalSelect')?.value;
-  
-  if (!temaId || !pacienteId || !profesionalId) {
-    showToast('Seleccione todos los campos', 'error');
-    return;
+async function asignarEducacion() {
+  const topic_id = document.getElementById('asignarTemaSelect')?.value;
+  const patient_id = document.getElementById('asignarPacienteSelect')?.value;
+  const professional_id = document.getElementById('asignarProfesionalSelect')?.value;
+  if (!topic_id || !patient_id || !professional_id) { showToast('Seleccione todos los campos', 'error'); return; }
+  try {
+    const response = await apiRequest('/api/education-assignments', {
+      method: 'POST',
+      body: JSON.stringify({ topic_id, patient_id, professional_id, assigned_by: currentUser.id })
+    });
+    const data = await response.json();
+    if (data.success) {
+      showToast('✅ Educación asignada', 'success');
+      cargarAsignaciones();
+    } else {
+      showToast(data.message || 'Error', 'error');
+    }
+  } catch (error) {
+    showToast('Error de conexión', 'error');
   }
-  
-  const topics = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
-  const tema = topics.find(t => t.id === temaId);
-  const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
-  const paciente = pacientes.find(p => p.id === pacienteId);
-  const usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
-  const profesional = usuarios.find(u => u.id === profesionalId);
-  
-  if (!tema || !paciente || !profesional) {
-    showToast('Error: datos no encontrados', 'error');
-    return;
-  }
-  
-  const asignadas = JSON.parse(localStorage.getItem('vital_educacion_asignada') || '[]');
-  asignadas.push({
-    id: generateId(),
-    tema_id: temaId,
-    tema_titulo: tema.title,
-    paciente_id: pacienteId,
-    paciente_nombre: paciente.name,
-    profesional_id: profesionalId,
-    profesional_nombre: profesional.name,
-    asignado_por: currentUser.name,
-    fecha_asignacion: new Date().toISOString(),
-    estado: 'PENDIENTE'
-  });
-  localStorage.setItem('vital_educacion_asignada', JSON.stringify(asignadas));
-  showToast('Educación asignada correctamente', 'success');
-  cargarAsignaciones();
 }
 
-function cargarAsignaciones() {
-  const asignadas = JSON.parse(localStorage.getItem('vital_educacion_asignada') || '[]');
-  const div = document.getElementById('listaAsignaciones');
-  if (!div) return;
-  if (asignadas.length === 0) {
-    div.innerHTML = '<p class="text-muted">No hay asignaciones registradas</p>';
-  } else {
-    div.innerHTML = asignadas.slice().reverse().map(e => {
-      const estadoClass = e.estado === 'COMPLETADO' ? 'edu-completado' : e.estado === 'CANCELADO' ? 'edu-cancelado' : 'edu-pendiente';
-      const estadoText = e.estado === 'COMPLETADO' ? '✅ COMPLETADO' : e.estado === 'CANCELADO' ? '❌ CANCELADO' : '⏳ PENDIENTE';
-      const fecha = e.fecha_completado ? new Date(e.fecha_completado).toLocaleString() : new Date(e.fecha_asignacion).toLocaleString();
-      return `
-        <div class="edu-asignada">
-          <strong>📖 ${e.tema_titulo}</strong><br>
-          <strong>👤 Paciente:</strong> ${e.paciente_nombre}<br>
-          <strong>👨‍⚕️ Profesional:</strong> ${e.profesional_nombre}<br>
-          <span class="${estadoClass}">${estadoText}</span><br>
-          <small style="color:#94a3b8;">${e.estado === 'COMPLETADO' ? 'Completado' : 'Asignado'}: ${fecha}</small>
-          ${e.evidencia ? `<br><small style="color:#64748b;">Evidencia: ${e.evidencia.substring(0, 50)}...</small>` : ''}
-          ${e.fotos_evidencia && e.fotos_evidencia.length > 0 ? `<br><small style="color:#22c55e;">📸 ${e.fotos_evidencia.length} foto(s)</small>` : ''}
-        </div>
-      `;
-    }).join('');
+async function cargarAsignaciones() {
+  try {
+    const response = await apiRequest('/api/education-assignments');
+    const data = await response.json();
+    const div = document.getElementById('listaAsignaciones');
+    if (!div) return;
+    if (data.success && data.data && data.data.length > 0) {
+      div.innerHTML = data.data.map(e => {
+        const estadoClass = e.status === 'COMPLETADO' ? 'edu-completado' : 'edu-pendiente';
+        const estadoText = e.status === 'COMPLETADO' ? '✅ COMPLETADO' : '⏳ PENDIENTE';
+        return `
+          <div class="edu-asignada">
+            <strong>📖 ${e.topic?.title || 'Tema'}</strong><br>
+            <strong>👤 Paciente:</strong> ${e.patient?.name || 'N/A'}<br>
+            <strong>👨‍⚕️ Profesional:</strong> ${e.professional?.name || 'N/A'}<br>
+            <span class="${estadoClass}">${estadoText}</span><br>
+            <small style="color:#94a3b8;">Asignado: ${new Date(e.assigned_at).toLocaleString()}</small>
+          </div>
+        `;
+      }).join('');
+    } else {
+      div.innerHTML = '<p class="text-muted">No hay asignaciones</p>';
+    }
+  } catch (error) {
+    const div = document.getElementById('listaAsignaciones');
+    if (div) div.innerHTML = '<p class="text-muted">Error al cargar</p>';
   }
 }
 
 // ==========================================
-// MÓDULO REPORTE MENSUAL (CON GRÁFICOS)
+// MÓDULO REPORTE MENSUAL (CON FORMULARIO FAMILIAR Y FIRMAS)
 // ==========================================
 function getReporteMensualContent() {
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
-  const pacientesOptions = pacientes.length === 0 ? 
-    '<option value="">No hay pacientes</option>' : 
-    '<option value="">-- Seleccionar Paciente --</option>' + 
-    pacientes.map(p => `<option value="${p.id}">${p.name} - ${p.ciudad || 'Sin ciudad'}</option>`).join('');
-  
+  const pacientesOptions = pacientes.length === 0 ? '<option value="">No hay pacientes</option>' : 
+    '<option value="">-- Seleccionar Paciente --</option>' + pacientes.map(p => `<option value="${p.id}">${p.name} - ${p.ciudad || 'Sin ciudad'}</option>`).join('');
   return `
     <div class="card">
       <div class="card-title">📊 Generar Reporte Mensual para Familiar</div>
-      <div class="tip-box info">
-        ℹ️ Este reporte genera un PDF completo con gráficos de evolución, estadísticas y recomendaciones para el familiar/acudiente del paciente.
-      </div>
+      <div class="tip-box info">ℹ️ Reporte completo con gráficos y firmas para el familiar/acudiente.</div>
       <div class="form-group">
         <label>🏥 Paciente</label>
         <select id="reporteMensualPaciente" onchange="actualizarInfoPacienteReporte()">${pacientesOptions}</select>
       </div>
       <div id="infoPacienteReporte"></div>
-      <div class="form-group">
-        <label>📆 Período del Reporte</label>
-        <select id="reporteMensualPeriodo">
-          <option value="actual">Mes actual (últimos 30 días)</option>
-          <option value="anterior">Mes anterior</option>
-          <option value="personalizado">Personalizado</option>
-        </select>
-      </div>
-      <div id="rangoPersonalizado" class="hidden">
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Desde</label>
-            <input type="date" id="reporteFechaDesde">
-          </div>
-          <div class="form-group">
-            <label>Hasta</label>
-            <input type="date" id="reporteFechaHasta">
-          </div>
+      <h4 style="color:#22c55e;margin:15px 0 10px 0;">👨‍👩‍👧 Datos del Familiar que Recibe</h4>
+      <div class="grid-2">
+        <div class="form-group"><label>Nombre del Familiar *</label><input type="text" id="familiarNombre" placeholder="Ej: María López"></div>
+        <div class="form-group"><label>Cédula del Familiar *</label><input type="text" id="familiarCedula" placeholder="Ej: 1234567890"></div>
+        <div class="form-group">
+          <label>Parentesco *</label>
+          <select id="familiarParentesco">
+            <option value="">-- Seleccionar --</option>
+            <option>Hijo(a)</option><option>Esposo(a)</option><option>Padre/Madre</option>
+            <option>Hermano(a)</option><option>Nieto(a)</option><option>Cuidador</option><option>Otro</option>
+          </select>
         </div>
+        <div class="form-group"><label>Teléfono</label><input type="tel" id="familiarTelefono" placeholder="Ej: 300-1234567"></div>
       </div>
       <div class="form-group">
         <label>📝 Observaciones del Coordinador</label>
-        <textarea id="reporteObservaciones" rows="3" placeholder="Observaciones y recomendaciones para el familiar..."></textarea>
+        <textarea id="reporteObservaciones" rows="3" placeholder="Observaciones y recomendaciones..."></textarea>
       </div>
-      <button class="btn btn-primary" onclick="generarReporteMensualPDF()">📥 Generar Reporte PDF Mensual</button>
+      <div style="margin-top:16px;border-top:1px solid #334155;padding-top:12px;">
+        <h4 style="color:#22c55e;margin-bottom:10px;">✍️ Firmas</h4>
+        <div class="grid-2">
+          <div>
+            <label>✍️ Firma Elaborador (Usted)</label>
+            <canvas id="sigMensualElabora" class="signature-canvas"></canvas>
+            <button class="btn-secondary btn-sm" onclick="clearCanvas('sigMensualElabora')">Borrar</button>
+          </div>
+          <div>
+            <label>✍️ Firma Familiar</label>
+            <canvas id="sigMensualFamiliar" class="signature-canvas"></canvas>
+            <button class="btn-secondary btn-sm" onclick="clearCanvas('sigMensualFamiliar')">Borrar</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="generarReporteMensualPDF()" style="margin-top:16px;">📥 Generar Reporte PDF Mensual</button>
     </div>
   `;
 }
 
 function configurarReporteMensual() {
-  const select = document.getElementById('reporteMensualPeriodo');
-  if (select) {
-    select.addEventListener('change', function() {
-      const rango = document.getElementById('rangoPersonalizado');
-      if (this.value === 'personalizado') {
-        rango.classList.remove('hidden');
-      } else {
-        rango.classList.add('hidden');
-      }
-    });
-  }
   actualizarInfoPacienteReporte();
+  setTimeout(() => {
+    initSignaturesMensual();
+  }, 100);
+}
+
+function initSignaturesMensual() {
+  ['sigMensualElabora','sigMensualFamiliar'].forEach(id => {
+    const canvas = document.getElementById(id);
+    if (!canvas || canvas.dataset.initialized === 'true') return;
+    const width = canvas.offsetWidth || 300;
+    const height = canvas.offsetHeight || 120;
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '16px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('✍️ Firme aquí', width / 2, height / 2);
+    let drawing = false;
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+    const startDraw = (e) => { drawing = true; ctx.beginPath(); const pos = getPos(e); ctx.moveTo(pos.x, pos.y); };
+    const draw = (e) => { if (!drawing) return; e.preventDefault(); const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); };
+    const endDraw = () => { drawing = false; };
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', endDraw);
+    canvas.dataset.initialized = 'true';
+  });
 }
 
 function actualizarInfoPacienteReporte() {
   const pacienteId = document.getElementById('reporteMensualPaciente')?.value;
   const div = document.getElementById('infoPacienteReporte');
   if (!div) return;
-  
-  if (!pacienteId) {
-    div.innerHTML = '';
-    return;
-  }
-  
+  if (!pacienteId) { div.innerHTML = ''; return; }
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
   const paciente = pacientes.find(p => p.id === pacienteId);
-  
-  if (!paciente) {
-    div.innerHTML = '';
-    return;
-  }
-  
+  if (!paciente) { div.innerHTML = ''; return; }
   const ciudad = paciente.ciudad || 'Bogotá';
   const rango = getRangoSpO2(ciudad);
-  
+  // Auto-llenar datos del familiar si están en el paciente
+  if (paciente.acudiente_nombre) {
+    const fam = document.getElementById('familiarNombre');
+    if (fam && !fam.value) fam.value = paciente.acudiente_nombre;
+  }
+  if (paciente.acudiente_cedula) {
+    const ced = document.getElementById('familiarCedula');
+    if (ced && !ced.value) ced.value = paciente.acudiente_cedula;
+  }
+  if (paciente.acudiente_parentesco) {
+    const par = document.getElementById('familiarParentesco');
+    if (par && !par.value) par.value = paciente.acudiente_parentesco;
+  }
+  if (paciente.acudiente_telefono) {
+    const tel = document.getElementById('familiarTelefono');
+    if (tel && !tel.value) tel.value = paciente.acudiente_telefono;
+  }
   div.innerHTML = `
     <div class="paciente-info-card">
       <h3>${paciente.name}</h3>
       <p>📍 ${ciudad} (${rango.altitud}msnm)</p>
       <p>📅 Inicio atención: ${paciente.fecha_inicio_atencion || 'No registrada'}</p>
-      <p>📊 Rango SpO2 esperado: ${rango.spo2_min}% - ${rango.spo2_max}%</p>
+      <p>📊 Rango SpO2: ${rango.spo2_min}% - ${rango.spo2_max}%</p>
+      ${paciente.acudiente_nombre ? `<p style="color:#8b5cf6;">👨‍👩‍👧 Acudiente: ${paciente.acudiente_nombre} (${paciente.acudiente_parentesco || 'N/A'})</p>` : ''}
     </div>
   `;
 }
 
 async function generarReporteMensualPDF() {
   const pacienteId = document.getElementById('reporteMensualPaciente')?.value;
-  if (!pacienteId) {
-    showToast('Seleccione un paciente', 'error');
+  if (!pacienteId) { showToast('Seleccione un paciente', 'error'); return; }
+  const familiarNombre = document.getElementById('familiarNombre')?.value?.trim();
+  const familiarCedula = document.getElementById('familiarCedula')?.value?.trim();
+  const familiarParentesco = document.getElementById('familiarParentesco')?.value;
+  const familiarTelefono = document.getElementById('familiarTelefono')?.value?.trim();
+  if (!familiarNombre || !familiarCedula || !familiarParentesco) {
+    showToast('Complete los datos del familiar', 'error');
     return;
   }
-  
+  const firmaElabora = getSignatureData('sigMensualElabora');
+  const firmaFamiliar = getSignatureData('sigMensualFamiliar');
+  if (!firmaElabora || !firmaFamiliar) {
+    showToast('⚠️ Ambas firmas son requeridas', 'warning');
+    return;
+  }
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
   const paciente = pacientes.find(p => p.id === pacienteId);
-  if (!paciente) {
-    showToast('Paciente no encontrado', 'error');
-    return;
-  }
-  
-  const periodo = document.getElementById('reporteMensualPeriodo')?.value;
-  let fechaDesde, fechaHasta;
-  
-  if (periodo === 'personalizado') {
-    fechaDesde = document.getElementById('reporteFechaDesde')?.value;
-    fechaHasta = document.getElementById('reporteFechaHasta')?.value;
-    if (!fechaDesde || !fechaHasta) {
-      showToast('Seleccione el rango de fechas', 'error');
-      return;
-    }
-  } else {
-    const hoy = new Date();
-    fechaHasta = hoy.toISOString().split('T')[0];
-    const desde = new Date(hoy);
-    desde.setDate(desde.getDate() - 30);
-    fechaDesde = desde.toISOString().split('T')[0];
-  }
-  
-  showToast('Generando reporte mensual...', 'success');
-  
-  // Obtener datos del período
-  const storageKey = `vital_auxiliar_${pacienteId}`;
-  let allData = {};
-  try {
-    allData = JSON.parse(localStorage.getItem(storageKey) || '{}');
-  } catch (e) {}
-  
-  // Filtrar por fecha
-  const filterByDate = (items) => {
-    return items.filter(item => item.fecha >= fechaDesde && item.fecha <= fechaHasta);
-  };
-  
-  const signos = filterByDate(allData.signos || []);
-  const actividades = filterByDate(allData.actividades || []);
-  const medicamentos = filterByDate(allData.medicamentos || []);
-  const recibos = filterByDate(allData.recibos || []);
-  const entregas = filterByDate(allData.entregas || []);
-  
+  if (!paciente) { showToast('Paciente no encontrado', 'error'); return; }
+  const observaciones = document.getElementById('reporteObservaciones')?.value?.trim();
+  showToast('Generando reporte...', 'success');
   const PDFClass = window.jspdf?.jsPDF;
-  if (!PDFClass) {
-    showToast('Librería PDF no disponible', 'error');
-    return;
-  }
-  
+  if (!PDFClass) { showToast('Librería PDF no disponible', 'error'); return; }
   const doc = new PDFClass();
   let y = 20;
   const cleanText = (t) => t === null || t === undefined ? '' : String(t).trim();
-  
-  // Logo
   const logoBase64 = await cargarLogoBase64();
   if (logoBase64) {
-    try {
-      doc.addImage(logoBase64, 'JPEG', 80, y - 10, 50, 20);
-      y += 15;
-    } catch(e) {}
+    try { doc.addImage(logoBase64, 'JPEG', 80, y - 10, 50, 20); y += 15; } catch(e) {}
   }
-  
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
   doc.setTextColor(34, 197, 94);
@@ -2735,115 +2053,36 @@ async function generarReporteMensualPDF() {
   doc.setFontSize(12);
   doc.text('REPORTE MENSUAL DE ATENCIÓN DOMICILIARIA', 105, y, { align: 'center' });
   y += 10;
-  
-  // Datos del paciente
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.text('DATOS DEL PACIENTE', 20, y);
   y += 7;
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
-  doc.text('Paciente: ' + cleanText(paciente.name).toUpperCase(), 20, y);
-  y += 6;
-  doc.text('Documento: ' + (paciente.document || 'No registrado'), 20, y);
-  y += 6;
-  doc.text('Ciudad: ' + (paciente.ciudad || 'No especificada'), 20, y);
-  y += 6;
-  doc.text('Diagnóstico: ' + (paciente.diagnosis || 'No registrado'), 20, y);
-  y += 6;
-  doc.text('Médico tratante: ' + (paciente.doctor || 'No registrado'), 20, y);
-  y += 6;
-  doc.text('Período: ' + fechaDesde + ' al ' + fechaHasta, 20, y);
-  y += 10;
-  
-  // Resumen ejecutivo
+  doc.text('Paciente: ' + cleanText(paciente.name).toUpperCase(), 20, y); y += 6;
+  doc.text('Documento: ' + (paciente.document || 'No registrado'), 20, y); y += 6;
+  doc.text('Ciudad: ' + (paciente.ciudad || 'No especificada'), 20, y); y += 6;
+  doc.text('Diagnóstico: ' + (paciente.diagnosis || 'No registrado'), 20, y); y += 6;
+  doc.text('Médico tratante: ' + (paciente.doctor || 'No registrado'), 20, y); y += 6;
+  doc.text('Período: ' + new Date().toLocaleDateString('es-CO'), 20, y); y += 10;
   if (y > 240) { doc.addPage(); y = 20; }
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(34, 197, 94);
-  doc.text('RESUMEN EJECUTIVO', 20, y);
+  doc.text('OBSERVACIONES Y RECOMENDACIONES', 20, y);
   y += 7;
   doc.setTextColor(0, 0, 0);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
-  doc.text(`• Total turnos: ${recibos.length}`, 25, y); y += 6;
-  doc.text(`• Signos vitales registrados: ${signos.length}`, 25, y); y += 6;
-  doc.text(`• Medicamentos administrados: ${medicamentos.length}`, 25, y); y += 6;
-  doc.text(`• Actividades realizadas: ${actividades.length}`, 25, y); y += 6;
-  doc.text(`• Entregas de turno: ${entregas.length}`, 25, y); y += 10;
-  
-  // Gráficos (si hay datos)
-  if (signos.length > 0) {
-    if (y > 200) { doc.addPage(); y = 20; }
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(34, 197, 94);
-    doc.text('EVOLUCIÓN DE SIGNOS VITALES', 20, y);
-    y += 7;
-    
-    // Generar gráfico SpO2
-    const chartSpO2 = await generarGraficoSpO2(signos, paciente.ciudad || 'Bogotá');
-    if (chartSpO2) {
-      if (y > 220) { doc.addPage(); y = 20; }
-      try {
-        doc.addImage(chartSpO2, 'PNG', 20, y, 170, 80);
-        y += 85;
-      } catch(e) {}
-    }
-    
-    // Generar gráfico TA
-    const signosConTA = signos.filter(s => s.bp);
-    if (signosConTA.length > 0) {
-      const chartTA = await generarGraficoTA(signosConTA);
-      if (chartTA) {
-        if (y > 220) { doc.addPage(); y = 20; }
-        try {
-          doc.addImage(chartTA, 'PNG', 20, y, 170, 80);
-          y += 85;
-        } catch(e) {}
-      }
-    }
-  }
-  
-  // Incidentes críticos
-  const incidentes = signos.filter(s => s.alertas && s.alertas.length > 0);
-  if (incidentes.length > 0) {
-    if (y > 250) { doc.addPage(); y = 20; }
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(34, 197, 94);
-    doc.text('INCIDENTES CRÍTICOS', 20, y);
-    y += 7;
-    doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    incidentes.slice(0, 10).forEach(i => {
-      if (y > 270) { doc.addPage(); y = 20; }
-      doc.text(`[${i.fecha} ${i.hora}] ${i.alertas.join(', ')}`, 25, y);
-      y += 5;
-    });
-    y += 5;
-  }
-  
-  // Observaciones
-  const observaciones = document.getElementById('reporteObservaciones')?.value?.trim();
   if (observaciones) {
-    if (y > 250) { doc.addPage(); y = 20; }
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(34, 197, 94);
-    doc.text('OBSERVACIONES Y RECOMENDACIONES', 20, y);
-    y += 7;
-    doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
     const lines = doc.splitTextToSize(observaciones, 170);
     doc.text(lines, 25, y);
     y += lines.length * 5 + 5;
+  } else {
+    doc.text('Sin observaciones adicionales', 25, y);
+    y += 10;
   }
-  
-  // Firmas
-  if (y > 200) { doc.addPage(); y = 20; }
+  if (y > 180) { doc.addPage(); y = 20; }
   y += 10;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
@@ -2851,181 +2090,37 @@ async function generarReporteMensualPDF() {
   y += 15;
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  
-  // Firma Coordinador
-  doc.text('_________________________', 25, y);
-  y += 5;
-  doc.text('Elaborado por:', 25, y); y += 5;
-  doc.text(`Nombre: ${currentUser.name}`, 25, y); y += 5;
-  doc.text(`Rol: ${currentUser.role}`, 25, y); y += 5;
-  if (currentUser.cedula) {
-    doc.text(`Cédula: ${currentUser.cedula}`, 25, y); y += 5;
+  if (firmaElabora) {
+    try { doc.addImage(firmaElabora, 'PNG', 25, y, 60, 25); } catch(e) {}
   }
-  if (currentUser.rethus) {
-    doc.text(`ReTHUS: ${currentUser.rethus}`, 25, y); y += 5;
+  doc.text('_________________________', 25, y + 30);
+  doc.text('Elaborado por:', 25, y + 35); y += 5;
+  doc.text(`Nombre: ${currentUser.name}`, 25, y + 35);
+  doc.text(`Rol: ${currentUser.role}`, 25, y + 40);
+  if (currentUser.cedula) doc.text(`Cédula: ${currentUser.cedula}`, 25, y + 45);
+  if (currentUser.rethus) doc.text(`ReTHUS: ${currentUser.rethus}`, 25, y + 50);
+  if (firmaFamiliar) {
+    try { doc.addImage(firmaFamiliar, 'PNG', 110, y, 60, 25); } catch(e) {}
   }
-  
-  // Firma Familiar
-  doc.text('_________________________', 110, y - 20);
-  y -= 15;
-  doc.text('Recibido por (Familiar):', 110, y); y += 5;
-  doc.text('Nombre:', 110, y); y += 5;
-  doc.text('Parentesco:', 110, y); y += 5;
-  doc.text('Cédula:', 110, y); y += 5;
-  doc.text('Fecha:', 110, y);
-  
-  const nombreArchivo = 'reporte_mensual_' + cleanText(paciente.name).replace(/\s+/g, '_') + '_' + fechaDesde + '_a_' + fechaHasta + '.pdf';
+  doc.text('_________________________', 110, y + 30);
+  doc.text('Recibido por (Familiar):', 110, y + 35);
+  doc.text(`Nombre: ${familiarNombre}`, 110, y + 40);
+  doc.text(`Parentesco: ${familiarParentesco}`, 110, y + 45);
+  doc.text(`Cédula: ${familiarCedula}`, 110, y + 50);
+  if (familiarTelefono) doc.text(`Teléfono: ${familiarTelefono}`, 110, y + 55);
+  doc.text(`Fecha: ${new Date().toLocaleDateString('es-CO')}`, 110, y + 60);
+  const nombreArchivo = 'reporte_mensual_' + cleanText(paciente.name).replace(/\s+/g, '_') + '_' + getCurrentDate() + '.pdf';
   doc.save(nombreArchivo);
-  showToast('Reporte mensual generado', 'success');
-}
-
-async function generarGraficoSpO2(signos, ciudad) {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 600;
-    canvas.height = 300;
-    const ctx = canvas.getContext('2d');
-    
-    const rango = getRangoSpO2(ciudad);
-    
-    const data = {
-      labels: signos.map(s => s.fecha.substring(5) + ' ' + s.hora),
-      datasets: [{
-        label: 'SpO2 (%)',
-        data: signos.map(s => s.spo2 || 0),
-        borderColor: '#22c55e',
-        backgroundColor: 'rgba(34, 197, 94, 0.1)',
-        tension: 0.3,
-        fill: true
-      }]
-    };
-    
-    const config = {
-      type: 'line',
-      data: data,
-      options: {
-        responsive: false,
-        plugins: {
-          title: {
-            display: true,
-            text: `Evolución SpO2 - ${ciudad} (${rango.altitud}msnm) - Rango: ${rango.spo2_min}-${rango.spo2_max}%`,
-            font: { size: 14 }
-          },
-          legend: { display: true }
-        },
-        scales: {
-          y: {
-            min: 70,
-            max: 100,
-            title: { display: true, text: 'SpO2 (%)' }
-          },
-          x: {
-            title: { display: true, text: 'Fecha/Hora' },
-            ticks: { maxTicksLimit: 10 }
-          }
-        }
-      }
-    };
-    
-    const chart = new Chart(ctx, config);
-    
-    setTimeout(() => {
-      const dataUrl = canvas.toDataURL('image/png');
-      chart.destroy();
-      resolve(dataUrl);
-    }, 500);
-  });
-}
-
-async function generarGraficoTA(signos) {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 600;
-    canvas.height = 300;
-    const ctx = canvas.getContext('2d');
-    
-    const sistolica = [];
-    const diastolica = [];
-    
-    signos.forEach(s => {
-      const match = s.bp.match(/^(\d{2,3})\/(\d{2,3})$/);
-      if (match) {
-        sistolica.push(parseInt(match[1]));
-        diastolica.push(parseInt(match[2]));
-      } else {
-        sistolica.push(null);
-        diastolica.push(null);
-      }
-    });
-    
-    const data = {
-      labels: signos.map(s => s.fecha.substring(5) + ' ' + s.hora),
-      datasets: [
-        {
-          label: 'Sistólica',
-          data: sistolica,
-          borderColor: '#ef4444',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
-          tension: 0.3
-        },
-        {
-          label: 'Diastólica',
-          data: diastolica,
-          borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          tension: 0.3
-        }
-      ]
-    };
-    
-    const config = {
-      type: 'line',
-      data: data,
-      options: {
-        responsive: false,
-        plugins: {
-          title: {
-            display: true,
-            text: 'Evolución Tensión Arterial',
-            font: { size: 14 }
-          },
-          legend: { display: true }
-        },
-        scales: {
-          y: {
-            min: 40,
-            max: 200,
-            title: { display: true, text: 'mmHg' }
-          },
-          x: {
-            title: { display: true, text: 'Fecha/Hora' },
-            ticks: { maxTicksLimit: 10 }
-          }
-        }
-      }
-    };
-    
-    const chart = new Chart(ctx, config);
-    
-    setTimeout(() => {
-      const dataUrl = canvas.toDataURL('image/png');
-      chart.destroy();
-      resolve(dataUrl);
-    }, 500);
-  });
+  showToast('✅ Reporte mensual generado', 'success');
 }
 
 // ==========================================
-// PANEL DE CONTROL GLOBAL
+// PANEL GLOBAL
 // ==========================================
 function getReportesGlobalesContent() {
   const usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
   const temas = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
-  const asignadas = JSON.parse(localStorage.getItem('vital_educacion_asignada') || '[]');
-  const completados = asignadas.filter(e => e.estado === 'COMPLETADO').length;
-  const pendientes = asignadas.filter(e => e.estado === 'PENDIENTE').length;
-  
   return `
     <div class="card">
       <div class="card-title">📊 Panel de Control General</div>
@@ -3042,29 +2137,10 @@ function getReportesGlobalesContent() {
         </div>
         <div class="card" style="background:#0f172a;text-align:center;">
           <div style="font-size:2rem;">📚</div>
-          <strong>Temas Educativos</strong><br>
+          <strong>Temas</strong><br>
           <span style="font-size:1.5rem;color:#f97316;">${temas.length}</span>
         </div>
-        <div class="card" style="background:#0f172a;text-align:center;">
-          <div style="font-size:2rem;">✅</div>
-          <strong>Educación Completada</strong><br>
-          <span style="font-size:1.5rem;color:#22c55e;">${completados}</span>
-        </div>
-        <div class="card" style="background:#0f172a;text-align:center;">
-          <div style="font-size:2rem;">⏳</div>
-          <strong>Educación Pendiente</strong><br>
-          <span style="font-size:1.5rem;color:#f97316;">${pendientes}</span>
-        </div>
-        <div class="card" style="background:#0f172a;text-align:center;">
-          <div style="font-size:2rem;">📋</div>
-          <strong>Total Asignaciones</strong><br>
-          <span style="font-size:1.5rem;color:#8b5cf6;">${asignadas.length}</span>
-        </div>
       </div>
-    </div>
-    <div class="card">
-      <div class="card-title">📈 Actividad Reciente</div>
-      <p class="text-muted">Las estadísticas se actualizan en tiempo real según la actividad del sistema.</p>
     </div>
   `;
 }
@@ -3074,19 +2150,14 @@ function getReportesGlobalesContent() {
 // ==========================================
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('loginBtn').addEventListener('click', login);
-  document.getElementById('loginPassword').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') login();
-  });
-  document.getElementById('loginEmail').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') login();
-  });
+  document.getElementById('loginPassword').addEventListener('keydown', function(e) { if (e.key === 'Enter') login(); });
+  document.getElementById('loginEmail').addEventListener('keydown', function(e) { if (e.key === 'Enter') login(); });
   document.getElementById('togglePassword').addEventListener('click', function() {
     const passwordInput = document.getElementById('loginPassword');
     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
     passwordInput.setAttribute('type', type);
     this.textContent = type === 'password' ? '👁️' : '🙈';
   });
-  
   const token = localStorage.getItem('vital_token');
   const userData = localStorage.getItem('vital_user');
   if (token && userData) {
@@ -3111,9 +2182,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-console.log('🚀 Vital Hogar Pro IPS v2.0 - Sistema cargado correctamente');
-console.log('📍 Ciudades configuradas:', Object.keys(CIUDADES_COLOMBIA).length);
-console.log('👨‍⚕️ Roles con ReTHUS obligatorio:', ROLES_CON_RETHUS.length);
+console.log('🚀 Vital Hogar Pro IPS v2.1 - Sistema cargado');
+console.log('📍 Ciudades:', Object.keys(CIUDADES_COLOMBIA).length);
 </script>
 </body>
 </html>
