@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.0">
-<title>Vital Hogar Pro IPS - v6.0 Fusionado</title>
+<title>Vital Hogar Pro IPS - v7.0 Completo</title>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -18,7 +18,6 @@ body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;c
 .user-info .role-badge{background:#22c55e20;color:#22c55e;padding:2px 10px;border-radius:12px;font-size:.6rem;font-weight:600;text-transform:uppercase}
 .user-info .paciente-badge{background:#8b5cf620;color:#8b5cf6;padding:2px 10px;border-radius:12px;font-size:.65rem;font-weight:600;cursor:pointer}
 .user-info .paciente-badge:hover{background:#8b5cf640}
-.user-info .turno-badge{background:#f9731620;color:#f97316;padding:2px 10px;border-radius:12px;font-size:.6rem;font-weight:600}
 .logout-btn{background:#ef4444;border:none;color:white;padding:4px 14px;border-radius:20px;cursor:pointer;font-size:.65rem;font-weight:600}
 .card{background:#1e293b;border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid #334155}
 .card-title{font-size:1rem;font-weight:600;color:#22c55e;margin-bottom:16px;border-left:3px solid #22c55e;padding-left:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
@@ -73,6 +72,9 @@ body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;c
 .firma-guardada.visible{display:block}
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.8);z-index:2000;display:flex;align-items:center;justify-content:center}
 .modal-content{background:#1e293b;border-radius:16px;padding:24px;max-width:500px;width:90%;border:1px solid #334155;max-height:90vh;overflow-y:auto}
+.edu-asignada{background:#0f172a;padding:10px 14px;border-radius:8px;margin-bottom:6px;border-left:3px solid #8b5cf6}
+.edu-pendiente{color:#f97316;font-weight:600}
+.edu-completado{color:#22c55e;font-weight:600}
 @media(max-width:480px){
 body{padding:8px}
 .header{padding:10px 14px;flex-direction:column;text-align:center}
@@ -101,7 +103,6 @@ body{padding:8px}
 <span class="user-name" id="userName"></span>
 <span class="role-badge" id="userRoleDisplay"></span>
 <span class="paciente-badge" id="pacienteBadge" onclick="seleccionarPacienteHeader()">⚠️ Sin paciente</span>
-<span class="turno-badge" id="turnoBadge" style="display:none;"></span>
 <button class="btn-select-pac" onclick="seleccionarPacienteHeader()">👤 Paciente</button>
 <button class="logout-btn" onclick="logout()">Salir</button>
 </div>
@@ -136,9 +137,6 @@ body{padding:8px}
 <div id="toast" class="toast"></div>
 
 <script>
-// ============================================================
-// CONFIGURACIÓN GLOBAL
-// ============================================================
 var API_URL = 'https://vital-backend-1-y4kt.onrender.com';
 var currentUser = null;
 var currentRole = null;
@@ -146,10 +144,8 @@ var pacienteActual = null;
 var horaEntrada = null;
 var relojInterval = null;
 var recognitionActive = false;
+var educationTopics = [];
 
-// ============================================================
-// UTILIDADES
-// ============================================================
 function showToast(msg, type) {
   type = type || 'success';
   var toast = document.getElementById('toast');
@@ -175,9 +171,6 @@ function validarPacienteSeleccionado() {
   return true;
 }
 
-// ============================================================
-// RELOJ EN TIEMPO REAL
-// ============================================================
 function iniciarReloj() {
   if (relojInterval) clearInterval(relojInterval);
   relojInterval = setInterval(function() {
@@ -206,9 +199,6 @@ function detenerReloj() {
   }
 }
 
-// ============================================================
-// DICTADO POR VOZ
-// ============================================================
 function iniciarDictado(targetId) {
   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) { showToast('Voz no soportada', 'error'); return; }
@@ -240,9 +230,6 @@ function iniciarDictado(targetId) {
   try { recognition.start(); } catch(e) { recognitionActive = false; }
 }
 
-// ============================================================
-// API REQUEST
-// ============================================================
 async function apiRequest(endpoint, options) {
   options = options || {};
   var token = localStorage.getItem('vital_token');
@@ -255,9 +242,6 @@ async function apiRequest(endpoint, options) {
   } catch (error) { throw error; }
 }
 
-// ============================================================
-// LOGIN
-// ============================================================
 async function login() {
   var email = document.getElementById('loginEmail').value.trim();
   var password = document.getElementById('loginPassword').value;
@@ -333,9 +317,6 @@ function checkSession() {
   return false;
 }
 
-// ============================================================
-// PACIENTE
-// ============================================================
 function cargarPacienteActual() {
   var saved = localStorage.getItem('vital_paciente_actual');
   if (saved) { try { pacienteActual = JSON.parse(saved); } catch (e) { pacienteActual = null; } }
@@ -390,9 +371,6 @@ window.cerrarModalPaciente = function() {
   if (modal) modal.remove();
 };
 
-// ============================================================
-// ALMACENAMIENTO LOCAL
-// ============================================================
 function saveToLocal(key, data) {
   if (!pacienteActual) { showToast('Seleccione un paciente primero', 'warning'); return; }
   var storageKey = 'vital_' + currentRole.toLowerCase() + '_' + currentUser.id;
@@ -435,9 +413,6 @@ function cargarLista(key, elementId) {
   }
 }
 
-// ============================================================
-// FIRMAS (SOLO PARA ENTREGA)
-// ============================================================
 function initSignatures() {
   var canvasIds = ['sigEntrega', 'sigRecibe'];
   canvasIds.forEach(function(id) {
@@ -513,9 +488,6 @@ function getSignatureData(canvasId) {
   } catch (e) { return null; }
 }
 
-// ============================================================
-// TABS
-// ============================================================
 function buildTabs() {
   var tabsContainer = document.getElementById('tabsContainer');
   var tabs = [];
@@ -526,6 +498,7 @@ function buildTabs() {
         { id: 'actividades', name: '✅ Actividades' },
         { id: 'signos', name: '🩺 Signos' },
         { id: 'medicamentos', name: '💊 Medicamentos' },
+        { id: 'educacion', name: '📚 Educación' },
         { id: 'entrega', name: '🔄 Entrega' },
         { id: 'reportes', name: '📄 Reportes' }
       ];
@@ -534,6 +507,14 @@ function buildTabs() {
       tabs = [
         { id: 'usuarios', name: '👥 Usuarios' },
         { id: 'pacientes', name: '🏥 Pacientes' },
+        { id: 'educationTopics', name: '📚 Temas' },
+        { id: 'asignarEducacion', name: '📋 Asignar' },
+        { id: 'reportesGlobales', name: '📊 Reportes' }
+      ];
+      break;
+    case 'COORDINADOR':
+      tabs = [
+        { id: 'asignarEducacion', name: '📋 Asignar' },
         { id: 'reportesGlobales', name: '📊 Reportes' }
       ];
       break;
@@ -559,10 +540,13 @@ function loadTab(tabId) {
     case 'actividades': content = getActividadesContent(); break;
     case 'signos': content = getSignosContent(); break;
     case 'medicamentos': content = getMedicamentosContent(); break;
+    case 'educacion': content = getEducacionContent(); break;
     case 'entrega': content = getEntregaContent(); break;
     case 'reportes': content = getReportesContent(); break;
     case 'usuarios': content = getUsuariosContent(); break;
     case 'pacientes': content = getPacientesContent(); break;
+    case 'educationTopics': content = getEducationTopicsContent(); break;
+    case 'asignarEducacion': content = getAsignarEducacionContent(); break;
     case 'reportesGlobales': content = getReportesGlobalesContent(); break;
     default: content = '<div class="card"><p>Contenido no disponible</p></div>';
   }
@@ -574,12 +558,13 @@ function loadTab(tabId) {
     if (tabId === 'signos') cargarLista('signos', 'historialSignos');
     if (tabId === 'medicamentos') cargarLista('medicamentos', 'historialMedicamentos');
     if (tabId === 'entrega') cargarLista('entregas', 'historialEntregas');
+    if (tabId === 'usuarios') cargarUsuarios();
+    if (tabId === 'pacientes') cargarPacientes();
+    if (tabId === 'educationTopics') cargarListaTemas();
+    if (tabId === 'asignarEducacion') cargarAsignaciones();
   }, 100);
 }
 
-// ============================================================
-// RECIBO (SIN FIRMAS, CON RELOJ)
-// ============================================================
 function getReciboContent() {
   return '<div class="card"><div class="card-title">📋 Recibo del Paciente</div>' +
     '<div id="relojTurno" class="reloj-turno"></div>' +
@@ -610,9 +595,6 @@ window.confirmarRecibo = function() {
   cargarLista('recibos', 'historialRecibos');
 };
 
-// ============================================================
-// ACTIVIDADES
-// ============================================================
 function getActividadesContent() {
   return '<div class="card"><div class="card-title">✅ Actividades Realizadas</div>' +
     '<div id="listaActividades" style="margin-bottom:12px;"></div>' +
@@ -626,13 +608,77 @@ function getActividadesContent() {
     '<div class="form-group"><label>📝 Observación</label>' +
     '<textarea id="obsActividad" rows="2" placeholder="Detalle..."></textarea>' +
     '<button class="btn-voice" onclick="iniciarDictado(\'obsActividad\')">🎙️ Dictar</button></div>' +
-    '<div class="form-group" style="margin-top:12px; border-top:1px solid #334155; padding-top:12px;">' +
+    '<details style="margin-top:12px;padding:12px;background:#0f172a;border-radius:8px;">' +
+    '<summary style="cursor:pointer;color:#94a3b8;">📋 Escalas Clínicas</summary>' +
+    '<div style="margin-top:12px;">' +
+    '<div style="margin-bottom:12px;padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;">' +
+    '<label style="font-weight:600;color:#22c55e;">🧠 Glasgow</label>' +
+    '<div class="grid-2">' +
+    '<div class="form-group"><label>👁️ Ojos</label><select id="glasgowOjos" onchange="calcularGlasgow()">' +
+    '<option value="4">4 - Espontánea</option><option value="3">3 - Al llamado</option><option value="2">2 - Al dolor</option><option value="1">1 - No abre</option>' +
+    '</select></div>' +
+    '<div class="form-group"><label>🗣️ Verbal</label><select id="glasgowVerbal" onchange="calcularGlasgow()">' +
+    '<option value="5">5 - Orientado</option><option value="4">4 - Confuso</option><option value="3">3 - Palabras inapropiadas</option><option value="2">2 - Sonidos incomprensibles</option><option value="1">1 - No responde</option>' +
+    '</select></div>' +
+    '<div class="form-group"><label>💪 Motor</label><select id="glasgowMotor" onchange="calcularGlasgow()">' +
+    '<option value="6">6 - Obedece órdenes</option><option value="5">5 - Localiza el dolor</option><option value="4">4 - Retirada al dolor</option><option value="3">3 - Flexión anormal</option><option value="2">2 - Extensión anormal</option><option value="1">1 - No responde</option>' +
+    '</select></div>' +
+    '<div class="form-group"><label>📊 Total</label><input type="text" id="glasgowTotal" readonly></div>' +
+    '</div></div>' +
+    '<div style="margin-bottom:12px;padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;">' +
+    '<label style="font-weight:600;color:#22c55e;">😣 EVA (Escala de Dolor)</label>' +
+    '<input type="range" id="evaValor" min="0" max="10" value="0" oninput="document.getElementById(\'evaDisplay\').textContent=this.value" style="width:100%;">' +
+    '<span id="evaDisplay" style="color:#22c55e;font-weight:600;">0</span> / 10' +
+    '</div>' +
+    '<div style="padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;">' +
+    '<label style="font-weight:600;color:#22c55e;">📋 Braden (Riesgo Úlceras)</label>' +
+    '<div class="grid-2">' +
+    '<div class="form-group"><label>Percepción</label><select id="bradenPercepcion" onchange="calcularBraden()">' +
+    '<option value="4">4 - Normal</option><option value="3">3 - Ligeramente limitada</option><option value="2">2 - Muy limitada</option><option value="1">1 - Completamente limitada</option>' +
+    '</select></div>' +
+    '<div class="form-group"><label>Humedad</label><select id="bradenHumedad" onchange="calcularBraden()">' +
+    '<option value="4">4 - Siempre seca</option><option value="3">3 - A veces húmeda</option><option value="2">2 - A menudo húmeda</option><option value="1">1 - Siempre húmeda</option>' +
+    '</select></div>' +
+    '<div class="form-group"><label>Actividad</label><select id="bradenActividad" onchange="calcularBraden()">' +
+    '<option value="4">4 - Camina</option><option value="3">3 - Camina con ayuda</option><option value="2">2 - En silla de ruedas</option><option value="1">1 - Encamado</option>' +
+    '</select></div>' +
+    '<div class="form-group"><label>Movilidad</label><select id="bradenMovilidad" onchange="calcularBraden()">' +
+    '<option value="4">4 - Sin limitación</option><option value="3">3 - Ligeramente limitada</option><option value="2">2 - Muy limitada</option><option value="1">1 - Inmóvil</option>' +
+    '</select></div>' +
+    '<div class="form-group"><label>Nutrición</label><select id="bradenNutricion" onchange="calcularBraden()">' +
+    '<option value="4">4 - Excelente</option><option value="3">3 - Adecuada</option><option value="2">2 - Probablemente inadecuada</option><option value="1">1 - Muy inadecuada</option>' +
+    '</select></div>' +
+    '<div class="form-group"><label>Fricción</label><select id="bradenFriccion" onchange="calcularBraden()">' +
+    '<option value="3">3 - Sin problema</option><option value="2">2 - Problema potencial</option><option value="1">1 - Problema presente</option>' +
+    '</select></div>' +
+    '<div class="form-group" style="grid-column:1/-1;"><label>Total</label><input type="text" id="bradenTotal" readonly></div>' +
+    '</div></div></div></details>' +
+    '<div class="form-group" style="margin-top:12px;border-top:1px solid #334155;padding-top:12px;">' +
     '<label>📸 Evidencia Fotográfica (máx 3 fotos)</label>' +
     '<input type="file" id="photoInput" accept="image/*" capture="environment" multiple>' +
-    '<button class="btn-secondary" style="margin-top:6px; width:100%;" onclick="capturarFoto()">📷 Tomar Foto / Seleccionar</button>' +
+    '<button class="btn-secondary" style="margin-top:6px;width:100%;" onclick="capturarFoto()">📷 Tomar Foto / Seleccionar</button>' +
     '<div id="photoPreview" class="photo-preview"></div></div>' +
     '<button class="btn btn-primary" onclick="agregarActividad()">➕ Agregar</button></div>';
 }
+
+window.calcularGlasgow = function() {
+  var ojos = parseInt(document.getElementById('glasgowOjos').value) || 0;
+  var verbal = parseInt(document.getElementById('glasgowVerbal').value) || 0;
+  var motor = parseInt(document.getElementById('glasgowMotor').value) || 0;
+  var total = ojos + verbal + motor;
+  document.getElementById('glasgowTotal').value = total;
+};
+
+window.calcularBraden = function() {
+  var percepcion = parseInt(document.getElementById('bradenPercepcion').value) || 0;
+  var humedad = parseInt(document.getElementById('bradenHumedad').value) || 0;
+  var actividad = parseInt(document.getElementById('bradenActividad').value) || 0;
+  var movilidad = parseInt(document.getElementById('bradenMovilidad').value) || 0;
+  var nutricion = parseInt(document.getElementById('bradenNutricion').value) || 0;
+  var friccion = parseInt(document.getElementById('bradenFriccion').value) || 0;
+  var total = percepcion + humedad + actividad + movilidad + nutricion + friccion;
+  document.getElementById('bradenTotal').value = total;
+};
 
 window.capturarFoto = function() {
   var input = document.getElementById('photoInput');
@@ -661,6 +707,9 @@ window.agregarActividad = function() {
   if (!hora) { showToast('Ingrese la hora', 'error'); return; }
   var actividad = document.getElementById('tipoActividad').value;
   var observacion = document.getElementById('obsActividad').value;
+  var glasgow = document.getElementById('glasgowTotal') ? document.getElementById('glasgowTotal').value : '';
+  var eva = document.getElementById('evaValor') ? document.getElementById('evaValor').value : '';
+  var braden = document.getElementById('bradenTotal') ? document.getElementById('bradenTotal').value : '';
   var fotosBase64 = [];
   var preview = document.getElementById('photoPreview');
   if (preview && preview.children.length > 0) {
@@ -670,6 +719,7 @@ window.agregarActividad = function() {
   }
   var data = {
     actividad: actividad, hora: hora, observacion: observacion,
+    glasgow: glasgow, eva: eva, braden: braden,
     fotos: fotosBase64.length,
     fotos_data: fotosBase64
   };
@@ -681,25 +731,68 @@ window.agregarActividad = function() {
   cargarLista('actividades', 'listaActividades');
 };
 
-// ============================================================
-// SIGNOS VITALES
-// ============================================================
 function getSignosContent() {
   return '<div class="card"><div class="card-title">🩺 Signos Vitales</div>' +
     '<div class="grid-2">' +
-    '<div class="form-group"><label>🫀 SpO2 (%)</label><input type="number" id="spo2" min="0" max="100"></div>' +
-    '<div class="form-group"><label>❤️ FC (lpm)</label><input type="number" id="fc" min="0" max="200"></div>' +
-    '<div class="form-group"><label>💨 FR (rpm)</label><input type="number" id="fr" min="0" max="60"></div>' +
-    '<div class="form-group"><label>🌡️ Temp (°C)</label><input type="number" id="temp" step="0.1"></div>' +
-    '<div class="form-group"><label>📏 TA</label><input type="text" id="bp" placeholder="120/80"></div>' +
-    '<div class="form-group"><label>🩸 Glucosa (mg/dL)</label><input type="number" id="glucosa"></div>' +
+    '<div class="form-group"><label>🫀 SpO2 (%)</label><input type="number" id="spo2" min="0" max="100" oninput="evaluarSignosUI()"></div>' +
+    '<div class="form-group"><label>❤️ FC (lpm)</label><input type="number" id="fc" min="0" max="200" oninput="evaluarSignosUI()"></div>' +
+    '<div class="form-group"><label>💨 FR (rpm)</label><input type="number" id="fr" min="0" max="60" oninput="evaluarSignosUI()"></div>' +
+    '<div class="form-group"><label>🌡️ Temp (°C)</label><input type="number" id="temp" step="0.1" oninput="evaluarSignosUI()"></div>' +
+    '<div class="form-group"><label>📏 TA</label><input type="text" id="bp" placeholder="120/80" oninput="evaluarSignosUI()"></div>' +
+    '<div class="form-group"><label>🩸 Glucosa (mg/dL)</label><input type="number" id="glucosa" oninput="evaluarSignosUI()"></div>' +
     '<div class="form-group"><label>🕐 Hora</label><input type="time" id="horaSignos"></div></div>' +
     '<div class="form-group"><label>📝 Observación</label>' +
     '<textarea id="obsSignos" rows="2" placeholder="Observaciones..."></textarea>' +
     '<button class="btn-voice" onclick="iniciarDictado(\'obsSignos\')">🎙️ Dictar</button></div>' +
-    '<button class="btn btn-primary" onclick="guardarSignos()">💾 Guardar</button>' +
-    '<div id="signosAlert" style="margin-top:10px;"></div></div>' +
+    '<div id="signosAlert"></div>' +
+    '<button class="btn btn-primary" onclick="guardarSignos()">💾 Guardar</button></div>' +
     '<div class="card"><div class="card-title">📊 Últimos registros</div><div id="historialSignos"></div></div>';
+}
+
+function evaluarSignosUI() {
+  var spo2 = parseInt(document.getElementById('spo2').value) || 0;
+  var fc = parseInt(document.getElementById('fc').value) || 0;
+  var fr = parseInt(document.getElementById('fr').value) || 0;
+  var temp = parseFloat(document.getElementById('temp').value) || 0;
+  var glucosa = parseInt(document.getElementById('glucosa').value) || 0;
+  var alertas = [];
+  var nivel = 'success';
+  if (spo2 > 0) {
+    if (spo2 < 88) { alertas.push('🚨 SpO2 CRÍTICA: ' + spo2 + '%'); nivel = 'critical'; }
+    else if (spo2 < 92) { alertas.push('⚠️ SpO2 baja: ' + spo2 + '%'); if (nivel !== 'critical') nivel = 'warning'; }
+    else { alertas.push('✅ SpO2 normal: ' + spo2 + '%'); }
+  }
+  if (fc > 0) {
+    if (fc < 50 || fc > 120) { alertas.push('🚨 FC CRÍTICA: ' + fc + ' lpm'); nivel = 'critical'; }
+    else if (fc < 60 || fc > 100) { alertas.push('⚠️ FC anormal: ' + fc + ' lpm'); if (nivel !== 'critical') nivel = 'warning'; }
+    else { alertas.push('✅ FC normal: ' + fc + ' lpm'); }
+  }
+  if (fr > 0) {
+    if (fr < 10 || fr > 30) { alertas.push('🚨 FR CRÍTICA: ' + fr + ' rpm'); nivel = 'critical'; }
+    else if (fr < 12 || fr > 20) { alertas.push('⚠️ FR anormal: ' + fr + ' rpm'); if (nivel !== 'critical') nivel = 'warning'; }
+    else { alertas.push('✅ FR normal: ' + fr + ' rpm'); }
+  }
+  if (temp > 0) {
+    if (temp > 39) { alertas.push('🚨 FIEBRE ALTA: ' + temp + '°C'); nivel = 'critical'; }
+    else if (temp > 38) { alertas.push('⚠️ Fiebre: ' + temp + '°C'); if (nivel !== 'critical') nivel = 'warning'; }
+    else if (temp < 35) { alertas.push('⚠️ Hipotermia: ' + temp + '°C'); if (nivel !== 'critical') nivel = 'warning'; }
+    else { alertas.push('✅ Temp normal: ' + temp + '°C'); }
+  }
+  if (glucosa > 0) {
+    if (glucosa > 250 || glucosa < 50) { alertas.push('🚨 Glucosa CRÍTICA: ' + glucosa + ' mg/dL'); nivel = 'critical'; }
+    else if (glucosa > 180) { alertas.push('⚠️ Hiperglucemia: ' + glucosa + ' mg/dL'); if (nivel !== 'critical') nivel = 'warning'; }
+    else if (glucosa < 70) { alertas.push('⚠️ Hipoglucemia: ' + glucosa + ' mg/dL'); if (nivel !== 'critical') nivel = 'warning'; }
+    else { alertas.push('✅ Glucosa normal: ' + glucosa + ' mg/dL'); }
+  }
+  var div = document.getElementById('signosAlert');
+  if (div) {
+    if (alertas.length > 0) {
+      var cls = nivel === 'critical' ? 'alert-critical' : nivel === 'warning' ? 'alert-warning' : 'alert-success';
+      div.innerHTML = '<div class="alert-box ' + cls + '">' + alertas.join('<br>') + '</div>';
+    } else {
+      div.innerHTML = '';
+    }
+  }
 }
 
 window.guardarSignos = function() {
@@ -716,8 +809,6 @@ window.guardarSignos = function() {
   if (temp > 38.5) { alertas.push('FIEBRE'); tipoAlerta = 'warning'; }
   if (glucosa > 180) { alertas.push('HIPERGLUCEMIA'); tipoAlerta = 'warning'; }
   else if (glucosa > 0 && glucosa < 70) { alertas.push('HIPOGLUCEMIA'); tipoAlerta = 'warning'; }
-  var alertMsg = alertas.length > 0 ? alertas.join(' | ') : 'Parámetros normales';
-  document.getElementById('signosAlert').innerHTML = '<div class="alert-box alert-' + tipoAlerta + '">' + alertMsg + '</div>';
   saveToLocal('signos', {
     spo2: spo2, fc: document.getElementById('fc').value, fr: document.getElementById('fr').value,
     temp: temp, bp: document.getElementById('bp').value, glucosa: glucosa,
@@ -726,12 +817,10 @@ window.guardarSignos = function() {
   ['spo2','fc','fr','temp','bp','glucosa','obsSignos'].forEach(function(id) {
     var el = document.getElementById(id); if (el) el.value = '';
   });
+  document.getElementById('signosAlert').innerHTML = '';
   cargarLista('signos', 'historialSignos');
 };
 
-// ============================================================
-// MEDICAMENTOS
-// ============================================================
 function getMedicamentosContent() {
   return '<div class="card"><div class="card-title">💊 Medicamentos</div>' +
     '<div class="form-group"><label>💊 Nombre</label><input type="text" id="medNombre" placeholder="Ej: Enalapril"></div>' +
@@ -755,9 +844,43 @@ window.guardarMedicamento = function() {
   cargarLista('medicamentos', 'historialMedicamentos');
 };
 
-// ============================================================
-// ENTREGA (CON FIRMAS)
-// ============================================================
+function getEducacionContent() {
+  var asignadas = JSON.parse(localStorage.getItem('vital_educacion_asignada') || '[]');
+  var pendientes = asignadas.filter(function(e) { 
+    return e.paciente_id === (pacienteActual ? pacienteActual.id : '') && 
+           e.profesional_id === currentUser.id && 
+           e.estado === 'PENDIENTE'; 
+  });
+  var html = '<div class="card"><div class="card-title">📚 Educación Pendiente</div>';
+  if (pendientes.length === 0) {
+    html += '<p class="text-muted">No tienes educación pendiente para este paciente.</p>';
+  } else {
+    pendientes.forEach(function(e) {
+      html += '<div class="edu-asignada"><strong>Tema:</strong> ' + e.tema_titulo + '<br>' +
+              '<strong>Paciente:</strong> ' + e.paciente_nombre + '<br>' +
+              '<span class="edu-pendiente">⏳ PENDIENTE</span><br>' +
+              '<button class="btn btn-sm btn-primary" style="margin-top:8px;" onclick="completarEducacionAux(\'' + e.id + '\')">✅ Completar</button></div>';
+    });
+  }
+  html += '</div>';
+  return html;
+}
+
+window.completarEducacionAux = function(id) {
+  var evidencia = prompt('Describa la educación brindada:');
+  if (!evidencia) return;
+  var asignadas = JSON.parse(localStorage.getItem('vital_educacion_asignada') || '[]');
+  var index = asignadas.findIndex(function(a) { return a.id === id; });
+  if (index !== -1) {
+    asignadas[index].estado = 'COMPLETADO';
+    asignadas[index].fecha_completado = new Date().toISOString();
+    asignadas[index].evidencia = evidencia;
+    localStorage.setItem('vital_educacion_asignada', JSON.stringify(asignadas));
+    showToast('Educación completada', 'success');
+    loadTab('educacion');
+  }
+};
+
 function getEntregaContent() {
   return '<div class="card"><div class="card-title">🔄 Entrega de Turno</div>' +
     '<div class="tip-box"><strong>⚠️ IMPORTANTE:</strong> Registre la ENTREGA al finalizar el turno. <strong>Requiere firmas.</strong></div>' +
@@ -767,8 +890,8 @@ function getEntregaContent() {
     '<div class="form-group"><label>⚠️ Pendientes</label>' +
     '<textarea id="entregaPendientes" rows="2" placeholder="Pendientes..."></textarea>' +
     '<button class="btn-voice" onclick="iniciarDictado(\'entregaPendientes\')">🎙️ Dictar</button></div>' +
-    '<div style="margin-top:16px; border-top:1px solid #334155; padding-top:12px;">' +
-    '<div class="card-title" style="font-size:0.9rem; border-left-color:#8b5cf6;">📋 SBAR</div>' +
+    '<div style="margin-top:16px;border-top:1px solid #334155;padding-top:12px;">' +
+    '<div class="card-title" style="font-size:0.9rem;border-left-color:#8b5cf6;">📋 SBAR</div>' +
     '<div class="sbar-card">' +
     '<div class="sbar-field"><label>S - Situación</label><textarea id="sbarSituacion" rows="1"></textarea>' +
     '<button class="btn-voice" onclick="iniciarDictado(\'sbarSituacion\')">🎙️</button></div>' +
@@ -826,9 +949,6 @@ window.confirmarEntrega = function() {
   showToast('✅ Turno finalizado', 'success');
 };
 
-// ============================================================
-// REPORTES
-// ============================================================
 function getReportesContent() {
   return '<div class="card"><div class="card-title">📄 Generar Reporte del Día</div>' +
     '<button class="btn btn-primary" onclick="generarReportePDF()">📥 Generar Reporte PDF</button></div>';
@@ -871,6 +991,9 @@ function generarReportePDF() {
     actividades.forEach(function(a) {
       doc.text('🕐 ' + (a.hora || '') + ' - ' + cleanText(a.actividad), 25, y); y += 5;
       if (a.observacion) doc.text('   Obs: ' + cleanText(a.observacion).substring(0, 70), 30, y); y += 5;
+      if (a.glasgow) doc.text('   Glasgow: ' + a.glasgow, 30, y); y += 5;
+      if (a.eva) doc.text('   EVA: ' + a.eva, 30, y); y += 5;
+      if (a.braden) doc.text('   Braden: ' + a.braden, 30, y); y += 5;
     });
     y += 5;
   }
@@ -916,19 +1039,43 @@ function generarReportePDF() {
   showToast('Reporte generado', 'success');
 }
 
-// ============================================================
-// ADMIN - USUARIOS
-// ============================================================
 function getUsuariosContent() {
   return '<div class="card"><div class="card-title">👥 Crear Usuario</div>' +
     '<div class="grid-2">' +
     '<div class="form-group"><label>Nombre</label><input type="text" id="newUserName"></div>' +
     '<div class="form-group"><label>Email</label><input type="email" id="newUserEmail"></div>' +
-    '<div class="form-group"><label>Rol</label><select id="newUserRole"><option>AUXILIAR</option><option>ADMIN</option></select></div>' +
-    '<div class="form-group"><label>Contraseña</label><input type="password" id="newUserPass"></div></div>' +
+    '<div class="form-group"><label>Rol</label><select id="newUserRole">' +
+    '<option value="AUXILIAR">AUXILIAR</option>' +
+    '<option value="ENFERMERO">ENFERMERO</option>' +
+    '<option value="MEDICO">MEDICO</option>' +
+    '<option value="FISIOTERAPEUTA">FISIOTERAPEUTA</option>' +
+    '<option value="PSICOLOGO">PSICOLOGO</option>' +
+    '<option value="NUTRICIONISTA">NUTRICIONISTA</option>' +
+    '<option value="FONOAUDIOLOGO">FONOAUDIOLOGO</option>' +
+    '<option value="TERAPEUTA_OCUPACIONAL">TERAPEUTA OCUPACIONAL</option>' +
+    '<option value="TERAPEUTA_RESPIRATORIO">TERAPEUTA RESPIRATORIO</option>' +
+    '<option value="COORDINADOR">COORDINADOR</option>' +
+    '<option value="ADMIN">ADMIN</option></select></div>' +
+    '<div class="form-group"><label>Contraseña</label>' +
+    '<div style="position:relative;">' +
+    '<input type="password" id="newUserPass">' +
+    '<button type="button" class="password-toggle" onclick="toggleNewUserPass()">👁️</button>' +
+    '</div></div></div>' +
     '<button class="btn btn-primary" onclick="crearUsuario()">➕ Crear</button></div>' +
     '<div class="card"><div class="card-title">👥 Usuarios</div><div id="listaUsuarios"></div></div>';
 }
+
+window.toggleNewUserPass = function() {
+  var input = document.getElementById('newUserPass');
+  var btn = event.target;
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁️';
+  }
+};
 
 window.crearUsuario = async function() {
   var name = document.getElementById('newUserName').value.trim();
@@ -963,9 +1110,6 @@ async function cargarUsuarios() {
   } catch (e) {}
 }
 
-// ============================================================
-// ADMIN - PACIENTES
-// ============================================================
 function getPacientesContent() {
   return '<div class="card"><div class="card-title">🏥 Crear Paciente</div>' +
     '<div class="grid-2">' +
@@ -1009,17 +1153,120 @@ async function cargarPacientes() {
   } catch (e) {}
 }
 
-// ============================================================
-// ADMIN - REPORTES GLOBALES
-// ============================================================
-function getReportesGlobalesContent() {
-  return '<div class="card"><div class="card-title">📊 REPORTES GLOBALES</div>' +
-    '<p class="text-muted">Panel administrativo en desarrollo</p></div>';
+function getEducationTopicsContent() {
+  return '<div class="card"><div class="card-title">📚 Temas de Educación</div>' +
+    '<div class="form-group"><label>📝 Nuevo Tema</label><input type="text" id="newTopicTitle" placeholder="Ej: Cuidado de heridas"></div>' +
+    '<div class="form-group"><label>📋 Descripción</label><textarea id="newTopicDesc" rows="2" placeholder="Descripción..."></textarea>' +
+    '<button class="btn-voice" onclick="iniciarDictado(\'newTopicDesc\')">🎙️ Dictar</button></div>' +
+    '<button class="btn btn-primary" onclick="crearTemaEducacion()">➕ Crear Tema</button></div>' +
+    '<div class="card"><div class="card-title">📋 Temas</div><div id="listaTemasEducacion"></div></div>';
 }
 
-// ============================================================
-// INICIALIZACIÓN
-// ============================================================
+window.crearTemaEducacion = function() {
+  var title = document.getElementById('newTopicTitle').value;
+  var description = document.getElementById('newTopicDesc').value;
+  if (!title || !description) { showToast('Complete título y descripción', 'error'); return; }
+  var topics = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
+  topics.push({ id: 't' + Date.now(), title: title, description: description, created_at: new Date().toISOString() });
+  localStorage.setItem('vital_education_topics', JSON.stringify(topics));
+  document.getElementById('newTopicTitle').value = '';
+  document.getElementById('newTopicDesc').value = '';
+  cargarListaTemas();
+  showToast('Tema creado', 'success');
+};
+
+function cargarListaTemas() {
+  var topics = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
+  var div = document.getElementById('listaTemasEducacion');
+  if (!div) return;
+  if (topics.length === 0) {
+    div.innerHTML = '<p class="text-muted">Sin temas</p>';
+  } else {
+    div.innerHTML = topics.map(function(t) {
+      return '<div class="activity-item"><strong>' + t.title + '</strong><br>' + (t.description || '') + '</div>';
+    }).join('');
+  }
+}
+
+function getAsignarEducacionContent() {
+  var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+  var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
+  var profesionales = usuarios.filter(function(u) { return u.role === 'AUXILIAR'; });
+  var pacientesOptions = pacientes.map(function(p) { return '<option value="' + p.id + '">' + p.name + '</option>'; }).join('');
+  var profesionalesOptions = profesionales.map(function(p) { return '<option value="' + p.id + '">' + p.name + '</option>'; }).join('');
+  var topics = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
+  var topicsOptions = topics.map(function(t) { return '<option value="' + t.id + '">' + t.title + '</option>'; }).join('');
+  return '<div class="card"><div class="card-title">📋 Asignar Educación</div>' +
+    '<div class="grid-2">' +
+    '<div class="form-group"><label>📚 Tema</label><select id="asignarTemaSelect"><option value="">-- Seleccionar --</option>' + topicsOptions + '</select></div>' +
+    '<div class="form-group"><label>👤 Paciente</label><select id="asignarPacienteSelect"><option value="">-- Seleccionar --</option>' + pacientesOptions + '</select></div>' +
+    '<div class="form-group"><label>👨‍⚕️ Auxiliar</label><select id="asignarProfesionalSelect"><option value="">-- Seleccionar --</option>' + profesionalesOptions + '</select></div></div>' +
+    '<button class="btn btn-primary" onclick="asignarEducacion()">📤 Asignar</button></div>' +
+    '<div class="card"><div class="card-title">📋 Asignaciones</div><div id="listaAsignaciones"></div></div>';
+}
+
+window.asignarEducacion = function() {
+  var temaId = document.getElementById('asignarTemaSelect').value;
+  var pacienteId = document.getElementById('asignarPacienteSelect').value;
+  var profesionalId = document.getElementById('asignarProfesionalSelect').value;
+  if (!temaId || !pacienteId || !profesionalId) { showToast('Seleccione todos los campos', 'error'); return; }
+  var topics = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
+  var tema = topics.find(function(t) { return t.id === temaId; });
+  var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+  var paciente = pacientes.find(function(p) { return p.id === pacienteId; });
+  var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
+  var profesional = usuarios.find(function(u) { return u.id === profesionalId; });
+  if (!tema || !paciente || !profesional) { showToast('Datos incompletos', 'error'); return; }
+  var asignadas = JSON.parse(localStorage.getItem('vital_educacion_asignada') || '[]');
+  asignadas.push({
+    id: 'ea' + Date.now(),
+    tema_id: temaId,
+    tema_titulo: tema.title,
+    paciente_id: pacienteId,
+    paciente_nombre: paciente.name,
+    profesional_id: profesionalId,
+    profesional_nombre: profesional.name,
+    fecha_asignacion: new Date().toISOString(),
+    estado: 'PENDIENTE'
+  });
+  localStorage.setItem('vital_educacion_asignada', JSON.stringify(asignadas));
+  showToast('Educación asignada', 'success');
+  cargarAsignaciones();
+};
+
+function cargarAsignaciones() {
+  var asignadas = JSON.parse(localStorage.getItem('vital_educacion_asignada') || '[]');
+  var div = document.getElementById('listaAsignaciones');
+  if (!div) return;
+  if (asignadas.length === 0) {
+    div.innerHTML = '<p class="text-muted">Sin asignaciones</p>';
+  } else {
+    div.innerHTML = asignadas.map(function(e) {
+      var estadoClass = e.estado === 'COMPLETADO' ? 'edu-completado' : 'edu-pendiente';
+      var estadoText = e.estado === 'COMPLETADO' ? '✅ COMPLETADO' : '⏳ PENDIENTE';
+      return '<div class="edu-asignada"><strong>Tema:</strong> ' + e.tema_titulo + '<br>' +
+             '<strong>Paciente:</strong> ' + e.paciente_nombre + '<br>' +
+             '<strong>Auxiliar:</strong> ' + e.profesional_nombre + '<br>' +
+             '<span class="' + estadoClass + '">' + estadoText + '</span></div>';
+    }).join('');
+  }
+}
+
+function getReportesGlobalesContent() {
+  var usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
+  var pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
+  var temas = JSON.parse(localStorage.getItem('vital_education_topics') || '[]');
+  var asignadas = JSON.parse(localStorage.getItem('vital_educacion_asignada') || '[]');
+  var completados = asignadas.filter(function(e) { return e.estado === 'COMPLETADO'; }).length;
+  return '<div class="card"><div class="card-title">📊 REPORTES GLOBALES</div>' +
+    '<div class="grid-3">' +
+    '<div class="card" style="background:#0f172a;text-align:center;"><strong>👥 Usuarios</strong><br><span style="font-size:1.5rem;color:#22c55e;">' + usuarios.length + '</span></div>' +
+    '<div class="card" style="background:#0f172a;text-align:center;"><strong>🏥 Pacientes</strong><br><span style="font-size:1.5rem;color:#8b5cf6;">' + pacientes.length + '</span></div>' +
+    '<div class="card" style="background:#0f172a;text-align:center;"><strong>📚 Temas</strong><br><span style="font-size:1.5rem;color:#f97316;">' + temas.length + '</span></div>' +
+    '<div class="card" style="background:#0f172a;text-align:center;"><strong>✅ Completados</strong><br><span style="font-size:1.5rem;color:#22c55e;">' + completados + '</span></div>' +
+    '<div class="card" style="background:#0f172a;text-align:center;"><strong>⏳ Pendientes</strong><br><span style="font-size:1.5rem;color:#f97316;">' + (asignadas.length - completados) + '</span></div></div></div>';
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('loginBtn').addEventListener('click', login);
   document.getElementById('loginPassword').addEventListener('keydown', function(e) { if (e.key === 'Enter') login(); });
@@ -1035,7 +1282,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-console.log('🚀 Vital Hogar Pro IPS v6.0 - Fusionado y Corregido');
+console.log('🚀 Vital Hogar Pro IPS v7.0 - Completo con todas las funcionalidades');
 </script>
 </body>
 </html>
