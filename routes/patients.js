@@ -1,23 +1,22 @@
 const { createClient } = require('@supabase/supabase-js');
 
-// ==================== SUPABASE ====================
 const supabase = createClient(
     process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY  // ← CORRECTO
+    process.env.SUPABASE_ANON_KEY
 );
 
 // ============================================================
-//  GET PATIENTS - Listar todos los pacientes
+//  GET PATIENTS - Solo pacientes ACTIVOS
 // ============================================================
 async function getPatients(req, res) {
     try {
-        // ✅ Mostrar TODOS los pacientes (sin filtro de status)
         const { data, error } = await supabase
             .from('patients')
-            .select('*');
+            .select('*')
+            .or('status.eq.ACTIVE,status.is.null');
 
         if (error) throw error;
-        res.json({ success: true, data });
+        res.json({ success: true, data: data || [] });
     } catch (error) {
         console.error('❌ Error en getPatients:', error);
         res.status(500).json({ success: false, error: error.message });
@@ -25,13 +24,18 @@ async function getPatients(req, res) {
 }
 
 // ============================================================
-//  CREATE PATIENT - Crear paciente
+//  CREATE PATIENT (CON ciudad, fecha_inicio, acudiente)
 // ============================================================
 async function createPatient(req, res) {
     try {
-        const { name, document, diagnosis, doctor } = req.body;
+        const { 
+            name, document, diagnosis, doctor, 
+            ciudad, fecha_inicio_atencion,
+            acudiente_nombre, acudiente_cedula, 
+            acudiente_parentesco, acudiente_telefono,
+            direccion, telefono, eps
+        } = req.body;
 
-        // ✅ Validar campos obligatorios
         if (!name || !document) {
             return res.status(400).json({
                 success: false,
@@ -39,8 +43,7 @@ async function createPatient(req, res) {
             });
         }
 
-        // ✅ Validar que el documento no exista
-        const { data: existing, error: checkError } = await supabase
+        const { data: existing } = await supabase
             .from('patients')
             .select('document')
             .eq('document', document)
@@ -53,7 +56,6 @@ async function createPatient(req, res) {
             });
         }
 
-        // ✅ Crear paciente con status ACTIVE por defecto
         const { data, error } = await supabase
             .from('patients')
             .insert([{
@@ -61,7 +63,16 @@ async function createPatient(req, res) {
                 document,
                 diagnosis: diagnosis || '',
                 doctor: doctor || '',
-                status: 'ACTIVE'  // ← Estado por defecto
+                status: 'ACTIVE',
+                ciudad: ciudad || 'Bogotá',
+                fecha_inicio_atencion: fecha_inicio_atencion || new Date().toISOString().split('T')[0],
+                acudiente_nombre: acudiente_nombre || null,
+                acudiente_cedula: acudiente_cedula || null,
+                acudiente_parentesco: acudiente_parentesco || null,
+                acudiente_telefono: acudiente_telefono || null,
+                direccion: direccion || null,
+                telefono: telefono || null,
+                eps: eps || null
             }])
             .select();
 
@@ -80,7 +91,7 @@ async function createPatient(req, res) {
 }
 
 // ============================================================
-//  GET PATIENT BY ID - Obtener paciente específico
+//  GET PATIENT BY ID
 // ============================================================
 async function getPatientById(req, res) {
     try {
@@ -115,7 +126,7 @@ async function getPatientById(req, res) {
 }
 
 // ============================================================
-//  UPDATE PATIENT - Actualizar paciente
+//  UPDATE PATIENT
 // ============================================================
 async function updatePatient(req, res) {
     try {
@@ -129,8 +140,7 @@ async function updatePatient(req, res) {
             });
         }
 
-        // ✅ Verificar que el paciente existe
-        const { data: existing, error: checkError } = await supabase
+        const { data: existing } = await supabase
             .from('patients')
             .select('id')
             .eq('id', id)
@@ -143,7 +153,6 @@ async function updatePatient(req, res) {
             });
         }
 
-        // ✅ Si se actualiza documento, verificar que no exista
         if (updates.document) {
             const { data: existingDoc } = await supabase
                 .from('patients')
@@ -160,7 +169,6 @@ async function updatePatient(req, res) {
             }
         }
 
-        // ✅ Eliminar campos vacíos
         Object.keys(updates).forEach(key => {
             if (updates[key] === '' || updates[key] === null || updates[key] === undefined) {
                 delete updates[key];
@@ -188,7 +196,7 @@ async function updatePatient(req, res) {
 }
 
 // ============================================================
-//  DELETE PATIENT - Eliminar/Desactivar paciente
+//  DELETE PATIENT - ELIMINACIÓN PERMANENTE (Opción A)
 // ============================================================
 async function deletePatient(req, res) {
     try {
@@ -201,8 +209,7 @@ async function deletePatient(req, res) {
             });
         }
 
-        // ✅ Verificar que el paciente existe
-        const { data: existing, error: checkError } = await supabase
+        const { data: existing } = await supabase
             .from('patients')
             .select('id')
             .eq('id', id)
@@ -215,20 +222,17 @@ async function deletePatient(req, res) {
             });
         }
 
-        // ✅ Soft delete (desactivar) en lugar de eliminar
+        // ELIMINACIÓN PERMANENTE
         const { error } = await supabase
             .from('patients')
-            .update({ 
-                status: 'INACTIVE',
-                deleted_at: new Date().toISOString()
-            })
+            .delete()
             .eq('id', id);
 
         if (error) throw error;
 
         res.json({
             success: true,
-            message: '✅ Paciente desactivado exitosamente'
+            message: '✅ Paciente eliminado permanentemente'
         });
 
     } catch (error) {
@@ -238,32 +242,11 @@ async function deletePatient(req, res) {
 }
 
 // ============================================================
-//  REACTIVATE PATIENT - Reactivar paciente
+//  REACTIVATE PATIENT (Mantener por compatibilidad)
 // ============================================================
 async function reactivatePatient(req, res) {
     try {
         const { id } = req.params;
-
-        if (!id) {
-            return res.status(400).json({
-                success: false,
-                message: 'ID de paciente requerido'
-            });
-        }
-
-        // ✅ Verificar que el paciente existe
-        const { data: existing, error: checkError } = await supabase
-            .from('patients')
-            .select('id')
-            .eq('id', id)
-            .single();
-
-        if (!existing) {
-            return res.status(404).json({
-                success: false,
-                message: 'Paciente no encontrado'
-            });
-        }
 
         const { error } = await supabase
             .from('patients')
@@ -277,7 +260,7 @@ async function reactivatePatient(req, res) {
 
         res.json({
             success: true,
-            message: '✅ Paciente reactivado exitosamente'
+            message: '✅ Paciente reactivado'
         });
 
     } catch (error) {
@@ -286,9 +269,6 @@ async function reactivatePatient(req, res) {
     }
 }
 
-// ============================================================
-//  EXPORTAR
-// ============================================================
 module.exports = {
     getPatients,
     getPatientById,
