@@ -284,6 +284,20 @@ app.get('/api/shifts/professional/:professionalId', auth.protect, shifts.getShif
 app.get('/api/shifts/patient/:patientId', auth.protect, shifts.getShiftsByPatient);
 
 // ============================================================
+//  IMPORTAR NUEVO ARCHIVO DE ASIGNACIONES
+// ============================================================
+const educationAssignments = require('./routes/educationAssignments');
+
+// ============================================================
+//  RUTAS: ASIGNACIONES DE EDUCACIÓN (NUEVAS)
+// ============================================================
+app.get('/api/education-assignments', auth.protect, educationAssignments.getAssignments);
+app.get('/api/education-assignments/professional/:professionalId', auth.protect, educationAssignments.getAssignmentsByProfessional);
+app.post('/api/education-assignments', auth.protect, auth.authorize('ADMIN', 'COORDINADOR'), educationAssignments.createAssignment);
+app.put('/api/education-assignments/:id/complete', auth.protect, educationAssignments.completeAssignment);
+app.delete('/api/education-assignments/:id', auth.protect, auth.authorize('ADMIN', 'COORDINADOR'), educationAssignments.deleteAssignment);
+
+// ============================================================
 //  INICIAR SERVIDOR
 // ============================================================
 
