@@ -2075,7 +2075,7 @@ async function crearUsuario() {
   } catch (error) {
     showToast('Error de conexión', 'error');
   }
-}
+
 
 async function cargarUsuarios() {
   try {
@@ -2152,22 +2152,25 @@ async function eliminarUsuario(userId) {
 // MÓDULO PACIENTES (CON CIUDAD Y ELIMINACIÓN)
 // ==========================================
 function getPacientesContent() {
-  const ciudadesOptions = Object.keys(CIUDADES_COLOMBIA).sort().map(c => `<option value="${c}">${c} (${CIUDADES_COLOMBIA[c].altitud}msnm)</option>`).join('');
+  const ciudadesOptions = Object.keys(CIUDADES_COLOMBIA).sort().map(c => 
+    `<option value="${c}">${c} (${CIUDADES_COLOMBIA[c].altitud}msnm)</option>`
+  ).join('');
   
   return `
     <div class="card">
       <div class="card-title">➕ Crear Nuevo Paciente</div>
+      <h4 style="color:#22c55e;margin-bottom:10px;">📋 Datos del Paciente</h4>
       <div class="grid-2">
         <div class="form-group">
-          <label>Nombre Completo</label>
+          <label>Nombre Completo *</label>
           <input type="text" id="newPacienteNombre" placeholder="Ej: Juan Pérez">
         </div>
         <div class="form-group">
-          <label>Documento de Identidad</label>
+          <label>Documento de Identidad *</label>
           <input type="text" id="newPacienteDocumento" placeholder="Ej: 1234567890">
         </div>
         <div class="form-group">
-          <label>📍 Ciudad</label>
+          <label>📍 Ciudad *</label>
           <select id="newPacienteCiudad">
             ${ciudadesOptions}
           </select>
@@ -2183,6 +2186,35 @@ function getPacientesContent() {
         <div class="form-group">
           <label>Médico Tratante</label>
           <input type="text" id="newPacienteMedico" placeholder="Ej: Dr. García">
+        </div>
+      </div>
+      
+      <h4 style="color:#22c55e;margin:15px 0 10px 0;">👨‍👩‍👧 Datos del Acudiente/Familiar</h4>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Nombre Completo del Acudiente</label>
+          <input type="text" id="newAcudienteNombre" placeholder="Ej: María López">
+        </div>
+        <div class="form-group">
+          <label>Cédula del Acudiente</label>
+          <input type="text" id="newAcudienteCedula" placeholder="Ej: 987654321">
+        </div>
+        <div class="form-group">
+          <label>Parentesco</label>
+          <select id="newAcudienteParentesco">
+            <option value="">-- Seleccionar --</option>
+            <option>Hijo(a)</option>
+            <option>Esposo(a)</option>
+            <option>Padre/Madre</option>
+            <option>Hermano(a)</option>
+            <option>Nieto(a)</option>
+            <option>Cuidador</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Teléfono del Acudiente</label>
+          <input type="tel" id="newAcudienteTelefono" placeholder="Ej: 300-1234567">
         </div>
       </div>
       <button class="btn btn-primary" onclick="crearPaciente()">➕ Crear Paciente</button>
@@ -2201,6 +2233,10 @@ async function crearPaciente() {
   const documento = document.getElementById('newPacienteDocumento')?.value?.trim();
   const ciudad = document.getElementById('newPacienteCiudad')?.value;
   const fechaInicio = document.getElementById('newPacienteFechaInicio')?.value;
+  const acudienteNombre = document.getElementById('newAcudienteNombre')?.value?.trim();
+  const acudienteCedula = document.getElementById('newAcudienteCedula')?.value?.trim();
+  const acudienteParentesco = document.getElementById('newAcudienteParentesco')?.value;
+  const acudienteTelefono = document.getElementById('newAcudienteTelefono')?.value?.trim();
   
   if (!name || !documento) {
     showToast('Complete nombre y documento', 'error');
@@ -2211,17 +2247,22 @@ async function crearPaciente() {
     const response = await apiRequest('/api/patients', {
       method: 'POST',
       body: JSON.stringify({
-        name: name,
+        name,
         document: documento,
-        ciudad: ciudad,
+        ciudad,
         fecha_inicio_atencion: fechaInicio,
         diagnosis: document.getElementById('newPacienteDiagnostico')?.value || '',
-        doctor: document.getElementById('newPacienteMedico')?.value || ''
+        doctor: document.getElementById('newPacienteMedico')?.value || '',
+        acudiente_nombre: acudienteNombre,
+        acudiente_cedula: acudienteCedula,
+        acudiente_parentesco: acudienteParentesco,
+        acudiente_telefono: acudienteTelefono
       })
     });
     const data = await response.json();
     if (data.success) {
-      ['newPacienteNombre','newPacienteDocumento','newPacienteDiagnostico','newPacienteMedico'].forEach(id => {
+      ['newPacienteNombre','newPacienteDocumento','newPacienteDiagnostico','newPacienteMedico',
+       'newAcudienteNombre','newAcudienteCedula','newAcudienteTelefono'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
       });
@@ -2248,9 +2289,10 @@ async function cargarPacientes() {
           <div class="activity-item-content">
             <strong>${p.name}</strong><br>
             <span style="color:#94a3b8;font-size:0.8rem;">
-              ${p.document || 'Sin documento'} | ${p.ciudad || 'Sin ciudad'} | ${p.diagnosis || 'Sin diagnóstico'}
+              CC: ${p.document || 'Sin doc'} | 📍 ${p.ciudad || 'Sin ciudad'} | ${p.diagnosis || 'Sin dx'}
             </span>
             ${p.fecha_inicio_atencion ? `<br><span style="color:#64748b;font-size:0.75rem;">📅 Inicio: ${p.fecha_inicio_atencion}</span>` : ''}
+            ${p.acudiente_nombre ? `<br><span style="color:#8b5cf6;font-size:0.75rem;">👨‍👩‍👧 ${p.acudiente_nombre} (${p.acudiente_parentesco || 'N/A'})</span>` : ''}
           </div>
           <button class="btn-delete" onclick="confirmarEliminarPaciente('${p.id}', '${p.name.replace(/'/g, "\\'")}')">🗑️ Eliminar</button>
         </div>
