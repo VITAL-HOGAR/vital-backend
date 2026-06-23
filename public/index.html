@@ -1144,16 +1144,17 @@ function getEntregaContent() {
         <button class="btn-voice" onclick="iniciarDictado('entregaResumen')">🎙️ Dictar</button>
       </div>
       <div class="form-group">
-        <label>⚠️ Pendientes</label>
+        <label>⚠️ Pendientes / Alertas</label>
         <textarea id="entregaPendientes" rows="2" placeholder="Pendientes..."></textarea>
+        <button class="btn-voice" onclick="iniciarDictado('entregaPendientes')">🎙️ Dictar</button>
       </div>
       <div style="margin-top:16px;border-top:1px solid #334155;padding-top:12px;">
         <div class="card-title" style="font-size:0.9rem;border-left-color:#8b5cf6;">📋 Comunicación SBAR</div>
         <div class="sbar-card">
-          <div class="sbar-field"><label>S - Situación</label><textarea id="sbarSituacion" rows="1"></textarea></div>
-          <div class="sbar-field"><label>B - Antecedentes</label><textarea id="sbarAntecedentes" rows="1"></textarea></div>
-          <div class="sbar-field"><label>A - Evaluación</label><textarea id="sbarEvaluacion" rows="1"></textarea></div>
-          <div class="sbar-field"><label>R - Recomendación</label><textarea id="sbarRecomendacion" rows="1"></textarea></div>
+          <div class="sbar-field"><label>S - Situación</label><textarea id="sbarSituacion" rows="1"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarSituacion')">🎙️</button></div>
+          <div class="sbar-field"><label>B - Antecedentes</label><textarea id="sbarAntecedentes" rows="1"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarAntecedentes')">🎙️</button></div>
+          <div class="sbar-field"><label>A - Evaluación</label><textarea id="sbarEvaluacion" rows="1"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarEvaluacion')">🎙️</button></div>
+          <div class="sbar-field"><label>R - Recomendación</label><textarea id="sbarRecomendacion" rows="1"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarRecomendacion')">🎙️</button></div>
         </div>
       </div>
       <div class="form-group">
@@ -1308,7 +1309,7 @@ function getReportesContent() {
   return `
     <div class="card">
       <div class="card-title">📄 Generar Reporte del Día</div>
-      <p style="margin-bottom:12px;color:#94a3b8;">Genere un PDF con todas las actividades de hoy.</p>
+      <p style="margin-bottom:12px;color:#94a3b8;">Genere un PDF completo con todas las actividades de hoy.</p>
       <button class="btn btn-primary" onclick="generarReportePDF()">📥 Descargar Reporte PDF</button>
     </div>
   `;
@@ -1330,41 +1331,301 @@ async function generarReportePDF() {
   if (!validarPacienteSeleccionado()) return;
   const PDFClass = window.jspdf?.jsPDF;
   if (!PDFClass) { showToast('Librería PDF no disponible', 'error'); return; }
-  showToast('Generando PDF...', 'success');
-  const doc = new PDFClass();
-  let y = 20;
-  const cleanText = (t) => t === null || t === undefined ? '' : String(t).trim();
-  const logoBase64 = await cargarLogoBase64();
-  if (logoBase64) {
-    try { doc.addImage(logoBase64, 'JPEG', 80, y - 10, 50, 20); y += 15; } catch(e) {}
+  
+  showToast('Generando PDF completo...', 'success');
+  
+  try {
+    // Obtener todos los datos del día en paralelo
+    const hoy = getCurrentDate();
+    const [recibosRes, actividadesRes, signosRes, medicamentosRes, entregasRes] = await Promise.all([
+      apiRequest(`/api/recibos/patient/${pacienteActual.id}?date=${hoy}`),
+      apiRequest(`/api/actividades/patient/${pacienteActual.id}?date=${hoy}`),
+      apiRequest(`/api/signos/patient/${pacienteActual.id}?date=${hoy}`),
+      apiRequest(`/api/medicamentos/patient/${pacienteActual.id}?date=${hoy}`),
+      apiRequest(`/api/entregas/patient/${pacienteActual.id}?date=${hoy}`)
+    ]);
+    
+    const recibos = (await recibosRes.json()).data || [];
+    const actividades = (await actividadesRes.json()).data || [];
+    const signos = (await signosRes.json()).data || [];
+    const medicamentos = (await medicamentosRes.json()).data || [];
+    const entregas = (await entregasRes.json()).data || [];
+    
+    const doc = new PDFClass();
+    let y = 20;
+    const cleanText = (t) => t === null || t === undefined ? '' : String(t).trim();
+    
+    // LOGO
+    const logoBase64 = await cargarLogoBase64();
+    if (logoBase64) {
+      try { doc.addImage(logoBase64, 'JPEG', 80, y - 10, 50, 20); y += 15; } catch(e) {}
+    }
+    
+    // ENCABEZADO
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(34, 197, 94);
+    doc.text('VITAL HOGAR PRO IPS', 105, y, { align: 'center' });
+    y += 8;
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text('Cuidados Domiciliarios', 105, y, { align: 'center' });
+    y += 8;
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(12);
+    doc.text('REPORTE DE ATENCIÓN DOMICILIARIA', 105, y, { align: 'center' });
+    y += 10;
+    
+    // DATOS DEL PACIENTE Y PROFESIONAL
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Paciente: ', 20, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(cleanText(pacienteActual.name).toUpperCase(), 45, y);
+    y += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Ciudad: ', 20, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(pacienteActual.ciudad || 'No especificada', 45, y);
+    y += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Fecha: ', 20, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(new Date().toLocaleDateString('es-CO'), 45, y);
+    y += 5;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Profesional: ', 20, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text(cleanText(currentUser.name), 50, y);
+    y += 5;
+    if (currentUser.cedula || currentUser.rethus) {
+      doc.setFont('helvetica', 'bold');
+      doc.text('ID: ', 20, y);
+      doc.setFont('helvetica', 'normal');
+      let idText = '';
+      if (currentUser.cedula) idText += `CC: ${currentUser.cedula}`;
+      if (currentUser.rethus) idText += ` | ReTHUS: ${currentUser.rethus}`;
+      doc.text(idText, 45, y);
+      y += 5;
+    }
+    y += 5;
+    doc.setDrawColor(34, 197, 94);
+    doc.line(20, y, 190, y);
+    y += 8;
+    
+    // 1. RECIBOS
+    if (recibos.length > 0) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(34, 197, 94);
+      doc.text('1. RECIBO DEL PACIENTE', 20, y);
+      y += 6;
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      recibos.forEach(r => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.text(`Hora: ${r.hora || ''} | Entregado por: ${r.quien_entrega || 'N/A'}`, 25, y);
+        y += 5;
+        const estadoLines = doc.splitTextToSize(`Estado: ${cleanText(r.estado)}`, 160);
+        doc.text(estadoLines, 25, y);
+        y += estadoLines.length * 4 + 3;
+      });
+      y += 3;
+    }
+    
+    // 2. ACTIVIDADES
+    if (actividades.length > 0) {
+      if (y > 250) { doc.addPage(); y = 20; }
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(34, 197, 94);
+      doc.text('2. ACTIVIDADES REALIZADAS', 20, y);
+      y += 6;
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      actividades.forEach(a => {
+        if (y > 265) { doc.addPage(); y = 20; }
+        doc.setFont('helvetica', 'bold');
+        doc.text(`[${a.hora || ''}] ${cleanText(a.actividad)}`, 25, y);
+        y += 5;
+        doc.setFont('helvetica', 'normal');
+        if (a.observacion) {
+          const obsLines = doc.splitTextToSize(`Obs: ${cleanText(a.observacion)}`, 160);
+          doc.text(obsLines, 30, y);
+          y += obsLines.length * 4;
+        }
+        if (a.novedad) {
+          doc.text(`Novedad: ${cleanText(a.novedad)}`, 30, y);
+          y += 4;
+        }
+        if (a.fotos && a.fotos.length > 0) {
+          doc.setTextColor(139, 92, 246);
+          doc.text(`📸 ${a.fotos.length} foto(s) de evidencia adjunta(s)`, 30, y);
+          doc.setTextColor(0, 0, 0);
+          y += 4;
+        }
+        y += 3;
+      });
+      y += 3;
+    }
+    
+    // 3. SIGNOS VITALES
+    if (signos.length > 0) {
+      if (y > 250) { doc.addPage(); y = 20; }
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(34, 197, 94);
+      doc.text('3. SIGNOS VITALES', 20, y);
+      y += 6;
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      signos.forEach(s => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        let linea = `[${s.hora || ''}]`;
+        if (s.spo2) linea += ` SpO2:${s.spo2}%`;
+        if (s.fc) linea += ` FC:${s.fc}`;
+        if (s.fr) linea += ` FR:${s.fr}`;
+        if (s.temp) linea += ` T:${s.temp}°C`;
+        if (s.bp) linea += ` TA:${s.bp}`;
+        if (s.glucosa) linea += ` Glu:${s.glucosa}`;
+        if (s.braden) linea += ` Braden:${s.braden}`;
+        doc.text(linea, 25, y);
+        y += 5;
+        if (s.obs) {
+          const obsLines = doc.splitTextToSize(`Obs: ${cleanText(s.obs)}`, 160);
+          doc.text(obsLines, 30, y);
+          y += obsLines.length * 4;
+        }
+        y += 2;
+      });
+      y += 3;
+    }
+    
+    // 4. MEDICAMENTOS
+    if (medicamentos.length > 0) {
+      if (y > 250) { doc.addPage(); y = 20; }
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(34, 197, 94);
+      doc.text('4. MEDICAMENTOS ADMINISTRADOS', 20, y);
+      y += 6;
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      medicamentos.forEach(m => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.text(`[${m.hora || ''}] ${cleanText(m.nombre)} - ${cleanText(m.dosis)}`, 25, y);
+        y += 5;
+        if (m.obs) {
+          const obsLines = doc.splitTextToSize(`Obs: ${cleanText(m.obs)}`, 160);
+          doc.text(obsLines, 30, y);
+          y += obsLines.length * 4;
+        }
+        y += 2;
+      });
+      y += 3;
+    }
+    
+    // 5. ENTREGA DE TURNO (con firmas)
+    if (entregas.length > 0) {
+      if (y > 200) { doc.addPage(); y = 20; }
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(34, 197, 94);
+      doc.text('5. ENTREGA DE TURNO', 20, y);
+      y += 6;
+      doc.setTextColor(0, 0, 0);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      const ultima = entregas[0]; // La más reciente
+      if (ultima) {
+        doc.text(`Hora de entrega: ${ultima.horaentrega || ''} | Recibe: ${ultima.quienrecibe || ''}`, 25, y);
+        y += 5;
+        doc.setFont('helvetica', 'bold');
+        doc.text('Resumen:', 25, y);
+        doc.setFont('helvetica', 'normal');
+        y += 4;
+        const resumenLines = doc.splitTextToSize(cleanText(ultima.resumen), 160);
+        doc.text(resumenLines, 30, y);
+        y += resumenLines.length * 4 + 2;
+        if (ultima.pendientes) {
+          doc.setFont('helvetica', 'bold');
+          doc.text('Pendientes:', 25, y);
+          doc.setFont('helvetica', 'normal');
+          y += 4;
+          const pendLines = doc.splitTextToSize(cleanText(ultima.pendientes), 160);
+          doc.text(pendLines, 30, y);
+          y += pendLines.length * 4 + 2;
+        }
+        if (ultima.sbar) {
+          doc.setFont('helvetica', 'bold');
+          doc.text('Comunicación SBAR:', 25, y);
+          doc.setFont('helvetica', 'normal');
+          y += 4;
+          if (ultima.sbar.situacion) { doc.text(`S: ${cleanText(ultima.sbar.situacion).substring(0, 80)}`, 30, y); y += 4; }
+          if (ultima.sbar.antecedentes) { doc.text(`B: ${cleanText(ultima.sbar.antecedentes).substring(0, 80)}`, 30, y); y += 4; }
+          if (ultima.sbar.evaluacion) { doc.text(`A: ${cleanText(ultima.sbar.evaluacion).substring(0, 80)}`, 30, y); y += 4; }
+          if (ultima.sbar.recomendacion) { doc.text(`R: ${cleanText(ultima.sbar.recomendacion).substring(0, 80)}`, 30, y); y += 4; }
+        }
+        
+        // FIRMAS
+        if (y > 200) { doc.addPage(); y = 20; }
+        y += 5;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.text('FIRMAS DE CONFORMIDAD', 20, y);
+        y += 8;
+        
+        // Firma Entrega (Auxiliar)
+        if (ultima.firma_entrega) {
+          try { doc.addImage(ultima.firma_entrega, 'PNG', 20, y, 60, 25); } catch(e) {}
+        }
+        doc.setDrawColor(0, 0, 0);
+        doc.line(20, y + 28, 80, y + 28);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.text('ENTREGA (Auxiliar)', 20, y + 32);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Nombre: ${currentUser.name}`, 20, y + 36);
+        doc.text(`Rol: ${currentUser.role}`, 20, y + 40);
+        if (currentUser.cedula) doc.text(`Cédula: ${currentUser.cedula}`, 20, y + 44);
+        if (currentUser.rethus) doc.text(`ReTHUS: ${currentUser.rethus}`, 20, y + 48);
+        
+        // Firma Recibe
+        if (ultima.firma_recibe) {
+          try { doc.addImage(ultima.firma_recibe, 'PNG', 110, y, 60, 25); } catch(e) {}
+        }
+        doc.line(110, y + 28, 170, y + 28);
+        doc.setFont('helvetica', 'bold');
+        doc.text('RECIBE', 110, y + 32);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Nombre: ${ultima.quienrecibe || ''}`, 110, y + 36);
+        doc.text(`Fecha: ${new Date().toLocaleDateString('es-CO')}`, 110, y + 40);
+        doc.text(`Hora: ${ultima.horaentrega || ''}`, 110, y + 44);
+      }
+    }
+    
+    // PIE DE PÁGINA
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(7);
+      doc.setTextColor(150, 150, 150);
+      doc.text(`Vital Hogar Pro IPS - Página ${i} de ${totalPages} - Generado: ${new Date().toLocaleString('es-CO')}`, 105, 290, { align: 'center' });
+    }
+    
+    const fechaStr = new Date().toISOString().split('T')[0];
+    const nombreArchivo = `reporte_${cleanText(pacienteActual.name).replace(/\s+/g, '_')}_${fechaStr}.pdf`;
+    doc.save(nombreArchivo);
+    showToast('✅ Reporte PDF completo generado', 'success');
+    
+  } catch (error) {
+    console.error('Error generando PDF:', error);
+    showToast('Error al generar PDF: ' + error.message, 'error');
   }
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.setTextColor(34, 197, 94);
-  doc.text('VITAL HOGAR PRO IPS', 105, y, { align: 'center' });
-  y += 10;
-  doc.setTextColor(0, 0, 0);
-  doc.setFontSize(12);
-  doc.text('REPORTE DE ATENCIÓN DOMICILIARIA', 105, y, { align: 'center' });
-  y += 10;
-  doc.setFontSize(11);
-  doc.text('Paciente: ' + cleanText(pacienteActual.name).toUpperCase(), 20, y);
-  y += 6;
-  doc.setFontSize(9);
-  doc.text('Ciudad: ' + (pacienteActual.ciudad || 'No especificada'), 20, y);
-  y += 5;
-  doc.text('Fecha: ' + new Date().toLocaleDateString('es-CO'), 20, y);
-  y += 5;
-  doc.text('Profesional: ' + cleanText(currentUser.name), 20, y);
-  if (currentUser.rethus) { y += 5; doc.text('ReTHUS: ' + currentUser.rethus, 20, y); }
-  if (currentUser.cedula) { y += 5; doc.text('Cédula: ' + currentUser.cedula, 20, y); }
-  y += 10;
-  doc.setFontSize(10);
-  doc.text('(Reporte generado - datos completos en sistema)', 20, y);
-  const fechaStr = new Date().toISOString().split('T')[0];
-  const nombreArchivo = 'reporte_' + cleanText(pacienteActual.name).replace(/\s+/g, '_') + '_' + fechaStr + '.pdf';
-  doc.save(nombreArchivo);
-  showToast('✅ Reporte PDF generado', 'success');
 }
 
 // ==========================================
@@ -1633,7 +1894,7 @@ async function cargarPacientes() {
               CC: ${p.document || 'Sin doc'} | 📍 ${p.ciudad || 'Sin ciudad'} | ${p.diagnosis || 'Sin dx'}
             </span>
             ${p.fecha_inicio_atencion ? `<br><span style="color:#64748b;font-size:0.75rem;">📅 Inicio: ${p.fecha_inicio_atencion}</span>` : ''}
-            ${p.acudiente_nombre ? `<br><span style="color:#8b5cf6;font-size:0.75rem;">👨‍👩‍👧 ${p.acudiente_nombre} (${p.acudiente_parentesco || 'N/A'}) - Tel: ${p.acudiente_telefono || 'N/A'}</span>` : ''}
+            ${p.acudiente_nombre ? `<br><span style="color:#8b5cf6;font-size:0.75rem;">👨‍👩‍👧 ${p.acudiente_nombre} (${p.acudiente_parentesco || 'N/A'})</span>` : ''}
           </div>
           <button class="btn-delete" onclick="confirmarEliminarPaciente('${p.id}', '${p.name.replace(/'/g, "\\'")}')">🗑️ Eliminar</button>
         </div>
@@ -1712,7 +1973,7 @@ async function crearTemaEducacion() {
   try {
     const response = await apiRequest('/api/education', {
       method: 'POST',
-      body: JSON.stringify({ title, description, created_by: currentUser.name })
+      body: JSON.stringify({ title, description }) // ← Ya no envía created_by, el backend lo toma del token
     });
     const data = await response.json();
     if (data.success) {
@@ -1883,47 +2144,24 @@ function getReporteMensualContent() {
     '<option value="">-- Seleccionar Paciente --</option>' + pacientes.map(p => `<option value="${p.id}">${p.name} - ${p.ciudad || 'Sin ciudad'}</option>`).join('');
   return `
     <div class="card">
-      <div class="card-title">📊 Generar Reporte Mensual para Familiar</div>
-      <div class="tip-box info">ℹ️ Reporte completo con gráficos y firmas para el familiar/acudiente.</div>
+      <div class="card-title">📊 Generar Informe Mensual</div>
+      <div class="tip-box info">ℹ️ Informe informativo para el familiar/acudiente. Solo requiere firma del elaborador.</div>
       <div class="form-group">
         <label>🏥 Paciente</label>
         <select id="reporteMensualPaciente" onchange="actualizarInfoPacienteReporte()">${pacientesOptions}</select>
       </div>
       <div id="infoPacienteReporte"></div>
-      <h4 style="color:#22c55e;margin:15px 0 10px 0;">👨‍👩‍👧 Datos del Familiar que Recibe</h4>
-      <div class="grid-2">
-        <div class="form-group"><label>Nombre del Familiar *</label><input type="text" id="familiarNombre" placeholder="Ej: María López"></div>
-        <div class="form-group"><label>Cédula del Familiar *</label><input type="text" id="familiarCedula" placeholder="Ej: 1234567890"></div>
-        <div class="form-group">
-          <label>Parentesco *</label>
-          <select id="familiarParentesco">
-            <option value="">-- Seleccionar --</option>
-            <option>Hijo(a)</option><option>Esposo(a)</option><option>Padre/Madre</option>
-            <option>Hermano(a)</option><option>Nieto(a)</option><option>Cuidador</option><option>Otro</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Teléfono</label><input type="tel" id="familiarTelefono" placeholder="Ej: 300-1234567"></div>
-      </div>
       <div class="form-group">
-        <label>📝 Observaciones del Coordinador</label>
-        <textarea id="reporteObservaciones" rows="3" placeholder="Observaciones y recomendaciones..."></textarea>
+        <label>📝 Observaciones y Recomendaciones</label>
+        <textarea id="reporteObservaciones" rows="4" placeholder="Escriba las observaciones del período..."></textarea>
+        <button class="btn-voice" onclick="iniciarDictado('reporteObservaciones')">🎙️ Dictar</button>
       </div>
       <div style="margin-top:16px;border-top:1px solid #334155;padding-top:12px;">
-        <h4 style="color:#22c55e;margin-bottom:10px;">✍️ Firmas</h4>
-        <div class="grid-2">
-          <div>
-            <label>✍️ Firma Elaborador (Usted)</label>
-            <canvas id="sigMensualElabora" class="signature-canvas"></canvas>
-            <button class="btn-secondary btn-sm" onclick="clearCanvas('sigMensualElabora')">Borrar</button>
-          </div>
-          <div>
-            <label>✍️ Firma Familiar</label>
-            <canvas id="sigMensualFamiliar" class="signature-canvas"></canvas>
-            <button class="btn-secondary btn-sm" onclick="clearCanvas('sigMensualFamiliar')">Borrar</button>
-          </div>
-        </div>
+        <h4 style="color:#22c55e;margin-bottom:10px;">✍️ Firma del Elaborador</h4>
+        <canvas id="sigMensualElabora" class="signature-canvas"></canvas>
+        <button class="btn-secondary btn-sm" onclick="clearCanvas('sigMensualElabora')">Borrar</button>
       </div>
-      <button class="btn btn-primary" onclick="generarReporteMensualPDF()" style="margin-top:16px;">📥 Generar Reporte PDF Mensual</button>
+      <button class="btn btn-primary" onclick="generarReporteMensualPDF()" style="margin-top:16px;">📥 Generar Informe PDF</button>
     </div>
   `;
 }
@@ -1931,7 +2169,42 @@ function getReporteMensualContent() {
 function configurarReporteMensual() {
   actualizarInfoPacienteReporte();
   setTimeout(() => {
-    initSignaturesMensual();
+    // Solo inicializar UNA firma (la del elaborador)
+    const canvas = document.getElementById('sigMensualElabora');
+    if (!canvas || canvas.dataset.initialized === 'true') return;
+    const width = canvas.offsetWidth || 300;
+    const height = canvas.offsetHeight || 120;
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '16px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('✍️ Firme aquí', width / 2, height / 2);
+    let drawing = false;
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+    const startDraw = (e) => { drawing = true; ctx.beginPath(); const pos = getPos(e); ctx.moveTo(pos.x, pos.y); };
+    const draw = (e) => { if (!drawing) return; e.preventDefault(); const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); };
+    const endDraw = () => { drawing = false; };
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', endDraw);
+    canvas.dataset.initialized = 'true';
   }, 100);
 }
 
@@ -2016,102 +2289,135 @@ function actualizarInfoPacienteReporte() {
 async function generarReporteMensualPDF() {
   const pacienteId = document.getElementById('reporteMensualPaciente')?.value;
   if (!pacienteId) { showToast('Seleccione un paciente', 'error'); return; }
-  const familiarNombre = document.getElementById('familiarNombre')?.value?.trim();
-  const familiarCedula = document.getElementById('familiarCedula')?.value?.trim();
-  const familiarParentesco = document.getElementById('familiarParentesco')?.value;
-  const familiarTelefono = document.getElementById('familiarTelefono')?.value?.trim();
-  if (!familiarNombre || !familiarCedula || !familiarParentesco) {
-    showToast('Complete los datos del familiar', 'error');
-    return;
-  }
+  
+  const observaciones = document.getElementById('reporteObservaciones')?.value?.trim();
   const firmaElabora = getSignatureData('sigMensualElabora');
-  const firmaFamiliar = getSignatureData('sigMensualFamiliar');
-  if (!firmaElabora || !firmaFamiliar) {
-    showToast('⚠️ Ambas firmas son requeridas', 'warning');
+  
+  if (!firmaElabora) {
+    showToast('⚠️ Firma del elaborador requerida', 'warning');
     return;
   }
+  
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
   const paciente = pacientes.find(p => p.id === pacienteId);
   if (!paciente) { showToast('Paciente no encontrado', 'error'); return; }
-  const observaciones = document.getElementById('reporteObservaciones')?.value?.trim();
-  showToast('Generando reporte...', 'success');
+  
+  showToast('Generando reporte mensual...', 'success');
+  
   const PDFClass = window.jspdf?.jsPDF;
   if (!PDFClass) { showToast('Librería PDF no disponible', 'error'); return; }
+  
   const doc = new PDFClass();
   let y = 20;
   const cleanText = (t) => t === null || t === undefined ? '' : String(t).trim();
+  
+  // LOGO
   const logoBase64 = await cargarLogoBase64();
   if (logoBase64) {
     try { doc.addImage(logoBase64, 'JPEG', 80, y - 10, 50, 20); y += 15; } catch(e) {}
   }
+  
+  // ENCABEZADO
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
   doc.setTextColor(34, 197, 94);
   doc.text('VITAL HOGAR PRO IPS', 105, y, { align: 'center' });
-  y += 10;
+  y += 8;
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Cuidados Domiciliarios', 105, y, { align: 'center' });
+  y += 8;
   doc.setTextColor(0, 0, 0);
   doc.setFontSize(12);
-  doc.text('REPORTE MENSUAL DE ATENCIÓN DOMICILIARIA', 105, y, { align: 'center' });
+  doc.text('INFORME MENSUAL DE ATENCIÓN', 105, y, { align: 'center' });
   y += 10;
+  
+  // DATOS DEL PACIENTE
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
+  doc.setTextColor(34, 197, 94);
   doc.text('DATOS DEL PACIENTE', 20, y);
   y += 7;
+  doc.setTextColor(0, 0, 0);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
-  doc.text('Paciente: ' + cleanText(paciente.name).toUpperCase(), 20, y); y += 6;
-  doc.text('Documento: ' + (paciente.document || 'No registrado'), 20, y); y += 6;
-  doc.text('Ciudad: ' + (paciente.ciudad || 'No especificada'), 20, y); y += 6;
-  doc.text('Diagnóstico: ' + (paciente.diagnosis || 'No registrado'), 20, y); y += 6;
-  doc.text('Médico tratante: ' + (paciente.doctor || 'No registrado'), 20, y); y += 6;
-  doc.text('Período: ' + new Date().toLocaleDateString('es-CO'), 20, y); y += 10;
+  doc.text(`Paciente: ${cleanText(paciente.name).toUpperCase()}`, 20, y); y += 5;
+  doc.text(`Documento: ${paciente.document || 'No registrado'}`, 20, y); y += 5;
+  doc.text(`Ciudad: ${paciente.ciudad || 'No especificada'}`, 20, y); y += 5;
+  doc.text(`Diagnóstico: ${paciente.diagnosis || 'No registrado'}`, 20, y); y += 5;
+  doc.text(`Médico tratante: ${paciente.doctor || 'No registrado'}`, 20, y); y += 5;
+  doc.text(`Período del informe: ${new Date().toLocaleDateString('es-CO')}`, 20, y); y += 5;
+  if (paciente.acudiente_nombre) {
+    doc.text(`Acudiente principal: ${paciente.acudiente_nombre} (${paciente.acudiente_parentesco || 'N/A'})`, 20, y); y += 5;
+    if (paciente.acudiente_telefono) {
+      doc.text(`Teléfono acudiente: ${paciente.acudiente_telefono}`, 20, y); y += 5;
+    }
+  }
+  y += 5;
+  
+  // RESUMEN EJECUTIVO
   if (y > 240) { doc.addPage(); y = 20; }
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(34, 197, 94);
-  doc.text('OBSERVACIONES Y RECOMENDACIONES', 20, y);
+  doc.text('RESUMEN EJECUTIVO', 20, y);
   y += 7;
   doc.setTextColor(0, 0, 0);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
+  doc.text('Este informe resume la atención brindada al paciente durante el período indicado.', 25, y); y += 6;
+  doc.text('Para información detallada de cada día, consulte los reportes diarios individuales.', 25, y); y += 10;
+  
+  // OBSERVACIONES
   if (observaciones) {
+    if (y > 240) { doc.addPage(); y = 20; }
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(34, 197, 94);
+    doc.text('OBSERVACIONES Y RECOMENDACIONES', 20, y);
+    y += 7;
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
     const lines = doc.splitTextToSize(observaciones, 170);
     doc.text(lines, 25, y);
     y += lines.length * 5 + 5;
-  } else {
-    doc.text('Sin observaciones adicionales', 25, y);
-    y += 10;
   }
-  if (y > 180) { doc.addPage(); y = 20; }
+  
+  // FIRMA DEL ELABORADOR (SIN firma del familiar)
+  if (y > 200) { doc.addPage(); y = 20; }
   y += 10;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
-  doc.text('FIRMAS DE CONFORMIDAD', 20, y);
-  y += 15;
+  doc.setTextColor(0, 0, 0);
+  doc.text('FIRMA DEL ELABORADOR', 20, y);
+  y += 10;
+  
+  if (firmaElabora) {
+    try { doc.addImage(firmaElabora, 'PNG', 25, y, 70, 30); } catch(e) {}
+  }
+  doc.setDrawColor(0, 0, 0);
+  doc.line(25, y + 33, 95, y + 33);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  if (firmaElabora) {
-    try { doc.addImage(firmaElabora, 'PNG', 25, y, 60, 25); } catch(e) {}
-  }
-  doc.text('_________________________', 25, y + 30);
-  doc.text('Elaborado por:', 25, y + 35); y += 5;
-  doc.text(`Nombre: ${currentUser.name}`, 25, y + 35);
-  doc.text(`Rol: ${currentUser.role}`, 25, y + 40);
-  if (currentUser.cedula) doc.text(`Cédula: ${currentUser.cedula}`, 25, y + 45);
-  if (currentUser.rethus) doc.text(`ReTHUS: ${currentUser.rethus}`, 25, y + 50);
-  if (firmaFamiliar) {
-    try { doc.addImage(firmaFamiliar, 'PNG', 110, y, 60, 25); } catch(e) {}
-  }
-  doc.text('_________________________', 110, y + 30);
-  doc.text('Recibido por (Familiar):', 110, y + 35);
-  doc.text(`Nombre: ${familiarNombre}`, 110, y + 40);
-  doc.text(`Parentesco: ${familiarParentesco}`, 110, y + 45);
-  doc.text(`Cédula: ${familiarCedula}`, 110, y + 50);
-  if (familiarTelefono) doc.text(`Teléfono: ${familiarTelefono}`, 110, y + 55);
-  doc.text(`Fecha: ${new Date().toLocaleDateString('es-CO')}`, 110, y + 60);
-  const nombreArchivo = 'reporte_mensual_' + cleanText(paciente.name).replace(/\s+/g, '_') + '_' + getCurrentDate() + '.pdf';
+  y += 38;
+  doc.text(`Nombre: ${currentUser.name}`, 25, y); y += 4;
+  doc.text(`Rol: ${currentUser.role}`, 25, y); y += 4;
+  if (currentUser.cedula) { doc.text(`Cédula: ${currentUser.cedula}`, 25, y); y += 4; }
+  if (currentUser.rethus) { doc.text(`ReTHUS: ${currentUser.rethus}`, 25, y); y += 4; }
+  doc.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-CO')}`, 25, y);
+  
+  // NOTA AL PIE
+  y += 15;
+  doc.setFontSize(8);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Este documento es un informe informativo generado por el sistema Vital Hogar Pro IPS.', 20, y);
+  y += 4;
+  doc.text('Para detalles específicos de cada jornada, consulte los reportes diarios firmados.', 20, y);
+  
+  const nombreArchivo = `informe_mensual_${cleanText(paciente.name).replace(/\s+/g, '_')}_${getCurrentDate()}.pdf`;
   doc.save(nombreArchivo);
-  showToast('✅ Reporte mensual generado', 'success');
+  showToast('✅ Informe mensual generado', 'success');
 }
 
 // ==========================================
