@@ -6,13 +6,20 @@ const supabase = createClient(
 );
 
 // ============================================================
-//  GET ALL ASSIGNMENTS
+//  GET ALL ASSIGNMENTS - CORREGIDO (relaciones múltiples)
 // ============================================================
 async function getAssignments(req, res) {
     try {
+        // ✅ CORREGIDO: especificar relaciones explícitamente
         const { data, error } = await supabase
             .from('education_assignments')
-            .select('*, topic:education_topics(title, description), patient:patients(name, document), professional:users(name, role)')
+            .select(`
+                *,
+                topic:education_topics(title, description),
+                patient:patients(name, document, ciudad),
+                professional:users!education_assignments_professional_id_fkey(name, role, email),
+                assigned_by_user:users!education_assignments_assigned_by_fkey(name)
+            `)
             .order('assigned_at', { ascending: false });
 
         if (error) throw error;
@@ -24,7 +31,7 @@ async function getAssignments(req, res) {
 }
 
 // ============================================================
-//  GET ASSIGNMENTS BY PROFESSIONAL
+//  GET ASSIGNMENTS BY PROFESSIONAL - CORREGIDO
 // ============================================================
 async function getAssignmentsByProfessional(req, res) {
     try {
@@ -32,7 +39,11 @@ async function getAssignmentsByProfessional(req, res) {
         
         const { data, error } = await supabase
             .from('education_assignments')
-            .select('*, topic:education_topics(title, description), patient:patients(name, document)')
+            .select(`
+                *,
+                topic:education_topics(title, description),
+                patient:patients(name, document, ciudad)
+            `)
             .eq('professional_id', professionalId)
             .order('assigned_at', { ascending: false });
 
@@ -49,7 +60,8 @@ async function getAssignmentsByProfessional(req, res) {
 // ============================================================
 async function createAssignment(req, res) {
     try {
-        const { topic_id, patient_id, professional_id, assigned_by } = req.body;
+        const { topic_id, patient_id, professional_id } = req.body;
+        const assigned_by = req.user?.id || null;
 
         if (!topic_id || !patient_id || !professional_id) {
             return res.status(400).json({
@@ -64,9 +76,8 @@ async function createAssignment(req, res) {
                 topic_id,
                 patient_id,
                 professional_id,
-                assigned_by: assigned_by || null,
-                status: 'PENDIENTE',
-                assigned_at: new Date().toISOString()
+                assigned_by,
+                status: 'PENDIENTE'
             }])
             .select();
 
