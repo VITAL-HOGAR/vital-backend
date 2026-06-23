@@ -440,6 +440,19 @@ function buildTabs() {
         { id: 'reportes', name: '📄 Reportes' }
       ];
       break;
+      case 'ENFERMERO':
+      case 'MEDICO':
+      case 'FISIOTERAPEUTA':
+      case 'PSICOLOGO':
+      case 'NUTRICIONISTA':
+      case 'FONOAUDIOLOGO':
+      case 'TERAPEUTA_OCUPACIONAL':
+      case 'TERAPEUTA_RESPIRATORIO':
+        tabs = [
+          { id: 'evidencias', name: '📸 Evidencias' },
+          { id: 'educacion', name: '📚 Educación' }
+      ];
+      break;
     case 'ADMIN':
       tabs = [
         { id: 'usuarios', name: '👥 Usuarios' },
