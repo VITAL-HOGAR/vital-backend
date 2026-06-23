@@ -13,7 +13,8 @@ async function getPatients(req, res) {
         const { data, error } = await supabase
             .from('patients')
             .select('*')
-            .or('status.eq.ACTIVE,status.is.null');
+            .eq('status', 'ACTIVE')  // ← Solo activos
+            .order('created_at', { ascending: false });
 
         if (error) throw error;
         res.json({ success: true, data: data || [] });
@@ -24,7 +25,7 @@ async function getPatients(req, res) {
 }
 
 // ============================================================
-//  CREATE PATIENT (CON ciudad, fecha_inicio, acudiente)
+//  CREATE PATIENT - CORREGIDO (solo valida duplicados en ACTIVE)
 // ============================================================
 async function createPatient(req, res) {
     try {
@@ -43,16 +44,18 @@ async function createPatient(req, res) {
             });
         }
 
+        // ✅ CORREGIDO: Solo buscar duplicados en pacientes ACTIVE
         const { data: existing } = await supabase
             .from('patients')
             .select('document')
             .eq('document', document)
+            .eq('status', 'ACTIVE')  // ← NUEVO: Solo activos
             .single();
 
         if (existing) {
             return res.status(400).json({
                 success: false,
-                message: 'El documento ya está registrado'
+                message: 'El documento ya está registrado en un paciente activo'
             });
         }
 
@@ -154,17 +157,19 @@ async function updatePatient(req, res) {
         }
 
         if (updates.document) {
+            // ✅ CORREGIDO: Solo validar duplicados en ACTIVE
             const { data: existingDoc } = await supabase
                 .from('patients')
                 .select('document')
                 .eq('document', updates.document)
+                .eq('status', 'ACTIVE')  // ← NUEVO
                 .neq('id', id)
                 .single();
 
             if (existingDoc) {
                 return res.status(400).json({
                     success: false,
-                    message: 'El documento ya está registrado por otro paciente'
+                    message: 'El documento ya está registrado por otro paciente activo'
                 });
             }
         }
@@ -196,7 +201,7 @@ async function updatePatient(req, res) {
 }
 
 // ============================================================
-//  DELETE PATIENT - ELIMINACIÓN PERMANENTE (Opción A)
+//  DELETE PATIENT - ELIMINACIÓN PERMANENTE
 // ============================================================
 async function deletePatient(req, res) {
     try {
@@ -222,7 +227,7 @@ async function deletePatient(req, res) {
             });
         }
 
-        // ELIMINACIÓN PERMANENTE
+        // ✅ ELIMINACIÓN PERMANENTE
         const { error } = await supabase
             .from('patients')
             .delete()
@@ -242,7 +247,7 @@ async function deletePatient(req, res) {
 }
 
 // ============================================================
-//  REACTIVATE PATIENT (Mantener por compatibilidad)
+//  REACTIVATE PATIENT (mantener por compatibilidad)
 // ============================================================
 async function reactivatePatient(req, res) {
     try {
