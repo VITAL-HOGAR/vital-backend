@@ -1347,16 +1347,25 @@ function getReportesContent() {
 
 async function cargarLogoBase64() {
   try {
-    const response = await fetch('https://i.imgur.com/01YZxey.jpeg');
+    const response = await fetch('https://i.imgur.com/01YZxey.jpeg', {
+      mode: 'cors',
+      cache: 'no-cache'
+    });
+    if (!response.ok) {
+      console.log('Logo no disponible, continuando sin logo');
+      return null;
+    }
     const blob = await response.blob();
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result);
       reader.readAsDataURL(blob);
     });
-  } catch (e) { return null; }
+  } catch (e) { 
+    console.log('Error cargando logo:', e.message);
+    return null; 
+  }
 }
-
 async function generarReportePDF() {
   if (!validarPacienteSeleccionado()) return;
   const PDFClass = window.jspdf?.jsPDF;
@@ -1476,10 +1485,10 @@ async function generarReportePDF() {
           y += 4;
         }
         if (a.fotos && a.fotos.length > 0) {
-          doc.setTextColor(139, 92, 246);
-          doc.text(`📸 ${a.fotos.length} foto(s) de evidencia disponibles en el sistema`, 30, y);
-          doc.setTextColor(0, 0, 0);
-          y += 4;
+         doc.setTextColor(139, 92, 246);
+         doc.text(`[FOTO] ${a.fotos.length} foto(s) de evidencia disponibles en el sistema`, 30, y);
+         doc.setTextColor(0, 0, 0);
+         y += 4;
         }
         y += 3;
       });
@@ -1539,12 +1548,62 @@ async function generarReportePDF() {
       });
       y += 3;
     }
+        // 5. EDUCACIÓN BRINDADA AL PACIENTE (NUEVA SECCIÓN)
+    try {
+      const eduResponse = await apiRequest('/api/education-assignments');
+      const eduData = await eduResponse.json();
+      if (eduData.success && eduData.data) {
+        const educacionPaciente = eduData.data.filter(e => 
+          e.patient_id === pacienteActual.id && 
+          e.status === 'COMPLETADO' &&
+          e.completed_at && e.completed_at.startsWith(hoy)
+        );
+        
+        if (educacionPaciente.length > 0) {
+          if (y > 250) { doc.addPage(); y = 20; }
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(11);
+          doc.setTextColor(34, 197, 94);
+          doc.text('5. EDUCACION BRINDADA AL PACIENTE', 20, y);
+          y += 6;
+          doc.setTextColor(0, 0, 0);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9);
+          
+          educacionPaciente.forEach(edu => {
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Tema: ${edu.topic?.title || 'N/A'}`, 25, y);
+            y += 5;
+            doc.setFont('helvetica', 'normal');
+            if (edu.evidencia) {
+              const evLines = doc.splitTextToSize(`Evidencia: ${edu.evidencia}`, 160);
+              doc.text(evLines, 30, y);
+              y += evLines.length * 4;
+            }
+            if (edu.fotos_evidencia && edu.fotos_evidencia.length > 0) {
+              doc.setTextColor(139, 92, 246);
+              doc.text(`[FOTO] ${edu.fotos_evidencia.length} foto(s) de evidencia disponibles en el sistema`, 30, y);
+              doc.setTextColor(0, 0, 0);
+              y += 4;
+            }
+            doc.text(`Completado por: ${edu.professional?.name || 'N/A'} (${edu.professional?.role || ''})`, 30, y);
+            y += 6;
+          });
+          y += 3;
+        }
+      }
+    } catch (eduError) {
+      console.log('No se pudo cargar educación:', eduError);
+    }
+    
+    // 6. ENTREGA DE TURNO (con firmas)
     if (entregas.length > 0) {
       if (y > 200) { doc.addPage(); y = 20; }
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
       doc.setTextColor(34, 197, 94);
-      doc.text('5. ENTREGA DE TURNO', 20, y);
+      doc.text('6. ENTREGA DE TURNO', 20, y);
       y += 6;
       doc.setTextColor(0, 0, 0);
       doc.setFont('helvetica', 'normal');
@@ -1571,7 +1630,7 @@ async function generarReportePDF() {
         }
         if (ultima.sbar) {
           doc.setFont('helvetica', 'bold');
-          doc.text('Comunicación SBAR:', 25, y);
+          doc.text('Comunicacion SBAR:', 25, y);
           doc.setFont('helvetica', 'normal');
           y += 4;
           if (ultima.sbar.situacion) { doc.text(`S: ${cleanText(ultima.sbar.situacion).substring(0, 80)}`, 30, y); y += 4; }
@@ -1596,7 +1655,7 @@ async function generarReportePDF() {
         doc.setFont('helvetica', 'normal');
         doc.text(`Nombre: ${currentUser.name}`, 20, y + 36);
         doc.text(`Rol: ${currentUser.role}`, 20, y + 40);
-        if (currentUser.cedula) doc.text(`Cédula: ${currentUser.cedula}`, 20, y + 44);
+        if (currentUser.cedula) doc.text(`Cedula: ${currentUser.cedula}`, 20, y + 44);
         if (currentUser.rethus) doc.text(`ReTHUS: ${currentUser.rethus}`, 20, y + 48);
         if (ultima.firma_recibe) {
           try { doc.addImage(ultima.firma_recibe, 'PNG', 110, y, 60, 25); } catch(e) {}
