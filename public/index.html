@@ -3,48 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.0">
-<title>Vital Hogar Pro IPS - Sistema Completo v2.1</title>
+<title>Vital Hogar Pro IPS v2.2</title>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;color:#e2e8f0;padding:12px;min-height:100vh}
 .header{background:linear-gradient(135deg,#1e293b,#0f172a);border-radius:20px;padding:12px 20px;margin-bottom:16px;border:1px solid #334155;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
 .logo-area{display:flex;align-items:center;gap:12px}
 .logo-area img{height:50px;width:auto;object-fit:contain;border-radius:8px}
-.logo-area h1{font-size:1.1rem;font-weight:700;color:#22c55e;letter-spacing:.5px}
+.logo-area h1{font-size:1.1rem;font-weight:700;color:#22c55e}
 .logo-area .subtitle{font-size:.6rem;color:#94a3b8;letter-spacing:1px;text-transform:uppercase}
 .user-info{display:flex;align-items:center;gap:10px;background:#0f172a;padding:6px 16px;border-radius:30px;border:1px solid #334155;font-size:.75rem;flex-wrap:wrap}
 .user-info .user-name{color:#22c55e;font-weight:600}
 .user-info .role-badge{background:#22c55e20;color:#22c55e;padding:2px 10px;border-radius:12px;font-size:.6rem;font-weight:600;text-transform:uppercase}
-.user-info .paciente-badge{background:#8b5cf620;color:#8b5cf6;padding:2px 10px;border-radius:12px;font-size:.65rem;font-weight:600;cursor:pointer}
+.user-info .paciente-badge{background:#8b5cf620;color:#8b5cf6;padding:2px 10px;border-radius:12px;font-size:.65rem;font-weight:600}
 .user-info .paciente-badge.sin-paciente{background:#ef444420;color:#ef4444}
 .logout-btn{background:#ef4444;border:none;color:white;padding:4px 14px;border-radius:20px;cursor:pointer;font-size:.65rem;font-weight:600}
 .card{background:#1e293b;border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid #334155}
-.card-title{font-size:1rem;font-weight:600;color:#22c55e;margin-bottom:16px;border-left:3px solid #22c55e;padding-left:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.card-title{font-size:1rem;font-weight:600;color:#22c55e;margin-bottom:16px;border-left:3px solid #22c55e;padding-left:12px}
 .form-group{margin-bottom:14px;position:relative}
 .form-group label{display:block;font-size:.65rem;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;letter-spacing:.5px;font-weight:600}
 .form-group input,.form-group select,.form-group textarea{width:100%;background:#0f172a!important;border:1px solid #334155;border-radius:10px;padding:10px 14px;color:#e2e8f0!important;font-size:.9rem}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#22c55e;outline:none;box-shadow:0 0 0 3px #22c55e20}
 .form-group select option{background:#1e293b;color:#e2e8f0}
 .form-group textarea{min-height:80px;resize:vertical}
-.form-group .hint{font-size:.7rem;color:#64748b;margin-top:4px;font-style:italic}
-.btn{padding:10px 20px;border-radius:12px;font-weight:600;cursor:pointer;border:none;font-size:.85rem;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-.btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.form-group .hint{font-size:.7rem;color:#64748b;margin-top:4px}
+.btn{padding:10px 20px;border-radius:12px;font-weight:600;cursor:pointer;border:none;font-size:.85rem;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn-primary{background:#22c55e;color:white;width:100%}
 .btn-primary:hover{background:#16a34a}
 .btn-secondary{background:#334155;color:white}
-.btn-secondary:hover{background:#475569}
 .btn-danger{background:#ef4444;color:white}
-.btn-danger:hover{background:#dc2626}
-.btn-voice{background:#8b5cf6;color:white;padding:6px 14px;font-size:.75rem;width:auto;margin-top:4px}
+.btn-voice{background:#8b5cf6;color:white;padding:6px 14px;font-size:.75rem;width:auto;margin-top:4px;border:none;border-radius:8px;cursor:pointer}
 .btn-sm{padding:4px 12px;font-size:.7rem;width:auto}
 .btn-select-pac{background:#8b5cf6;color:white;padding:4px 14px;border-radius:20px;cursor:pointer;font-size:.65rem;font-weight:600;border:none}
 .btn-delete{background:#ef444420;color:#ef4444;border:1px solid #ef4444;padding:4px 10px;border-radius:8px;cursor:pointer;font-size:.7rem;font-weight:600}
 .btn-delete:hover{background:#ef4444;color:white}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;overflow-x:auto;padding-bottom:4px}
+.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;overflow-x:auto}
 .tab{padding:8px 16px;background:#1e293b;border-radius:30px;cursor:pointer;font-size:.75rem;font-weight:500;white-space:nowrap;border:1px solid transparent}
 .tab:hover{background:#334155}
 .tab.active{background:#22c55e;color:white;border-color:#22c55e}
@@ -57,14 +53,15 @@ body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f172a;c
 .photo-preview img{width:60px;height:60px;border-radius:8px;object-fit:cover;border:1px solid #334155}
 .tip-box{background:#0f172a;padding:10px 14px;border-radius:10px;margin-bottom:12px;border-left:4px solid #f97316;font-size:.8rem}
 .tip-box.info{border-left-color:#3b82f6}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;border-radius:30px;padding:12px 24px;display:none;z-index:1000;font-size:.85rem;max-width:90%;text-align:center;border:1px solid #334155;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.tip-box.success{border-left-color:#22c55e}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;border-radius:30px;padding:12px 24px;display:none;z-index:1000;font-size:.85rem;max-width:90%;text-align:center;border:1px solid #334155}
 .toast.show{display:block}
 .toast.success{border-left:4px solid #22c55e}
 .toast.error{border-left:4px solid #ef4444}
 .toast.warning{border-left:4px solid #f97316}
 .login-container{max-width:420px;margin:40px auto}
 .login-container .card{padding:30px}
-.login-container .card-title{font-size:1.2rem;text-align:center;border-left:none;padding-left:0;justify-content:center}
+.login-container .card-title{font-size:1.2rem;text-align:center;border-left:none;padding-left:0}
 .login-error{color:#ef4444;font-size:.8rem;margin-bottom:10px;display:none;padding:8px 12px;background:#ef444420;border-radius:8px;border:1px solid #ef4444}
 .password-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#94a3b8;cursor:pointer;font-size:1.2rem;padding:0}
 .reloj-turno{background:#0f172a;padding:12px;border-radius:10px;margin-bottom:12px;border:1px solid #22c55e;font-size:.9rem;text-align:center}
@@ -159,9 +156,6 @@ let horaEntrada = null;
 let relojInterval = null;
 let recognitionActive = false;
 
-// ==========================================
-// CIUDADES COLOMBIA CON RANGOS SpO2
-// ==========================================
 const CIUDADES_COLOMBIA = {
   'Bogotá': { altitud: 2640, spo2_min: 88, spo2_max: 94, spo2_alerta: 85, spo2_critico: 80 },
   'Medellín': { altitud: 1495, spo2_min: 92, spo2_max: 98, spo2_alerta: 89, spo2_critico: 85 },
@@ -189,9 +183,6 @@ const CIUDADES_COLOMBIA = {
 const ROLES_CON_RETHUS = ['AUXILIAR','ENFERMERO','MEDICO','FISIOTERAPEUTA','PSICOLOGO','NUTRICIONISTA','FONOAUDIOLOGO','TERAPEUTA_OCUPACIONAL','TERAPEUTA_RESPIRATORIO'];
 const ACTIVIDADES_CON_FOTO = ['Curación de heridas','Curación LPP','Lesión por presión','Otro'];
 
-// ==========================================
-// FUNCIONES UTILITARIAS
-// ==========================================
 function showToast(msg, type = 'success') {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
@@ -200,33 +191,12 @@ function showToast(msg, type = 'success') {
   toast._timeout = setTimeout(() => toast.classList.remove('show'), 3500);
 }
 
-function getCurrentTime() {
-  return new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-}
-
-function getCurrentTimeShort() {
-  return new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
-}
-
-function getCurrentDate() {
-  return new Date().toISOString().split('T')[0];
-}
-
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
-}
-
-function requiereReTHUS(role) {
-  return ROLES_CON_RETHUS.includes(role);
-}
-
-function getRangoSpO2(ciudad) {
-  return CIUDADES_COLOMBIA[ciudad] || CIUDADES_COLOMBIA['Bogotá'];
-}
-
-function requiereFotoActividad(tipo) {
-  return ACTIVIDADES_CON_FOTO.some(a => tipo.toLowerCase().includes(a.toLowerCase()));
-}
+function getCurrentTime() { return new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+function getCurrentTimeShort() { return new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }); }
+function getCurrentDate() { return new Date().toISOString().split('T')[0]; }
+function requiereReTHUS(role) { return ROLES_CON_RETHUS.includes(role); }
+function getRangoSpO2(ciudad) { return CIUDADES_COLOMBIA[ciudad] || CIUDADES_COLOMBIA['Bogotá']; }
+function requiereFotoActividad(tipo) { return ACTIVIDADES_CON_FOTO.some(a => tipo.toLowerCase().includes(a.toLowerCase())); }
 
 function validarPacienteSeleccionado() {
   if (!pacienteActual) {
@@ -237,9 +207,6 @@ function validarPacienteSeleccionado() {
   return true;
 }
 
-// ==========================================
-// API REQUEST
-// ==========================================
 async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem('vital_token');
   const headers = { 'Content-Type': 'application/json' };
@@ -256,14 +223,9 @@ async function apiRequest(endpoint, options = {}) {
       throw new Error('Sesión expirada');
     }
     return response;
-  } catch (error) {
-    throw error;
-  }
+  } catch (error) { throw error; }
 }
 
-// ==========================================
-// LOGIN / LOGOUT
-// ==========================================
 async function login() {
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value;
@@ -340,15 +302,10 @@ async function cargarDatosIniciales() {
       const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
       const existe = pacientes.find(p => p.id === pacienteActual?.id);
       if (!existe) pacienteActual = null;
-    } catch (e) {
-      pacienteActual = null;
-    }
+    } catch (e) { pacienteActual = null; }
   }
 }
 
-// ==========================================
-// RELOJ
-// ==========================================
 function iniciarReloj() {
   if (relojInterval) clearInterval(relojInterval);
   relojInterval = setInterval(() => {
@@ -379,9 +336,6 @@ function detenerReloj() {
   horaEntrada = null;
 }
 
-// ==========================================
-// DICTADO DE VOZ
-// ==========================================
 function iniciarDictado(targetId) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) { showToast('Voz no soportada', 'error'); return; }
@@ -408,17 +362,11 @@ function iniciarDictado(targetId) {
   try { recognition.start(); } catch(e) { recognitionActive = false; showToast('Error al iniciar dictado', 'error'); }
 }
 
-// ==========================================
-// DISPLAY PACIENTE
-// ==========================================
 function actualizarDisplayPaciente() {
   const container = document.getElementById('pacienteContainer');
   if (!container) return;
   const rolesSinPaciente = ['ADMIN', 'COORDINADOR'];
-  if (rolesSinPaciente.includes(currentRole)) {
-    container.innerHTML = '';
-    return;
-  }
+  if (rolesSinPaciente.includes(currentRole)) { container.innerHTML = ''; return; }
   if (pacienteActual) {
     container.innerHTML = `
       <span class="paciente-badge">👤 ${pacienteActual.name}</span>
@@ -477,9 +425,6 @@ function cerrarModalPaciente() {
   if (modal) modal.remove();
 }
 
-// ==========================================
-// TABS
-// ==========================================
 function buildTabs() {
   const tabsContainer = document.getElementById('tabsContainer');
   let tabs = [];
@@ -561,9 +506,6 @@ function loadTab(tabId) {
   }, 100);
 }
 
-// ==========================================
-// MÓDULO RECIBO
-// ==========================================
 function getReciboContent() {
   return `
     <div class="card">
@@ -610,7 +552,7 @@ async function confirmarRecibo() {
       document.getElementById('reciboEstado').value = '';
       showToast('✅ Recibo registrado', 'success');
     } else {
-      showToast(data.error || 'Error al guardar', 'error');
+      showToast(data.error || data.message || 'Error al guardar', 'error');
     }
   } catch (error) {
     showToast('Error de conexión', 'error');
@@ -618,7 +560,7 @@ async function confirmarRecibo() {
 }
 
 // ==========================================
-// MÓDULO ACTIVIDADES
+// ACTIVIDADES - CON ESCALA BRADEN INCLUIDA ✅
 // ==========================================
 function getActividadesContent() {
   return `
@@ -649,10 +591,13 @@ function getActividadesContent() {
         <textarea id="obsActividad" rows="2" placeholder="Detalle..."></textarea>
         <button class="btn-voice" onclick="iniciarDictado('obsActividad')">🎙️ Dictar</button>
       </div>
-      <details style="margin-top:12px;padding:12px;background:#0f172a;border-radius:8px;">
-        <summary style="cursor:pointer;color:#94a3b8;">📋 Escalas Clínicas</summary>
+      
+      <details style="margin-top:12px;padding:12px;background:#0f172a;border-radius:8px;" open>
+        <summary style="cursor:pointer;color:#22c55e;font-weight:600;">📋 ESCALAS CLÍNICAS (haga clic para colapsar)</summary>
         <div style="margin-top:12px;">
-          <div style="margin-bottom:12px;padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;">
+          
+          <!-- GLASGOW -->
+          <div style="margin-bottom:12px;padding:12px;background:#1e293b;border-radius:8px;border:1px solid #334155;">
             <label style="font-weight:600;color:#22c55e;">🧠 Glasgow</label>
             <div class="grid-2">
               <div class="form-group">
@@ -691,13 +636,85 @@ function getActividadesContent() {
               </div>
             </div>
           </div>
-          <div style="margin-bottom:12px;padding:12px;background:#0f172a;border-radius:8px;border:1px solid #334155;">
-            <label style="font-weight:600;color:#22c55e;">😣 EVA (Dolor)</label>
+          
+          <!-- EVA -->
+          <div style="margin-bottom:12px;padding:12px;background:#1e293b;border-radius:8px;border:1px solid #334155;">
+            <label style="font-weight:600;color:#22c55e;">😣 EVA (Escala de Dolor)</label>
             <input type="range" id="evaValor" min="0" max="10" value="0" oninput="document.getElementById('evaDisplay').textContent=this.value" style="width:100%;">
             <span id="evaDisplay" style="color:#22c55e;font-weight:600;">0</span> / 10
           </div>
+          
+          <!-- BRADEN ✅ AGREGADA -->
+          <div style="padding:12px;background:#1e293b;border-radius:8px;border:1px solid #334155;">
+            <label style="font-weight:600;color:#22c55e;">📋 Braden (Riesgo de Úlceras por Presión)</label>
+            <div class="tip-box info" style="font-size:.7rem;margin-top:8px;">
+              ℹ️ Menor puntaje = Mayor riesgo. &lt;18: Riesgo | &lt;15: Riesgo alto | &lt;12: Riesgo muy alto | &lt;9: Riesgo extremo
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Percepción</label>
+                <select id="bradenPercepcion" onchange="calcularBraden()">
+                  <option value="4">4 - Normal</option>
+                  <option value="3">3 - Ligeramente limitada</option>
+                  <option value="2">2 - Muy limitada</option>
+                  <option value="1">1 - Completamente limitada</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Humedad</label>
+                <select id="bradenHumedad" onchange="calcularBraden()">
+                  <option value="4">4 - Siempre seca</option>
+                  <option value="3">3 - A veces húmeda</option>
+                  <option value="2">2 - A menudo húmeda</option>
+                  <option value="1">1 - Siempre húmeda</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Actividad</label>
+                <select id="bradenActividad" onchange="calcularBraden()">
+                  <option value="4">4 - Camina</option>
+                  <option value="3">3 - Camina con ayuda</option>
+                  <option value="2">2 - En silla de ruedas</option>
+                  <option value="1">1 - Encamado</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Movilidad</label>
+                <select id="bradenMovilidad" onchange="calcularBraden()">
+                  <option value="4">4 - Sin limitación</option>
+                  <option value="3">3 - Ligeramente limitada</option>
+                  <option value="2">2 - Muy limitada</option>
+                  <option value="1">1 - Inmóvil</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Nutrición</label>
+                <select id="bradenNutricion" onchange="calcularBraden()">
+                  <option value="4">4 - Excelente</option>
+                  <option value="3">3 - Adecuada</option>
+                  <option value="2">2 - Probablemente inadecuada</option>
+                  <option value="1">1 - Muy inadecuada</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Fricción/Cizallamiento</label>
+                <select id="bradenFriccion" onchange="calcularBraden()">
+                  <option value="3">3 - Sin problema</option>
+                  <option value="2">2 - Problema potencial</option>
+                  <option value="1">1 - Problema presente</option>
+                </select>
+              </div>
+              <div class="form-group" style="grid-column:1/-1;">
+                <label>📊 Total Braden</label>
+                <input type="text" id="bradenTotal" readonly style="font-weight:bold;color:#22c55e;">
+                <div id="bradenInterpretacion" style="font-size:.75rem;margin-top:4px;color:#94a3b8;"></div>
+              </div>
+            </div>
+          </div>
+          
         </div>
       </details>
+      
       <div id="contenedorFotoActividad" class="form-group hidden" style="margin-top:12px;border-top:1px solid #334155;padding-top:12px;">
         <label>📸 Evidencia Fotográfica (obligatorio para curaciones/LPP)</label>
         <div class="tip-box info" style="font-size:.75rem;">ℹ️ Solo habilitado para: Curación de heridas, Curación LPP, Otro</div>
@@ -705,7 +722,7 @@ function getActividadesContent() {
         <button class="btn-secondary" style="margin-top:6px;width:100%;" onclick="document.getElementById('photoInput').click()">📷 Tomar Foto</button>
         <div id="photoPreview" class="photo-preview"></div>
       </div>
-      <button class="btn btn-primary" onclick="agregarActividad()">➕ Agregar Actividad</button>
+      <button class="btn btn-primary" onclick="agregarActividad()" style="margin-top:12px;">➕ Agregar Actividad</button>
     </div>
   `;
 }
@@ -731,6 +748,26 @@ function calcularGlasgow() {
   const motor = parseInt(document.getElementById('glasgowMotor')?.value) || 0;
   const input = document.getElementById('glasgowTotal');
   if (input) input.value = ojos + verbal + motor;
+}
+
+function calcularBraden() {
+  const p = parseInt(document.getElementById('bradenPercepcion')?.value) || 0;
+  const h = parseInt(document.getElementById('bradenHumedad')?.value) || 0;
+  const a = parseInt(document.getElementById('bradenActividad')?.value) || 0;
+  const m = parseInt(document.getElementById('bradenMovilidad')?.value) || 0;
+  const n = parseInt(document.getElementById('bradenNutricion')?.value) || 0;
+  const f = parseInt(document.getElementById('bradenFriccion')?.value) || 0;
+  const total = p + h + a + m + n + f;
+  const input = document.getElementById('bradenTotal');
+  const interp = document.getElementById('bradenInterpretacion');
+  if (input) input.value = total + ' puntos';
+  if (interp) {
+    if (total >= 19) { interp.innerHTML = '<span style="color:#22c55e;">✅ SIN RIESGO</span>'; interp.style.color = '#22c55e'; }
+    else if (total >= 15) { interp.innerHTML = '<span style="color:#eab308;">⚠️ RIESGO LEVE</span>'; interp.style.color = '#eab308'; }
+    else if (total >= 13) { interp.innerHTML = '<span style="color:#f97316;">⚠️ RIESGO MODERADO</span>'; interp.style.color = '#f97316'; }
+    else if (total >= 10) { interp.innerHTML = '<span style="color:#ef4444;">🚨 RIESGO ALTO</span>'; interp.style.color = '#ef4444'; }
+    else { interp.innerHTML = '<span style="color:#ef4444;font-weight:bold;">🚨 RIESGO MUY ALTO</span>'; interp.style.color = '#ef4444'; }
+  }
 }
 
 document.addEventListener('change', function(e) {
@@ -761,6 +798,7 @@ async function agregarActividad() {
   const observacion = document.getElementById('obsActividad')?.value || '';
   const glasgow = document.getElementById('glasgowTotal')?.value || '';
   const eva = document.getElementById('evaValor')?.value || '';
+  const braden = document.getElementById('bradenTotal')?.value || '';
   let fotosBase64 = [];
   const preview = document.getElementById('photoPreview');
   if (preview && requiereFotoActividad(actividad)) {
@@ -773,6 +811,12 @@ async function agregarActividad() {
     }
   }
   try {
+    const novedadParts = [];
+    if (glasgow) novedadParts.push(`Glasgow: ${glasgow}`);
+    if (eva) novedadParts.push(`EVA: ${eva}/10`);
+    if (braden) novedadParts.push(`Braden: ${braden}`);
+    const novedad = novedadParts.join(', ');
+    
     const response = await apiRequest('/api/actividades', {
       method: 'POST',
       body: JSON.stringify({
@@ -782,7 +826,7 @@ async function agregarActividad() {
         hora: hora,
         observacion: observacion,
         educacion: '',
-        novedad: glasgow ? `Glasgow: ${glasgow}, EVA: ${eva}` : '',
+        novedad: novedad,
         fotos: fotosBase64
       })
     });
@@ -794,16 +838,13 @@ async function agregarActividad() {
       if (preview) preview.innerHTML = '';
       showToast('✅ Actividad registrada', 'success');
     } else {
-      showToast(data.error || 'Error al guardar', 'error');
+      showToast(data.error || data.message || 'Error al guardar', 'error');
     }
   } catch (error) {
     showToast('Error de conexión', 'error');
   }
 }
 
-// ==========================================
-// MÓDULO SIGNOS VITALES
-// ==========================================
 function getSignosContent() {
   const ciudad = pacienteActual?.ciudad || 'Bogotá';
   const rango = getRangoSpO2(ciudad);
@@ -931,16 +972,13 @@ async function guardarSignos() {
       document.getElementById('signosAlert').innerHTML = '';
       showToast('✅ Signos guardados', 'success');
     } else {
-      showToast(data.error || 'Error al guardar', 'error');
+      showToast(data.error || data.message || 'Error al guardar', 'error');
     }
   } catch (error) {
     showToast('Error de conexión', 'error');
   }
 }
 
-// ==========================================
-// MÓDULO MEDICAMENTOS
-// ==========================================
 function getMedicamentosContent() {
   return `
     <div class="card">
@@ -985,16 +1023,13 @@ async function guardarMedicamento() {
       });
       showToast('✅ Medicamento registrado', 'success');
     } else {
-      showToast(data.error || 'Error al guardar', 'error');
+      showToast(data.error || data.message || 'Error al guardar', 'error');
     }
   } catch (error) {
     showToast('Error de conexión', 'error');
   }
 }
 
-// ==========================================
-// MÓDULO EDUCACIÓN (DEL AUXILIAR)
-// ==========================================
 function getEducacionContent() {
   return `
     <div class="card">
@@ -1123,16 +1158,13 @@ async function guardarCompletarEducacion(id) {
       cerrarModalCompletarEdu();
       cargarEducacionPendiente();
     } else {
-      showToast(data.error || 'Error', 'error');
+      showToast(data.error || data.message || 'Error', 'error');
     }
   } catch (error) {
     showToast('Error de conexión', 'error');
   }
 }
 
-// ==========================================
-// MÓDULO ENTREGA
-// ==========================================
 function getEntregaContent() {
   return `
     <div class="card">
@@ -1150,11 +1182,12 @@ function getEntregaContent() {
       </div>
       <div style="margin-top:16px;border-top:1px solid #334155;padding-top:12px;">
         <div class="card-title" style="font-size:0.9rem;border-left-color:#8b5cf6;">📋 Comunicación SBAR</div>
+        <div class="tip-box info" style="font-size:.7rem;">ℹ️ SBAR = Situación, Antecedentes, Evaluación, Recomendación. Estándar internacional de comunicación clínica.</div>
         <div class="sbar-card">
-          <div class="sbar-field"><label>S - Situación</label><textarea id="sbarSituacion" rows="1"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarSituacion')">🎙️</button></div>
-          <div class="sbar-field"><label>B - Antecedentes</label><textarea id="sbarAntecedentes" rows="1"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarAntecedentes')">🎙️</button></div>
-          <div class="sbar-field"><label>A - Evaluación</label><textarea id="sbarEvaluacion" rows="1"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarEvaluacion')">🎙️</button></div>
-          <div class="sbar-field"><label>R - Recomendación</label><textarea id="sbarRecomendacion" rows="1"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarRecomendacion')">🎙️</button></div>
+          <div class="sbar-field"><label>S - Situación (¿Qué está pasando?)</label><textarea id="sbarSituacion" rows="1"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarSituacion')">🎙️</button></div>
+          <div class="sbar-field"><label>B - Antecedentes (Contexto clínico)</label><textarea id="sbarAntecedentes" rows="1"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarAntecedentes')">🎙️</button></div>
+          <div class="sbar-field"><label>A - Evaluación (¿Qué creo que está pasando?)</label><textarea id="sbarEvaluacion" rows="1"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarEvaluacion')">🎙️</button></div>
+          <div class="sbar-field"><label>R - Recomendación (¿Qué se debe hacer?)</label><textarea id="sbarRecomendacion" rows="1"></textarea><button class="btn-voice" onclick="iniciarDictado('sbarRecomendacion')">🎙️</button></div>
         </div>
       </div>
       <div class="form-group">
@@ -1295,16 +1328,13 @@ async function confirmarEntrega() {
       clearCanvas('sigEntrega');
       clearCanvas('sigRecibe');
     } else {
-      showToast(data.error || 'Error', 'error');
+      showToast(data.error || data.message || 'Error', 'error');
     }
   } catch (error) {
     showToast('Error de conexión', 'error');
   }
 }
 
-// ==========================================
-// MÓDULO REPORTES (PDF DIARIO)
-// ==========================================
 function getReportesContent() {
   return `
     <div class="card">
@@ -1331,11 +1361,8 @@ async function generarReportePDF() {
   if (!validarPacienteSeleccionado()) return;
   const PDFClass = window.jspdf?.jsPDF;
   if (!PDFClass) { showToast('Librería PDF no disponible', 'error'); return; }
-  
   showToast('Generando PDF completo...', 'success');
-  
   try {
-    // Obtener todos los datos del día en paralelo
     const hoy = getCurrentDate();
     const [recibosRes, actividadesRes, signosRes, medicamentosRes, entregasRes] = await Promise.all([
       apiRequest(`/api/recibos/patient/${pacienteActual.id}?date=${hoy}`),
@@ -1344,24 +1371,18 @@ async function generarReportePDF() {
       apiRequest(`/api/medicamentos/patient/${pacienteActual.id}?date=${hoy}`),
       apiRequest(`/api/entregas/patient/${pacienteActual.id}?date=${hoy}`)
     ]);
-    
     const recibos = (await recibosRes.json()).data || [];
     const actividades = (await actividadesRes.json()).data || [];
     const signos = (await signosRes.json()).data || [];
     const medicamentos = (await medicamentosRes.json()).data || [];
     const entregas = (await entregasRes.json()).data || [];
-    
     const doc = new PDFClass();
     let y = 20;
     const cleanText = (t) => t === null || t === undefined ? '' : String(t).trim();
-    
-    // LOGO
     const logoBase64 = await cargarLogoBase64();
     if (logoBase64) {
       try { doc.addImage(logoBase64, 'JPEG', 80, y - 10, 50, 20); y += 15; } catch(e) {}
     }
-    
-    // ENCABEZADO
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(16);
     doc.setTextColor(34, 197, 94);
@@ -1375,8 +1396,6 @@ async function generarReportePDF() {
     doc.setFontSize(12);
     doc.text('REPORTE DE ATENCIÓN DOMICILIARIA', 105, y, { align: 'center' });
     y += 10;
-    
-    // DATOS DEL PACIENTE Y PROFESIONAL
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text('Paciente: ', 20, y);
@@ -1412,8 +1431,6 @@ async function generarReportePDF() {
     doc.setDrawColor(34, 197, 94);
     doc.line(20, y, 190, y);
     y += 8;
-    
-    // 1. RECIBOS
     if (recibos.length > 0) {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
@@ -1433,8 +1450,6 @@ async function generarReportePDF() {
       });
       y += 3;
     }
-    
-    // 2. ACTIVIDADES
     if (actividades.length > 0) {
       if (y > 250) { doc.addPage(); y = 20; }
       doc.setFont('helvetica', 'bold');
@@ -1462,7 +1477,7 @@ async function generarReportePDF() {
         }
         if (a.fotos && a.fotos.length > 0) {
           doc.setTextColor(139, 92, 246);
-          doc.text(`📸 ${a.fotos.length} foto(s) de evidencia adjunta(s)`, 30, y);
+          doc.text(`📸 ${a.fotos.length} foto(s) de evidencia disponibles en el sistema`, 30, y);
           doc.setTextColor(0, 0, 0);
           y += 4;
         }
@@ -1470,8 +1485,6 @@ async function generarReportePDF() {
       });
       y += 3;
     }
-    
-    // 3. SIGNOS VITALES
     if (signos.length > 0) {
       if (y > 250) { doc.addPage(); y = 20; }
       doc.setFont('helvetica', 'bold');
@@ -1503,8 +1516,6 @@ async function generarReportePDF() {
       });
       y += 3;
     }
-    
-    // 4. MEDICAMENTOS
     if (medicamentos.length > 0) {
       if (y > 250) { doc.addPage(); y = 20; }
       doc.setFont('helvetica', 'bold');
@@ -1528,8 +1539,6 @@ async function generarReportePDF() {
       });
       y += 3;
     }
-    
-    // 5. ENTREGA DE TURNO (con firmas)
     if (entregas.length > 0) {
       if (y > 200) { doc.addPage(); y = 20; }
       doc.setFont('helvetica', 'bold');
@@ -1540,7 +1549,7 @@ async function generarReportePDF() {
       doc.setTextColor(0, 0, 0);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
-      const ultima = entregas[0]; // La más reciente
+      const ultima = entregas[0];
       if (ultima) {
         doc.text(`Hora de entrega: ${ultima.horaentrega || ''} | Recibe: ${ultima.quienrecibe || ''}`, 25, y);
         y += 5;
@@ -1570,16 +1579,12 @@ async function generarReportePDF() {
           if (ultima.sbar.evaluacion) { doc.text(`A: ${cleanText(ultima.sbar.evaluacion).substring(0, 80)}`, 30, y); y += 4; }
           if (ultima.sbar.recomendacion) { doc.text(`R: ${cleanText(ultima.sbar.recomendacion).substring(0, 80)}`, 30, y); y += 4; }
         }
-        
-        // FIRMAS
         if (y > 200) { doc.addPage(); y = 20; }
         y += 5;
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(10);
         doc.text('FIRMAS DE CONFORMIDAD', 20, y);
         y += 8;
-        
-        // Firma Entrega (Auxiliar)
         if (ultima.firma_entrega) {
           try { doc.addImage(ultima.firma_entrega, 'PNG', 20, y, 60, 25); } catch(e) {}
         }
@@ -1593,8 +1598,6 @@ async function generarReportePDF() {
         doc.text(`Rol: ${currentUser.role}`, 20, y + 40);
         if (currentUser.cedula) doc.text(`Cédula: ${currentUser.cedula}`, 20, y + 44);
         if (currentUser.rethus) doc.text(`ReTHUS: ${currentUser.rethus}`, 20, y + 48);
-        
-        // Firma Recibe
         if (ultima.firma_recibe) {
           try { doc.addImage(ultima.firma_recibe, 'PNG', 110, y, 60, 25); } catch(e) {}
         }
@@ -1607,8 +1610,6 @@ async function generarReportePDF() {
         doc.text(`Hora: ${ultima.horaentrega || ''}`, 110, y + 44);
       }
     }
-    
-    // PIE DE PÁGINA
     const totalPages = doc.internal.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i);
@@ -1616,21 +1617,16 @@ async function generarReportePDF() {
       doc.setTextColor(150, 150, 150);
       doc.text(`Vital Hogar Pro IPS - Página ${i} de ${totalPages} - Generado: ${new Date().toLocaleString('es-CO')}`, 105, 290, { align: 'center' });
     }
-    
     const fechaStr = new Date().toISOString().split('T')[0];
     const nombreArchivo = `reporte_${cleanText(pacienteActual.name).replace(/\s+/g, '_')}_${fechaStr}.pdf`;
     doc.save(nombreArchivo);
     showToast('✅ Reporte PDF completo generado', 'success');
-    
   } catch (error) {
     console.error('Error generando PDF:', error);
     showToast('Error al generar PDF: ' + error.message, 'error');
   }
 }
 
-// ==========================================
-// MÓDULO USUARIOS
-// ==========================================
 function getUsuariosContent() {
   return `
     <div class="card">
@@ -1681,11 +1677,8 @@ function toggleReTHUSField() {
   const role = document.getElementById('newUserRole')?.value;
   const group = document.getElementById('rethusGroup');
   if (!group) return;
-  if (requiereReTHUS(role)) {
-    group.classList.remove('hidden');
-  } else {
-    group.classList.add('hidden');
-  }
+  if (requiereReTHUS(role)) group.classList.remove('hidden');
+  else group.classList.add('hidden');
 }
 
 function toggleNewUserPass(btn) {
@@ -1793,9 +1786,6 @@ async function eliminarUsuario(userId) {
   }
 }
 
-// ==========================================
-// MÓDULO PACIENTES (CON CIUDAD Y ACUDIENTE)
-// ==========================================
 function getPacientesContent() {
   const ciudadesOptions = Object.keys(CIUDADES_COLOMBIA).sort().map(c => 
     `<option value="${c}">${c} (${CIUDADES_COLOMBIA[c].altitud}msnm)</option>`
@@ -1944,9 +1934,6 @@ async function eliminarPaciente(pacienteId) {
   }
 }
 
-// ==========================================
-// MÓDULO TEMAS EDUCATIVOS
-// ==========================================
 function getEducationTopicsContent() {
   return `
     <div class="card">
@@ -1973,7 +1960,7 @@ async function crearTemaEducacion() {
   try {
     const response = await apiRequest('/api/education', {
       method: 'POST',
-      body: JSON.stringify({ title, description }) // ← Ya no envía created_by, el backend lo toma del token
+      body: JSON.stringify({ title, description })
     });
     const data = await response.json();
     if (data.success) {
@@ -2001,8 +1988,7 @@ async function cargarListaTemas() {
         <div class="activity-item">
           <div class="activity-item-content">
             <strong>${t.title}</strong><br>
-            <span style="color:#94a3b8;font-size:0.8rem;">${(t.description || '').substring(0, 100)}${(t.description || '').length > 100 ? '...' : ''}</span><br>
-            <small style="color:#64748b;">Creado por: ${t.created_by || 'Admin'}</small>
+            <span style="color:#94a3b8;font-size:0.8rem;">${(t.description || '').substring(0, 100)}${(t.description || '').length > 100 ? '...' : ''}</span>
           </div>
           <button class="btn-delete" onclick="confirmarEliminarTema('${t.id}', '${t.title.replace(/'/g, "\\'")}')">🗑️</button>
         </div>
@@ -2051,9 +2037,6 @@ async function eliminarTema(topicId) {
   }
 }
 
-// ==========================================
-// MÓDULO ASIGNAR EDUCACIÓN
-// ==========================================
 function getAsignarEducacionContent() {
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
   const usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
@@ -2135,9 +2118,6 @@ async function cargarAsignaciones() {
   }
 }
 
-// ==========================================
-// MÓDULO REPORTE MENSUAL (CON FORMULARIO FAMILIAR Y FIRMAS)
-// ==========================================
 function getReporteMensualContent() {
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
   const pacientesOptions = pacientes.length === 0 ? '<option value="">No hay pacientes</option>' : 
@@ -2169,7 +2149,6 @@ function getReporteMensualContent() {
 function configurarReporteMensual() {
   actualizarInfoPacienteReporte();
   setTimeout(() => {
-    // Solo inicializar UNA firma (la del elaborador)
     const canvas = document.getElementById('sigMensualElabora');
     if (!canvas || canvas.dataset.initialized === 'true') return;
     const width = canvas.offsetWidth || 300;
@@ -2208,46 +2187,6 @@ function configurarReporteMensual() {
   }, 100);
 }
 
-function initSignaturesMensual() {
-  ['sigMensualElabora','sigMensualFamiliar'].forEach(id => {
-    const canvas = document.getElementById(id);
-    if (!canvas || canvas.dataset.initialized === 'true') return;
-    const width = canvas.offsetWidth || 300;
-    const height = canvas.offsetHeight || 120;
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '16px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('✍️ Firme aquí', width / 2, height / 2);
-    let drawing = false;
-    ctx.strokeStyle = '#0f172a';
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    function getPos(e) {
-      const rect = canvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      return { x: clientX - rect.left, y: clientY - rect.top };
-    }
-    const startDraw = (e) => { drawing = true; ctx.beginPath(); const pos = getPos(e); ctx.moveTo(pos.x, pos.y); };
-    const draw = (e) => { if (!drawing) return; e.preventDefault(); const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); };
-    const endDraw = () => { drawing = false; };
-    canvas.addEventListener('mousedown', startDraw);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', endDraw);
-    canvas.addEventListener('mouseleave', endDraw);
-    canvas.addEventListener('touchstart', startDraw, { passive: false });
-    canvas.addEventListener('touchmove', draw, { passive: false });
-    canvas.addEventListener('touchend', endDraw);
-    canvas.dataset.initialized = 'true';
-  });
-}
-
 function actualizarInfoPacienteReporte() {
   const pacienteId = document.getElementById('reporteMensualPaciente')?.value;
   const div = document.getElementById('infoPacienteReporte');
@@ -2258,23 +2197,6 @@ function actualizarInfoPacienteReporte() {
   if (!paciente) { div.innerHTML = ''; return; }
   const ciudad = paciente.ciudad || 'Bogotá';
   const rango = getRangoSpO2(ciudad);
-  // Auto-llenar datos del familiar si están en el paciente
-  if (paciente.acudiente_nombre) {
-    const fam = document.getElementById('familiarNombre');
-    if (fam && !fam.value) fam.value = paciente.acudiente_nombre;
-  }
-  if (paciente.acudiente_cedula) {
-    const ced = document.getElementById('familiarCedula');
-    if (ced && !ced.value) ced.value = paciente.acudiente_cedula;
-  }
-  if (paciente.acudiente_parentesco) {
-    const par = document.getElementById('familiarParentesco');
-    if (par && !par.value) par.value = paciente.acudiente_parentesco;
-  }
-  if (paciente.acudiente_telefono) {
-    const tel = document.getElementById('familiarTelefono');
-    if (tel && !tel.value) tel.value = paciente.acudiente_telefono;
-  }
   div.innerHTML = `
     <div class="paciente-info-card">
       <h3>${paciente.name}</h3>
@@ -2289,35 +2211,25 @@ function actualizarInfoPacienteReporte() {
 async function generarReporteMensualPDF() {
   const pacienteId = document.getElementById('reporteMensualPaciente')?.value;
   if (!pacienteId) { showToast('Seleccione un paciente', 'error'); return; }
-  
   const observaciones = document.getElementById('reporteObservaciones')?.value?.trim();
   const firmaElabora = getSignatureData('sigMensualElabora');
-  
   if (!firmaElabora) {
     showToast('⚠️ Firma del elaborador requerida', 'warning');
     return;
   }
-  
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
   const paciente = pacientes.find(p => p.id === pacienteId);
   if (!paciente) { showToast('Paciente no encontrado', 'error'); return; }
-  
   showToast('Generando reporte mensual...', 'success');
-  
   const PDFClass = window.jspdf?.jsPDF;
   if (!PDFClass) { showToast('Librería PDF no disponible', 'error'); return; }
-  
   const doc = new PDFClass();
   let y = 20;
   const cleanText = (t) => t === null || t === undefined ? '' : String(t).trim();
-  
-  // LOGO
   const logoBase64 = await cargarLogoBase64();
   if (logoBase64) {
     try { doc.addImage(logoBase64, 'JPEG', 80, y - 10, 50, 20); y += 15; } catch(e) {}
   }
-  
-  // ENCABEZADO
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
   doc.setTextColor(34, 197, 94);
@@ -2331,8 +2243,6 @@ async function generarReporteMensualPDF() {
   doc.setFontSize(12);
   doc.text('INFORME MENSUAL DE ATENCIÓN', 105, y, { align: 'center' });
   y += 10;
-  
-  // DATOS DEL PACIENTE
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(34, 197, 94);
@@ -2354,21 +2264,6 @@ async function generarReporteMensualPDF() {
     }
   }
   y += 5;
-  
-  // RESUMEN EJECUTIVO
-  if (y > 240) { doc.addPage(); y = 20; }
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(34, 197, 94);
-  doc.text('RESUMEN EJECUTIVO', 20, y);
-  y += 7;
-  doc.setTextColor(0, 0, 0);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  doc.text('Este informe resume la atención brindada al paciente durante el período indicado.', 25, y); y += 6;
-  doc.text('Para información detallada de cada día, consulte los reportes diarios individuales.', 25, y); y += 10;
-  
-  // OBSERVACIONES
   if (observaciones) {
     if (y > 240) { doc.addPage(); y = 20; }
     doc.setFontSize(11);
@@ -2383,8 +2278,6 @@ async function generarReporteMensualPDF() {
     doc.text(lines, 25, y);
     y += lines.length * 5 + 5;
   }
-  
-  // FIRMA DEL ELABORADOR (SIN firma del familiar)
   if (y > 200) { doc.addPage(); y = 20; }
   y += 10;
   doc.setFont('helvetica', 'bold');
@@ -2392,7 +2285,6 @@ async function generarReporteMensualPDF() {
   doc.setTextColor(0, 0, 0);
   doc.text('FIRMA DEL ELABORADOR', 20, y);
   y += 10;
-  
   if (firmaElabora) {
     try { doc.addImage(firmaElabora, 'PNG', 25, y, 70, 30); } catch(e) {}
   }
@@ -2406,23 +2298,17 @@ async function generarReporteMensualPDF() {
   if (currentUser.cedula) { doc.text(`Cédula: ${currentUser.cedula}`, 25, y); y += 4; }
   if (currentUser.rethus) { doc.text(`ReTHUS: ${currentUser.rethus}`, 25, y); y += 4; }
   doc.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-CO')}`, 25, y);
-  
-  // NOTA AL PIE
   y += 15;
   doc.setFontSize(8);
   doc.setTextColor(100, 100, 100);
   doc.text('Este documento es un informe informativo generado por el sistema Vital Hogar Pro IPS.', 20, y);
   y += 4;
   doc.text('Para detalles específicos de cada jornada, consulte los reportes diarios firmados.', 20, y);
-  
   const nombreArchivo = `informe_mensual_${cleanText(paciente.name).replace(/\s+/g, '_')}_${getCurrentDate()}.pdf`;
   doc.save(nombreArchivo);
   showToast('✅ Informe mensual generado', 'success');
 }
 
-// ==========================================
-// PANEL GLOBAL
-// ==========================================
 function getReportesGlobalesContent() {
   const usuarios = JSON.parse(localStorage.getItem('vital_usuarios') || '[]');
   const pacientes = JSON.parse(localStorage.getItem('vital_pacientes') || '[]');
@@ -2451,9 +2337,6 @@ function getReportesGlobalesContent() {
   `;
 }
 
-// ==========================================
-// INICIALIZACIÓN
-// ==========================================
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('loginBtn').addEventListener('click', login);
   document.getElementById('loginPassword').addEventListener('keydown', function(e) { if (e.key === 'Enter') login(); });
@@ -2488,7 +2371,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-console.log('🚀 Vital Hogar Pro IPS v2.1 - Sistema cargado');
+console.log('🚀 Vital Hogar Pro IPS v2.2 - Sistema cargado');
 console.log('📍 Ciudades:', Object.keys(CIUDADES_COLOMBIA).length);
 </script>
 </body>
